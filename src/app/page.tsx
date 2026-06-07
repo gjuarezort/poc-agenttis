@@ -711,13 +711,16 @@ export default function AgenttisDashboard() {
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "row" }}>
 
-      {/* Collapsible Sidebar — expands on hover */}
+      {/* Collapsible Sidebar — expands on hover, fixed height */}
       <aside
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
         style={{
-          width: sidebarOpen ? "260px" : "52px",
-          minHeight: "100vh",
+          width: sidebarOpen ? "220px" : "52px",
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          alignSelf: "flex-start",
           background: "var(--bg-surface-solid)",
           borderRight: "1px solid var(--border-color)",
           display: "flex",
@@ -732,12 +735,13 @@ export default function AgenttisDashboard() {
         <div style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "center",
-          padding: "1rem 0",
+          justifyContent: sidebarOpen ? "flex-start" : "center",
+          padding: sidebarOpen ? "1rem 0.85rem" : "1rem 0",
           borderBottom: "1px solid var(--border-color)",
-          minHeight: "64px",
-          gap: "0.5rem",
+          minHeight: "60px",
+          gap: "0.6rem",
           overflow: "hidden",
+          transition: "padding 0.22s ease",
         }}>
           <div className="flex-center" style={{
             background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
@@ -745,10 +749,25 @@ export default function AgenttisDashboard() {
             color: "#fff", fontWeight: 800, fontSize: "0.95rem", flexShrink: 0,
             boxShadow: "0 2px 8px var(--color-primary-glow)"
           }}>A</div>
+          <span style={{
+            fontWeight: 800,
+            fontSize: "1rem",
+            letterSpacing: "-0.4px",
+            background: "linear-gradient(135deg, var(--text-primary) 0%, var(--color-primary) 100%)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            opacity: sidebarOpen ? 1 : 0,
+            maxWidth: sidebarOpen ? "160px" : "0px",
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            transition: "opacity 0.15s ease, max-width 0.22s ease",
+          }}>
+            Agenttis
+          </span>
         </div>
 
         {/* Nav items */}
-        <nav style={{ flex: 1, padding: "0.75rem 0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+        <nav style={{ flex: 1, padding: "0.75rem 0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem", overflowY: "auto", overflowX: "hidden" }}>
           {navItems.map(item => (
             <React.Fragment key={item.key}>
             {item.sectionLabel && (
@@ -797,87 +816,87 @@ export default function AgenttisDashboard() {
             </React.Fragment>
           ))}
         </nav>
-      </aside>
 
-      {/* Right column: header + main + footer */}
-      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
-
-      {/* Dynamic Header */}
-      <header className="glass-panel" style={{
-        margin: "1rem",
-        padding: "1rem 2.0rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        zIndex: 10,
-        borderRadius: "var(--radius-lg)"
-      }}>
-
-        {/* Left branding */}
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-              <span style={{ fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.5px" }}>{t("appName")}</span>
-              <span className="badge badge-info" style={{ fontSize: "0.65rem", padding: "0.1rem 0.4rem" }}>{t("mvpBuilder")}</span>
-            </div>
-            <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>{t("tagline")}</p>
-          </div>
-        </div>
-
-        {/* Right Switch Controls (Language & Theme Manager) */}
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          
-          {/* Multilingual Selector */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", background: "var(--bg-surface-solid)", padding: "0.3rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-            <Globe size={14} style={{ color: "var(--text-muted)", marginLeft: "0.25rem" }} />
-            <button 
-              onClick={() => handleLanguageChange("en")}
-              style={{
-                background: language === "en" ? "var(--color-primary-glow)" : "transparent",
-                color: language === "en" ? "var(--color-primary)" : "var(--text-secondary)",
-                padding: "0.2rem 0.5rem",
-                fontSize: "0.75rem",
-                borderRadius: "var(--radius-sm)",
-                fontWeight: language === "en" ? 700 : 500
-              }}
-            >
-              EN
-            </button>
-            <button 
-              onClick={() => handleLanguageChange("es")}
-              style={{
-                background: language === "es" ? "var(--color-primary-glow)" : "transparent",
-                color: language === "es" ? "var(--color-primary)" : "var(--text-secondary)",
-                padding: "0.2rem 0.5rem",
-                fontSize: "0.75rem",
-                borderRadius: "var(--radius-sm)",
-                fontWeight: language === "es" ? 700 : 500
-              }}
-            >
-              ES
-            </button>
-          </div>
-
-          {/* Theme manager Toggle button */}
-          <button 
+        {/* Sidebar bottom: dark mode toggle */}
+        <div style={{
+          borderTop: "1px solid var(--border-color)",
+          padding: "0.6rem 0.5rem",
+          display: "flex",
+          justifyContent: sidebarOpen ? "flex-start" : "center",
+        }}>
+          <button
             onClick={toggleTheme}
-            className="btn-secondary"
+            className={`tab-btn`}
             title={theme === "light" ? "Switch to Dark Mode" : "Switch to Light Mode"}
             style={{
-              width: "36px",
-              height: "36px",
-              padding: 0,
-              borderRadius: "var(--radius-md)",
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center"
+              width: "100%",
+              justifyContent: sidebarOpen ? "flex-start" : "center",
+              gap: "0.6rem",
+              padding: "0.5rem 0.75rem",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
             }}
           >
-            {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+            <span style={{ flexShrink: 0 }}>
+              {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
+            </span>
+            <span style={{
+              overflow: "hidden",
+              opacity: sidebarOpen ? 1 : 0,
+              transition: "opacity 0.1s ease",
+              maxWidth: sidebarOpen ? "200px" : "0px",
+              fontSize: "0.85rem",
+            }}>
+              {theme === "light" ? (language === "es" ? "Modo Oscuro" : "Dark Mode") : (language === "es" ? "Modo Claro" : "Light Mode")}
+            </span>
           </button>
-
         </div>
-      </header>
+      </aside>
+
+      {/* Right column: main + footer */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", position: "relative" }}>
+
+        {/* Floating language selector — top right */}
+        <div style={{
+          position: "absolute",
+          top: "1rem",
+          right: "1rem",
+          zIndex: 30,
+          display: "flex",
+          alignItems: "center",
+          gap: "0.4rem",
+          background: "var(--bg-surface-solid)",
+          padding: "0.3rem",
+          borderRadius: "var(--radius-md)",
+          border: "1px solid var(--border-color)",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        }}>
+          <Globe size={14} style={{ color: "var(--text-muted)", marginLeft: "0.25rem" }} />
+          <button
+            onClick={() => handleLanguageChange("en")}
+            style={{
+              background: language === "en" ? "var(--color-primary-glow)" : "transparent",
+              color: language === "en" ? "var(--color-primary)" : "var(--text-secondary)",
+              padding: "0.2rem 0.5rem",
+              fontSize: "0.75rem",
+              borderRadius: "var(--radius-sm)",
+              fontWeight: language === "en" ? 700 : 500,
+              border: "none",
+            }}
+          >EN</button>
+          <button
+            onClick={() => handleLanguageChange("es")}
+            style={{
+              background: language === "es" ? "var(--color-primary-glow)" : "transparent",
+              color: language === "es" ? "var(--color-primary)" : "var(--text-secondary)",
+              padding: "0.2rem 0.5rem",
+              fontSize: "0.75rem",
+              borderRadius: "var(--radius-sm)",
+              fontWeight: language === "es" ? 700 : 500,
+              border: "none",
+            }}
+          >ES</button>
+        </div>
 
       {/* Main Content Layout */}
       <main className="container" style={{ flex: 1, padding: "1rem", maxWidth: "1500px" }}>
