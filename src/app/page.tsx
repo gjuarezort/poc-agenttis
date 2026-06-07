@@ -433,6 +433,7 @@ export default function AgenttisDashboard() {
   const [mockConnections, setMockConnections] = useState<Array<{id:string, name:string, category:string, status:"connected"|"error"|"pending", lastSync:string, records:string}>>([
     { id:"demo1", name: "Demo: Clientes Uruguay", category:"CSV", status:"connected", lastSync:"Hace 2h", records:"500 filas" },
   ]);
+  const [arTab, setArTab] = useState<"cobrar"|"pagar">("cobrar");
 
   // Chat/Playground state
   const [query, setQuery] = useState<string>("");
@@ -2530,7 +2531,6 @@ export default function AgenttisDashboard() {
         {activeTab === "accountsReceivable" && (() => {
           const es = language === "es";
           const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
-          const [arTab, setArTab] = React.useState<"cobrar"|"pagar">("cobrar");
           const cobrar = [
             { cliente:"Supermercado El Sol S.A.", factura:"e-001245", fecha:"2026-05-10", vence:"2026-06-10", monto:180000, dias:28 },
             { cliente:"Farmacia Central",         factura:"e-001198", fecha:"2026-05-01", vence:"2026-05-31", monto: 45000, dias:37 },
