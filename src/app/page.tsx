@@ -729,6 +729,52 @@ export default function AgenttisDashboard() {
     });
   };
 
+  // ── Wizard data (needs language, so lives in render scope) ──────────
+  const sourceCategories = [
+    { id: "files",      label: language === "es" ? "Archivos" : "Files",                   icon: <HardDrive size={20} />, color: "var(--color-primary)",
+      sources: [{ id:"excel", label:"Excel / CSV", desc:".xlsx, .csv, .xls" }, { id:"pdf", label: language==="es"?"PDF / e-Factura":"PDF / e-Invoice", desc:".pdf, .xml DGI" }] },
+    { id: "cloud",      label: "Cloud Storage",                                             icon: <Cloud size={20} />,     color: "var(--color-accent)",
+      sources: [{ id:"gdrive", label:"Google Drive", desc:"Sheets, Docs" }, { id:"onedrive", label:"OneDrive", desc:"Excel, SharePoint" }, { id:"dropbox", label:"Dropbox", desc:"" }] },
+    { id: "database",   label: language === "es" ? "Base de Datos" : "Database",            icon: <Server size={20} />,    color: "#8b5cf6",
+      sources: [{ id:"postgres", label:"PostgreSQL", desc:"" }, { id:"mysql", label:"MySQL / MariaDB", desc:"" }, { id:"sqlserver", label:"SQL Server", desc:"" }, { id:"gsheets", label:"Google Sheets API", desc:"" }] },
+    { id: "accounting", label: language === "es" ? "Software Contable" : "Accounting ERP",  icon: <Landmark size={20} />,  color: "var(--color-warning)",
+      sources: [{ id:"tango", label:"Tango Gestión", desc: language==="es"?"Popular en UY/AR":"Popular in UY/AR" }, { id:"bejerman", label:"Bejerman", desc:"" }, { id:"xero", label:"Xero", desc:"API v2" }, { id:"odoo", label:"Odoo", desc:"Open source" }] },
+    { id: "banks",      label: language === "es" ? "Bancos Uruguay" : "Uruguayan Banks",    icon: <Building2 size={20} />, color: "var(--color-success)",
+      sources: [{ id:"brou", label:"BROU", desc:"Banco República" }, { id:"itau", label:"Itaú Uruguay", desc:"" }, { id:"santander", label:"Santander", desc:"" }, { id:"bbva", label:"BBVA", desc:"" }, { id:"scotiabank", label:"Scotiabank", desc:"" }] },
+    { id: "billing",    label: language === "es" ? "Facturación" : "Billing",               icon: <Receipt size={20} />,   color: "#f43f5e",
+      sources: [{ id:"dgi", label:"e-Factura DGI", desc: language==="es"?"Portal DGI Uruguay":"DGI Uruguay portal" }, { id:"mercadopago", label:"Mercado Pago", desc:"API v1" }, { id:"stripe", label:"Stripe", desc:"Payments API" }] },
+  ];
+
+  const wizardFields: Record<string, {label:string,key:string,type?:string,placeholder?:string}[]> = {
+    excel:      [{ label:language==="es"?"Archivo":"File", key:"file", type:"file" }],
+    pdf:        [{ label:language==="es"?"Archivo PDF/XML":"PDF/XML file", key:"file", type:"file" }],
+    gdrive:     [{ label:"Folder ID o URL", key:"folder", placeholder:"https://drive.google.com/drive/folders/..." }, { label:language==="es"?"Cuenta Google":"Google Account", key:"email", placeholder:"empresa@gmail.com" }],
+    onedrive:   [{ label:"SharePoint URL", key:"url", placeholder:"https://empresa.sharepoint.com/..." }],
+    dropbox:    [{ label:"Access Token", key:"token", type:"password", placeholder:"sl.B..." }],
+    postgres:   [{ label:"Host", key:"host", placeholder:"localhost" }, { label:language==="es"?"Puerto":"Port", key:"port", placeholder:"5432" }, { label:language==="es"?"Base de datos":"Database", key:"db", placeholder:"contabilidad" }, { label:language==="es"?"Usuario":"User", key:"user", placeholder:"admin" }, { label:language==="es"?"Contraseña":"Password", key:"pass", type:"password", placeholder:"••••••••" }],
+    mysql:      [{ label:"Host", key:"host", placeholder:"localhost" }, { label:language==="es"?"Puerto":"Port", key:"port", placeholder:"3306" }, { label:language==="es"?"Base de datos":"Database", key:"db", placeholder:"contabilidad" }, { label:language==="es"?"Usuario":"User", key:"user", placeholder:"admin" }, { label:language==="es"?"Contraseña":"Password", key:"pass", type:"password", placeholder:"••••••••" }],
+    sqlserver:  [{ label:"Server", key:"host", placeholder:"SERVIDOR\\INSTANCIA" }, { label:language==="es"?"Base de datos":"Database", key:"db", placeholder:"Contabilidad" }, { label:language==="es"?"Usuario":"User", key:"user", placeholder:"sa" }, { label:language==="es"?"Contraseña":"Password", key:"pass", type:"password", placeholder:"••••••••" }],
+    gsheets:    [{ label:"Spreadsheet ID", key:"id", placeholder:"1BxiMVs0XRA5..." }, { label:"Service Account JSON", key:"sa", type:"password", placeholder:"{ ... }" }],
+    tango:      [{ label:language==="es"?"Empresa":"Company", key:"company", placeholder:"Mi empresa SRL" }, { label:"API Key", key:"key", type:"password", placeholder:"TGO-..." }],
+    bejerman:   [{ label:"Host / URL", key:"host", placeholder:"http://servidor:8080" }, { label:language==="es"?"Usuario":"User", key:"user" }, { label:language==="es"?"Contraseña":"Password", key:"pass", type:"password" }],
+    xero:       [{ label:"Client ID", key:"clientId", placeholder:"XXXXXXXX-XXXX-..." }, { label:"Client Secret", key:"secret", type:"password" }],
+    odoo:       [{ label:"URL", key:"url", placeholder:"https://miempresa.odoo.com" }, { label:language==="es"?"Base de datos":"Database", key:"db" }, { label:language==="es"?"Usuario":"User", key:"user" }, { label:"API Key", key:"key", type:"password" }],
+    brou:       [{ label:language==="es"?"N° de cuenta":"Account No.", key:"account", placeholder:"001-XXXXXXXX-X" }, { label:"Token BROU Open Banking", key:"token", type:"password" }],
+    itau:       [{ label:"Client ID", key:"clientId" }, { label:"Client Secret", key:"secret", type:"password" }],
+    santander:  [{ label:"API Key Santander", key:"key", type:"password" }],
+    bbva:       [{ label:"API Key BBVA", key:"key", type:"password" }],
+    scotiabank: [{ label:"API Key Scotiabank", key:"key", type:"password" }],
+    dgi:        [{ label:language==="es"?"RUT empresa":"Company RUT", key:"rut", placeholder:"21XXXXXXX" }, { label:language==="es"?"Certificado (.pfx)":"Certificate (.pfx)", key:"cert", type:"file" }],
+    mercadopago:[{ label:"Access Token", key:"token", type:"password", placeholder:"APP_USR-..." }],
+    stripe:     [{ label:"Secret Key", key:"key", type:"password", placeholder:"sk_live_..." }],
+  };
+
+  const selectedSource = sourceCategories
+    .flatMap(c => c.sources.map(s => ({ ...s, catColor: c.color, catLabel: c.label })))
+    .find(s => s.id === wizardSourceType);
+  const wizardFormFields = wizardFields[wizardSourceType] ?? [];
+  // ─────────────────────────────────────────────────────────────────────
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "row" }}>
 
@@ -1078,94 +1124,7 @@ export default function AgenttisDashboard() {
 
         {/* TAB 1: DATA CONNECTION HUB */}
         {activeTab === "data" && (() => {
-          const sourceCategories = [
-            {
-              id: "files", label: language === "es" ? "Archivos" : "Files",
-              icon: <HardDrive size={20} />, color: "var(--color-primary)",
-              sources: [
-                { id: "excel", label: "Excel / CSV", desc: ".xlsx, .csv, .xls" },
-                { id: "pdf",   label: language === "es" ? "PDF / e-Factura" : "PDF / e-Invoice", desc: ".pdf, .xml DGI" },
-              ]
-            },
-            {
-              id: "cloud", label: "Cloud Storage",
-              icon: <Cloud size={20} />, color: "var(--color-accent)",
-              sources: [
-                { id: "gdrive",   label: "Google Drive",   desc: "Sheets, Docs, carpetas" },
-                { id: "onedrive", label: "OneDrive",        desc: "Excel, SharePoint" },
-                { id: "dropbox",  label: "Dropbox",         desc: language === "es" ? "Archivos y carpetas" : "Files & folders" },
-              ]
-            },
-            {
-              id: "database", label: language === "es" ? "Base de Datos" : "Database",
-              icon: <Server size={20} />, color: "#8b5cf6",
-              sources: [
-                { id: "postgres",  label: "PostgreSQL",         desc: "SQL + JSON" },
-                { id: "mysql",     label: "MySQL / MariaDB",    desc: "" },
-                { id: "sqlserver", label: "SQL Server",         desc: "Microsoft" },
-                { id: "gsheets",   label: "Google Sheets API",  desc: "" },
-              ]
-            },
-            {
-              id: "accounting", label: language === "es" ? "Software Contable" : "Accounting ERP",
-              icon: <Landmark size={20} />, color: "var(--color-warning)",
-              sources: [
-                { id: "tango",    label: "Tango Gestión",  desc: language === "es" ? "Popular en UY/AR" : "Popular in UY/AR" },
-                { id: "bejerman", label: "Bejerman",        desc: "" },
-                { id: "xero",     label: "Xero",            desc: "API v2" },
-                { id: "odoo",     label: "Odoo",            desc: "Open source" },
-              ]
-            },
-            {
-              id: "banks", label: language === "es" ? "Bancos Uruguay" : "Uruguayan Banks",
-              icon: <Building2 size={20} />, color: "var(--color-success)",
-              sources: [
-                { id: "brou",       label: "BROU",            desc: language === "es" ? "Banco República" : "Banco República" },
-                { id: "itau",       label: "Itaú Uruguay",    desc: "" },
-                { id: "santander",  label: "Santander",       desc: "" },
-                { id: "bbva",       label: "BBVA",            desc: "" },
-                { id: "scotiabank", label: "Scotiabank",      desc: "" },
-              ]
-            },
-            {
-              id: "billing", label: language === "es" ? "Facturación" : "Billing",
-              icon: <Receipt size={20} />, color: "#f43f5e",
-              sources: [
-                { id: "dgi",        label: "e-Factura DGI",   desc: language === "es" ? "Portal DGI Uruguay" : "DGI Uruguay portal" },
-                { id: "mercadopago",label: "Mercado Pago",    desc: "API v1" },
-                { id: "stripe",     label: "Stripe",           desc: "Payments API" },
-              ]
-            },
-          ];
-
-          const wizardFields: Record<string, {label:string, key:string, type?:string, placeholder?:string}[]> = {
-            excel:      [{ label: language === "es" ? "Archivo" : "File", key: "file", type: "file" }],
-            pdf:        [{ label: language === "es" ? "Archivo PDF/XML" : "PDF/XML file", key: "file", type: "file" }],
-            gdrive:     [{ label: "Folder ID o URL", key: "folder", placeholder: "https://drive.google.com/drive/folders/..." }, { label: language === "es" ? "Cuenta Google" : "Google Account", key: "email", placeholder: "empresa@gmail.com" }],
-            onedrive:   [{ label: "SharePoint URL", key: "url", placeholder: "https://empresa.sharepoint.com/..." }],
-            dropbox:    [{ label: "Access Token", key: "token", type: "password", placeholder: "sl.B..." }],
-            postgres:   [{ label: "Host", key: "host", placeholder: "localhost" }, { label: language === "es" ? "Puerto" : "Port", key: "port", placeholder: "5432" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "admin" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
-            mysql:      [{ label: "Host", key: "host", placeholder: "localhost" }, { label: language === "es" ? "Puerto" : "Port", key: "port", placeholder: "3306" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "admin" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
-            sqlserver:  [{ label: "Server", key: "host", placeholder: "SERVIDOR\\INSTANCIA" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "Contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "sa" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
-            gsheets:    [{ label: "Spreadsheet ID", key: "id", placeholder: "1BxiMVs0XRA5..." }, { label: "Service Account JSON", key: "sa", type: "password", placeholder: "{ ... }" }],
-            tango:      [{ label: language === "es" ? "Empresa" : "Company", key: "company", placeholder: "Mi empresa SRL" }, { label: "API Key", key: "key", type: "password", placeholder: "TGO-..." }],
-            bejerman:   [{ label: "Host / URL", key: "host", placeholder: "http://servidor:8080" }, { label: language === "es" ? "Usuario" : "User", key: "user" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password" }],
-            xero:       [{ label: "Client ID", key: "clientId", placeholder: "XXXXXXXX-XXXX-..." }, { label: "Client Secret", key: "secret", type: "password" }],
-            odoo:       [{ label: "URL", key: "url", placeholder: "https://miempresa.odoo.com" }, { label: language === "es" ? "Base de datos" : "Database", key: "db" }, { label: language === "es" ? "Usuario" : "User", key: "user" }, { label: "API Key", key: "key", type: "password" }],
-            brou:       [{ label: language === "es" ? "N° de cuenta" : "Account No.", key: "account", placeholder: "001-XXXXXXXX-X" }, { label: "Token BROU Open Banking", key: "token", type: "password" }],
-            itau:       [{ label: "Client ID", key: "clientId" }, { label: "Client Secret", key: "secret", type: "password" }],
-            santander:  [{ label: "API Key Santander", key: "key", type: "password" }],
-            bbva:       [{ label: "API Key BBVA", key: "key", type: "password" }],
-            scotiabank: [{ label: "API Key Scotiabank", key: "key", type: "password" }],
-            dgi:        [{ label: language === "es" ? "RUT empresa" : "Company RUT", key: "rut", placeholder: "21XXXXXXX" }, { label: language === "es" ? "Certificado (.pfx)" : "Certificate (.pfx)", key: "cert", type: "file" }],
-            mercadopago:[{ label: "Access Token", key: "token", type: "password", placeholder: "APP_USR-..." }],
-            stripe:     [{ label: "Secret Key", key: "key", type: "password", placeholder: "sk_live_..." }],
-          };
-
-          const selectedSource = sourceCategories.flatMap(c => c.sources.map(s => ({...s, catColor: c.color, catLabel: c.label}))).find(s => s.id === wizardSourceType);
-          const fields = wizardFields[wizardSourceType] ?? [];
           const statusColor = (s: string) => s === "connected" ? "var(--color-success)" : s === "error" ? "var(--color-danger)" : "var(--color-warning)";
-          const statusLabel = (s: string) => s === "connected" ? (language === "es" ? "Conectado" : "Connected") : s === "error" ? "Error" : (language === "es" ? "Pendiente" : "Pending");
 
           const allConnections = [
             ...mockConnections,
@@ -1264,7 +1223,7 @@ export default function AgenttisDashboard() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "0.75rem" }}>
                 {sourceCategories.map(cat => (
                   <div key={cat.id} className="glass-panel glass-panel-interactive" style={{ padding: "1rem 1.25rem", cursor: "pointer" }}
-                    onClick={() => { setWizardSourceType(cat.sources[0].id); setWizardOpen(true); setWizardStep(1); setWizardConfig({}); }}>
+                    onClick={() => { setWizardOpen(true); setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.6rem" }}>
                       <div style={{ color: cat.color, display: "flex" }}>{cat.icon}</div>
                       <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-primary)" }}>{cat.label}</span>
@@ -1362,115 +1321,6 @@ export default function AgenttisDashboard() {
                 </div>
               </div>
             ) : null}
-
-            {/* ── Wizard Modal ── */}
-            {wizardOpen && (
-              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
-                onClick={(e) => { if (e.target === e.currentTarget) setWizardOpen(false); }}>
-                <div className="glass-panel" style={{ width: "100%", maxWidth: "620px", padding: "1.75rem", position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
-
-                  {/* Modal header */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-                    <div>
-                      <h3 style={{ margin: "0 0 0.2rem" }}>{language === "es" ? "Nueva Conexión" : "New Connection"}</h3>
-                      <div style={{ display: "flex", gap: "0.4rem" }}>
-                        {[1,2,3].map(n => (
-                          <div key={n} style={{ height: "3px", width: "40px", borderRadius: "2px", background: wizardStep >= n ? "var(--color-primary)" : "var(--border-color)", transition: "background 0.2s" }} />
-                        ))}
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginLeft: "0.25rem" }}>{language === "es" ? `Paso ${wizardStep} de 3` : `Step ${wizardStep} of 3`}</span>
-                      </div>
-                    </div>
-                    <button onClick={() => setWizardOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem" }}>
-                      <X size={18} />
-                    </button>
-                  </div>
-
-                  {/* Step 1 — Choose source */}
-                  {wizardStep === 1 && (
-                    <div>
-                      <p style={{ margin: "0 0 1rem", fontSize: "0.88rem", color: "var(--text-secondary)" }}>
-                        {language === "es" ? "¿Desde dónde querés traer los datos?" : "Where do you want to bring data from?"}
-                      </p>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                        {sourceCategories.map(cat => (
-                          <div key={cat.id}>
-                            <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>{cat.label}</p>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                              {cat.sources.map(src => (
-                                <button key={src.id}
-                                  onClick={() => { setWizardSourceType(src.id); setWizardStep(2); setWizardConfig({}); }}
-                                  style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem", fontWeight: 600, borderRadius: "var(--radius-sm)", border: `1px solid ${wizardSourceType === src.id ? cat.color : "var(--border-color)"}`, background: wizardSourceType === src.id ? `${cat.color}20` : "var(--bg-surface-solid)", color: wizardSourceType === src.id ? cat.color : "var(--text-secondary)", cursor: "pointer", transition: "all 0.15s" }}>
-                                  {src.label}
-                                  {src.desc && <span style={{ fontWeight: 400, marginLeft: "0.3rem", opacity: 0.6, fontSize: "0.72rem" }}>· {src.desc}</span>}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 2 — Configuration */}
-                  {wizardStep === 2 && (
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", padding: "0.6rem 0.85rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                        <span style={{ color: selectedSource?.catColor ?? "var(--color-primary)", fontSize: "1.1rem" }}>⬡</span>
-                        <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{selectedSource?.label}</span>
-                        <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>— {selectedSource?.catLabel}</span>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                        {fields.map(f => (
-                          <div key={f.key}>
-                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.3rem" }}>{f.label}</label>
-                            {f.type === "file"
-                              ? <input type="file" onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.files?.[0]?.name ?? "" }))} style={{ fontSize: "0.82rem" }} />
-                              : <input type={f.type ?? "text"} placeholder={f.placeholder} value={wizardConfig[f.key] ?? ""} onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.value }))} />
-                            }
-                          </div>
-                        ))}
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem" }}>
-                        <button className="btn btn-secondary" onClick={() => setWizardStep(1)}>{language === "es" ? "← Volver" : "← Back"}</button>
-                        <button className="btn btn-primary" disabled={wizardConnecting} onClick={() => {
-                          setWizardConnecting(true);
-                          setTimeout(() => { setWizardConnecting(false); setWizardStep(3); }, 1400);
-                        }}>
-                          {wizardConnecting ? <><RefreshCw size={13} style={{ animation: "spin 0.8s linear infinite" }} /> {language === "es" ? "Conectando..." : "Connecting..."}</> : <><Wifi size={13} /> {language === "es" ? "Probar conexión" : "Test connection"}</>}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Step 3 — Success */}
-                  {wizardStep === 3 && (
-                    <div style={{ textAlign: "center", padding: "1rem 0" }}>
-                      <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "rgba(16,185,129,0.12)", border: "2px solid var(--color-success)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
-                        <CheckCircle2 size={28} style={{ color: "var(--color-success)" }} />
-                      </div>
-                      <h3 style={{ margin: "0 0 0.4rem" }}>{language === "es" ? "¡Conexión exitosa!" : "Connection successful!"}</h3>
-                      <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", margin: "0 0 0.5rem" }}>
-                        <strong style={{ color: "var(--text-primary)" }}>{selectedSource?.label}</strong> {language === "es" ? "está lista para usarse con los agentes contables." : "is ready to use with accounting agents."}
-                      </p>
-                      <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0 0 1.75rem" }}>
-                        {language === "es" ? "Los datos estarán disponibles en Conciliación, Cierre Mensual y Alertas Fiscales." : "Data will be available in Reconciliation, Monthly Close and Tax Alerts."}
-                      </p>
-                      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
-                        <button className="btn btn-secondary" onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); }}>
-                          {language === "es" ? "Agregar otra" : "Add another"}
-                        </button>
-                        <button className="btn btn-primary" onClick={() => {
-                          setMockConnections(prev => [...prev, { id: `conn-${Date.now()}`, name: selectedSource?.label ?? wizardSourceType, category: selectedSource?.catLabel ?? "", status: "connected", lastSync: language === "es" ? "Ahora mismo" : "Just now", records: language === "es" ? "Sincronizando..." : "Syncing..." }]);
-                          setWizardOpen(false);
-                        }}>
-                          {language === "es" ? "Comenzar a usar →" : "Start using →"}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
 
           </div>
           );
@@ -2628,6 +2478,116 @@ export default function AgenttisDashboard() {
           <span>Documentation</span>
         </div>
       </footer>
+      {/* ── Connection Wizard Modal (root level, always accessible) ── */}
+      {wizardOpen && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
+          onClick={(e) => { if (e.target === e.currentTarget) setWizardOpen(false); }}>
+          <div className="glass-panel" style={{ width: "100%", maxWidth: "640px", padding: "1.75rem", position: "relative", maxHeight: "90vh", overflowY: "auto", background: "var(--bg-surface-solid)" }}>
+
+            {/* Header */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <div>
+                <h3 style={{ margin: "0 0 0.4rem" }}>{language === "es" ? "Nueva Conexión" : "New Connection"}</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  {[1,2,3].map(n => (
+                    <div key={n} style={{ height: "3px", width: "40px", borderRadius: "2px", background: wizardStep >= n ? "var(--color-primary)" : "var(--border-color)", transition: "background 0.2s" }} />
+                  ))}
+                  <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginLeft: "0.25rem" }}>{language === "es" ? `Paso ${wizardStep} de 3` : `Step ${wizardStep} of 3`}</span>
+                </div>
+              </div>
+              <button onClick={() => setWizardOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem", display: "flex" }}>
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Step 1 — Choose source */}
+            {wizardStep === 1 && (
+              <div>
+                <p style={{ margin: "0 0 1rem", fontSize: "0.88rem", color: "var(--text-secondary)" }}>
+                  {language === "es" ? "¿Desde dónde querés traer los datos?" : "Where do you want to bring data from?"}
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  {sourceCategories.map(cat => (
+                    <div key={cat.id}>
+                      <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        <span style={{ color: cat.color }}>{cat.icon}</span> {cat.label}
+                      </p>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                        {cat.sources.map(src => (
+                          <button key={src.id}
+                            onClick={() => { setWizardSourceType(src.id); setWizardStep(2); setWizardConfig({}); }}
+                            style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem", fontWeight: 600, borderRadius: "var(--radius-sm)", border: `1px solid ${wizardSourceType === src.id ? cat.color : "var(--border-color)"}`, background: wizardSourceType === src.id ? `${cat.color}20` : "var(--bg-surface-hover)", color: wizardSourceType === src.id ? cat.color : "var(--text-secondary)", cursor: "pointer", transition: "all 0.15s" }}>
+                            {src.label}
+                            {src.desc && <span style={{ fontWeight: 400, marginLeft: "0.3rem", opacity: 0.6, fontSize: "0.72rem" }}>· {src.desc}</span>}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Step 2 — Configuration */}
+            {wizardStep === 2 && (
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "1.25rem", padding: "0.6rem 0.85rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                  <span style={{ color: selectedSource?.catColor ?? "var(--color-primary)" }}>{sourceCategories.find(c => c.sources.some(s => s.id === wizardSourceType))?.icon}</span>
+                  <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{selectedSource?.label}</span>
+                  <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>— {selectedSource?.catLabel}</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+                  {wizardFormFields.map(f => (
+                    <div key={f.key}>
+                      <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.3rem" }}>{f.label}</label>
+                      {f.type === "file"
+                        ? <input type="file" onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.files?.[0]?.name ?? "" }))} style={{ fontSize: "0.82rem" }} />
+                        : <input type={f.type ?? "text"} placeholder={f.placeholder} value={wizardConfig[f.key] ?? ""} onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.value }))} />
+                      }
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem" }}>
+                  <button className="btn btn-secondary" onClick={() => setWizardStep(1)}>{language === "es" ? "← Volver" : "← Back"}</button>
+                  <button className="btn btn-primary" disabled={wizardConnecting} onClick={() => { setWizardConnecting(true); setTimeout(() => { setWizardConnecting(false); setWizardStep(3); }, 1400); }}>
+                    {wizardConnecting
+                      ? <><RefreshCw size={13} style={{ animation: "spin 0.8s linear infinite" }} /> {language === "es" ? "Conectando..." : "Connecting..."}</>
+                      : <><Wifi size={13} /> {language === "es" ? "Probar conexión" : "Test connection"}</>}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3 — Success */}
+            {wizardStep === 3 && (
+              <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                <div style={{ width: "60px", height: "60px", borderRadius: "50%", background: "rgba(16,185,129,0.12)", border: "2px solid var(--color-success)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1.25rem" }}>
+                  <CheckCircle2 size={30} style={{ color: "var(--color-success)" }} />
+                </div>
+                <h3 style={{ margin: "0 0 0.5rem" }}>{language === "es" ? "¡Conexión exitosa!" : "Connection successful!"}</h3>
+                <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", margin: "0 0 0.4rem" }}>
+                  <strong style={{ color: "var(--text-primary)" }}>{selectedSource?.label}</strong> {language === "es" ? "está lista para usarse con los agentes contables." : "is ready to use with accounting agents."}
+                </p>
+                <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0 0 1.75rem" }}>
+                  {language === "es" ? "Los datos estarán disponibles en Conciliación, Cierre Mensual y Alertas Fiscales." : "Data will be available in Reconciliation, Monthly Close and Tax Alerts."}
+                </p>
+                <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+                  <button className="btn btn-secondary" onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); }}>
+                    {language === "es" ? "Agregar otra" : "Add another"}
+                  </button>
+                  <button className="btn btn-primary" onClick={() => {
+                    setMockConnections(prev => [...prev, { id: `conn-${Date.now()}`, name: selectedSource?.label ?? wizardSourceType, category: selectedSource?.catLabel ?? "", status: "connected", lastSync: language === "es" ? "Ahora mismo" : "Just now", records: language === "es" ? "Sincronizando..." : "Syncing..." }]);
+                    setWizardOpen(false);
+                  }}>
+                    {language === "es" ? "Comenzar a usar →" : "Start using →"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       </div> {/* end right column */}
     </div>
   );
