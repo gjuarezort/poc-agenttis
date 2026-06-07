@@ -783,7 +783,7 @@ export default function AgenttisDashboard() {
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
         style={{
-          width: sidebarOpen ? "220px" : "52px",
+          width: sidebarOpen ? "260px" : "52px",
           height: "100vh",
           position: "sticky",
           top: 0,
@@ -877,7 +877,7 @@ export default function AgenttisDashboard() {
                 textOverflow: "ellipsis",
                 opacity: sidebarOpen ? 1 : 0,
                 transition: "opacity 0.1s ease",
-                maxWidth: sidebarOpen ? "200px" : "0px",
+                maxWidth: sidebarOpen ? "220px" : "0px",
               }}>{item.label}</span>
             </button>
             </React.Fragment>
@@ -1198,30 +1198,40 @@ export default function AgenttisDashboard() {
             </div>
 
             {/* ── Demo sample datasets ── */}
-            <div>
-              <p style={{ margin: "0 0 0.75rem", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
-                {language === "es" ? "Datasets de demo" : "Demo datasets"}
-              </p>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-                {[
-                  { file: "customers_sales.csv", label: t("demoCustomers"), desc: t("demoCustomersDesc"), icon: <Table size={16} /> },
-                  { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc"), icon: <FolderOpen size={16} /> },
-                ].map(demo => (
-                  <div key={demo.file} className="glass-panel glass-panel-interactive"
-                    onClick={() => loadSampleCSV(`/samples/${demo.file}`, demo.file)}
-                    style={{ padding: "0.9rem 1.1rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", background: fileName === demo.file ? "var(--color-primary-glow)" : "var(--bg-surface-solid)", borderColor: fileName === demo.file ? "var(--color-primary)" : "var(--border-color)" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                      <span style={{ color: fileName === demo.file ? "var(--color-primary)" : "var(--text-muted)" }}>{demo.icon}</span>
-                      <div>
-                        <p style={{ margin: 0, fontWeight: 600, fontSize: "0.88rem", color: fileName === demo.file ? "var(--color-primary)" : "var(--text-primary)" }}>{demo.label}</p>
-                        <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>{demo.desc}</p>
-                      </div>
-                    </div>
-                    <ArrowRight size={15} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
+            {(() => {
+              const demos = [
+                { file: "customers_sales.csv", label: t("demoCustomers"), desc: t("demoCustomersDesc") },
+                { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc") },
+              ];
+              const selected = demos.find(d => d.file === fileName) ?? null;
+              return (
+                <div className="glass-panel" style={{ padding: "1rem 1.25rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
+                    <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", flexShrink: 0 }}>
+                      {language === "es" ? "Dataset de demo" : "Demo dataset"}
+                    </p>
+                    <select
+                      value={fileName && demos.some(d => d.file === fileName) ? fileName : ""}
+                      onChange={e => { if (e.target.value) loadSampleCSV(`/samples/${e.target.value}`, e.target.value); }}
+                      style={{ flex: 1, maxWidth: "360px", fontSize: "0.85rem" }}
+                    >
+                      <option value="">{language === "es" ? "— Seleccionar dataset —" : "— Select dataset —"}</option>
+                      {demos.map(d => <option key={d.file} value={d.file}>{d.label}</option>)}
+                    </select>
+                    {selected && (
+                      <button className="btn btn-primary" onClick={() => loadSampleCSV(`/samples/${selected.file}`, selected.file)} style={{ padding: "0.4rem 0.85rem", fontSize: "0.8rem", flexShrink: 0 }}>
+                        {language === "es" ? "Cargar" : "Load"} <ArrowRight size={12} />
+                      </button>
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
+                  {selected && (
+                    <p style={{ margin: "0.6rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                      {selected.desc}
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* ── Loaded data: schema + preview ── */}
             {loading ? (
