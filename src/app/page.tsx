@@ -1297,17 +1297,9 @@ export default function AgenttisDashboard() {
                       <tbody>{previewRows.map((row: any, rIdx: number) => <tr key={rIdx}>{parsedData.columns.map((col: any, cIdx: number) => <td key={cIdx}>{row[col.name] !== undefined ? String(row[col.name]) : ""}</td>)}</tr>)}</tbody>
                     </table>
                   </div>
-                  <div style={{ marginTop: "1rem", padding: "0.7rem 1rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Zap size={16} style={{ color: "var(--color-primary)" }} />
-                      <div>
-                        <h4 style={{ margin: 0, fontSize: "0.85rem" }}>{t("tokenOptimizations")}</h4>
-                        <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-secondary)" }}>{t("tokenPayloadDesc").replace("{tokens}", parsedData.fullCsvTokens.toLocaleString())}</p>
-                      </div>
-                    </div>
-                    <button className="btn btn-primary" onClick={() => setActiveTab("playground")} style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", flexShrink: 0 }}>
-                      {t("openPlaygroundBtn")} <ArrowRight size={12} />
-                    </button>
+                  <div style={{ marginTop: "1rem", padding: "0.6rem 1rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                    <Zap size={14} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
+                    <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-secondary)" }}>{t("tokenPayloadDesc").replace("{tokens}", parsedData.fullCsvTokens.toLocaleString())}</p>
                   </div>
                 </div>
               </div>
