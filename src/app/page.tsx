@@ -654,17 +654,59 @@ export default function AgenttisDashboard() {
         "Average price of products grouped by category"
       ];
 
-  const navItems: { key: typeof activeTab; icon: React.ReactNode; label: string; disabled?: boolean; divider?: boolean }[] = [
+  const navItems: { key: typeof activeTab; icon: React.ReactNode; label: string; disabled?: boolean; sectionLabel?: string }[] = [
     { key: "home",          icon: <Grid size={16} />,              label: tTab("home") },
-    { key: "data",          icon: <Database size={16} />,          label: tTab("data") },
+    { key: "data",          icon: <Database size={16} />,          label: tTab("data"),          sectionLabel: language === "es" ? "Core" : "Core" },
     { key: "playground",    icon: <Play size={16} />,              label: tTab("playground"),    disabled: !parsedData },
     { key: "recipe",        icon: <FileCode size={16} />,          label: tTab("recipe"),        disabled: !parsedData },
-    { key: "reconciliation",icon: <ArrowLeftRight size={16} />,    label: tTab("reconciliation"), divider: true },
+    { key: "reconciliation",icon: <ArrowLeftRight size={16} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Apps" },
     { key: "monthlyClose",  icon: <CalendarCheck size={16} />,     label: tTab("monthlyClose") },
-    { key: "taxAlerts",     icon: <Receipt size={16} />,           label: tTab("taxAlerts"),     divider: true },
-    { key: "integrations",  icon: <Package size={16} />,           label: tTab("integrations") },
+    { key: "taxAlerts",     icon: <Receipt size={16} />,           label: tTab("taxAlerts") },
+    { key: "integrations",  icon: <Package size={16} />,           label: tTab("integrations"),  sectionLabel: language === "es" ? "Sistema" : "System" },
     { key: "settings",      icon: <SlidersHorizontal size={16} />, label: tTab("settings") },
   ];
+
+  const renderInlineBold = (text: string): React.ReactNode => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g);
+    if (parts.length === 1) return text;
+    return (
+      <>
+        {parts.map((part, i) =>
+          part.startsWith('**') && part.endsWith('**')
+            ? <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{part.slice(2, -2)}</strong>
+            : <span key={i}>{part}</span>
+        )}
+      </>
+    );
+  };
+
+  const renderAgentText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((line, i) => {
+      if (!line.trim()) return <div key={i} style={{ height: '0.4rem' }} />;
+      if (/^[\-\*•]\s/.test(line)) {
+        return (
+          <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', margin: '0.15rem 0' }}>
+            <span style={{ color: 'var(--color-accent)', flexShrink: 0, lineHeight: 1.6, fontSize: '0.7rem', marginTop: '0.2rem' }}>▸</span>
+            <span style={{ lineHeight: 1.6, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{renderInlineBold(line.slice(2))}</span>
+          </div>
+        );
+      }
+      if (/^\d+\.\s/.test(line)) {
+        const match = line.match(/^(\d+)\.\s(.*)/);
+        if (match) return (
+          <div key={i} style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', margin: '0.15rem 0' }}>
+            <span style={{ color: 'var(--color-primary)', flexShrink: 0, fontWeight: 700, minWidth: '1.2rem', lineHeight: 1.6, fontSize: '0.82rem' }}>{match[1]}.</span>
+            <span style={{ lineHeight: 1.6, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{renderInlineBold(match[2])}</span>
+          </div>
+        );
+      }
+      if (/^\*\*.*\*\*:?\s*$/.test(line.trim())) {
+        return <p key={i} style={{ margin: '0.4rem 0 0.1rem', fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary)' }}>{line.replace(/\*\*/g, '')}</p>;
+      }
+      return <p key={i} style={{ margin: '0.1rem 0', lineHeight: 1.6, fontSize: '0.88rem', color: 'var(--text-secondary)' }}>{renderInlineBold(line)}</p>;
+    });
+  };
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "row" }}>
@@ -709,7 +751,25 @@ export default function AgenttisDashboard() {
         <nav style={{ flex: 1, padding: "0.75rem 0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
           {navItems.map(item => (
             <React.Fragment key={item.key}>
-            {item.divider && <div style={{ height: "1px", background: "var(--border-color)", margin: "0.4rem 0.5rem" }} />}
+            {item.sectionLabel && (
+              <div style={{
+                padding: sidebarOpen ? "0.6rem 0.75rem 0.2rem" : "0.6rem 0 0.2rem",
+                fontSize: "0.62rem",
+                fontWeight: 700,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.09em",
+                overflow: "hidden",
+                whiteSpace: "nowrap",
+                opacity: sidebarOpen ? 1 : 0,
+                transition: "opacity 0.2s ease",
+                borderTop: "1px solid var(--border-color)",
+                marginTop: "0.25rem",
+                textAlign: "left",
+              }}>
+                {item.sectionLabel}
+              </div>
+            )}
             <button
               className={`tab-btn ${activeTab === item.key ? "active" : ""}`}
               onClick={() => !item.disabled && setActiveTab(item.key as typeof activeTab)}
@@ -1309,61 +1369,103 @@ export default function AgenttisDashboard() {
                   </div>
                 ) : (
                   chatHistory.map((msg, index) => (
-                    <div 
+                    <div
                       key={index}
                       style={{
                         display: "flex",
-                        flexDirection: "column",
-                        alignItems: msg.role === "user" ? "flex-end" : "flex-start",
-                        gap: "0.3rem"
+                        flexDirection: msg.role === "user" ? "row-reverse" : "row",
+                        alignItems: "flex-start",
+                        gap: "0.6rem",
                       }}
                     >
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", fontWeight: 600 }}>
-                        {msg.role === "user" ? (language === "es" ? "PREGUNTA DE USUARIO" : "USER QUERY") : (language === "es" ? "RESPUESTA DE AGENTE" : "AGENT CLIENT")}
-                      </span>
-
-                      <div className="glass-panel" style={{
-                        padding: "0.85rem",
-                        maxWidth: "85%",
-                        background: msg.role === "user" ? "var(--color-primary-glow)" : "var(--bg-surface-solid)",
+                      {/* Avatar */}
+                      <div style={{
+                        flexShrink: 0,
+                        width: "30px",
+                        height: "30px",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: msg.role === "user" ? "var(--color-primary)" : "var(--bg-surface-hover)",
+                        border: "1px solid",
                         borderColor: msg.role === "user" ? "var(--color-primary)" : "var(--border-color)",
-                        borderRadius: "var(--radius-md)",
-                        wordBreak: "break-word",
-                        whiteSpace: "pre-wrap"
+                        fontSize: "0.7rem",
+                        fontWeight: 700,
+                        color: msg.role === "user" ? "#fff" : "var(--color-accent)",
+                        marginTop: "0.1rem",
                       }}>
-                        {msg.text}
+                        {msg.role === "user" ? "Tú" : <Cpu size={14} />}
                       </div>
 
-                      {msg.role === "agent" && msg.metrics && (
+                      {/* Bubble + meta */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.3rem", maxWidth: "82%", alignItems: msg.role === "user" ? "flex-end" : "flex-start" }}>
+                        <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", paddingLeft: msg.role === "agent" ? "0.1rem" : 0, paddingRight: msg.role === "user" ? "0.1rem" : 0 }}>
+                          {msg.role === "user" ? (language === "es" ? "Tú" : "You") : "Agenttis"}
+                        </span>
+
                         <div style={{
-                          display: "flex",
-                          gap: "0.5rem",
-                          fontSize: "0.7rem",
-                          color: "var(--color-primary)",
-                          fontWeight: 600,
-                          padding: "0.15rem 0.4rem",
-                          background: "var(--color-primary-glow)",
-                          border: "1px solid var(--border-color-glow)",
-                          borderRadius: "4px",
-                          marginTop: "0.15rem"
+                          padding: "0.75rem 1rem",
+                          background: msg.role === "user" ? "var(--color-primary)" : "var(--bg-surface-solid)",
+                          border: "1px solid",
+                          borderColor: msg.role === "user" ? "var(--color-primary)" : "var(--border-color)",
+                          borderRadius: msg.role === "user" ? "16px 4px 16px 16px" : "4px 16px 16px 16px",
+                          wordBreak: "break-word",
+                          color: msg.role === "user" ? "#fff" : "var(--text-secondary)",
+                          fontSize: "0.88rem",
+                          lineHeight: 1.6,
+                          boxShadow: msg.role === "user" ? "0 2px 12px var(--color-primary-glow)" : "0 2px 8px rgba(0,0,0,0.15)",
                         }}>
-                          <span style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <Zap size={10} /> {t("tokensSaved").replace("{percent}", msg.metrics.savingsPercent)}
-                          </span>
-                          <span>•</span>
-                          <span style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
-                            <Clock size={10} /> Latency: {msg.metrics.mcpLatency}ms vs {msg.metrics.fullContextLatency}ms
-                          </span>
+                          {msg.role === "user"
+                            ? msg.text
+                            : <div style={{ display: "flex", flexDirection: "column", gap: "0.05rem" }}>{renderAgentText(msg.text)}</div>
+                          }
                         </div>
-                      )}
+
+                        {msg.role === "agent" && msg.metrics && (
+                          <div style={{
+                            display: "flex",
+                            gap: "0.5rem",
+                            fontSize: "0.68rem",
+                            color: "var(--text-muted)",
+                            alignItems: "center",
+                            paddingLeft: "0.1rem",
+                          }}>
+                            <span style={{ display: "flex", alignItems: "center", gap: "0.2rem", color: "var(--color-success)" }}>
+                              <Zap size={9} /> {t("tokensSaved").replace("{percent}", msg.metrics.savingsPercent)}
+                            </span>
+                            <span style={{ color: "var(--border-color)" }}>•</span>
+                            <span style={{ display: "flex", alignItems: "center", gap: "0.2rem" }}>
+                              <Clock size={9} /> {msg.metrics.mcpLatency}ms
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))
                 )}
 
                 {chatLoading && (
-                  <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", padding: "0.25rem" }}>
-                    <div className="spinner" style={{ width: "14px", height: "14px" }}></div>
-                    <span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{t("agentThinking")}</span>
+                  <div style={{ display: "flex", flexDirection: "row", alignItems: "flex-start", gap: "0.6rem" }}>
+                    <div style={{
+                      flexShrink: 0, width: "30px", height: "30px", borderRadius: "50%",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)",
+                      color: "var(--color-accent)", marginTop: "0.1rem",
+                    }}>
+                      <Cpu size={14} />
+                    </div>
+                    <div style={{
+                      padding: "0.75rem 1rem",
+                      background: "var(--bg-surface-solid)",
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "4px 16px 16px 16px",
+                      display: "flex", gap: "0.3rem", alignItems: "center",
+                    }}>
+                      <span className="typing-dot" />
+                      <span className="typing-dot" style={{ animationDelay: "0.15s" }} />
+                      <span className="typing-dot" style={{ animationDelay: "0.3s" }} />
+                    </div>
                   </div>
                 )}
                 <div ref={chatEndRef} />
