@@ -1,0 +1,16 @@
+product_id,product_name,sku,price,stock_level,category,status
+PROD-001,Quantum Processor,QP-X100,599.99,42,Hardware,In Stock
+PROD-002,OLED Display 27,OD-27D,349.99,15,Hardware,In Stock
+PROD-003,Mechanical Keyboard,MK-88B,120.00,0,Peripherals,Out of Stock
+PROD-004,Ergonomic Mouse,EM-400,89.50,110,Peripherals,In Stock
+PROD-005,USB-C Hub Multiport,UH-701,45.00,250,Accessories,In Stock
+PROD-006,Noise Cancelling Headphones,NC-900,299.99,8,Audio,In Stock
+PROD-007,Bluetooth Speaker Waterproof,BS-W10,79.99,0,Audio,Out of Stock
+PROD-008,External SSD 2TB,SSD-2TB,180.00,67,Storage,In Stock
+PROD-009,HD Webcam 1080p,WC-1080,65.00,12,Video,Low Stock
+PROD-010,Dual Monitor Stand,MS-DUAL,110.00,35,Office,In Stock
+PROD-011,Smart Desk Lamp,SL-RGB,55.00,85,Office,In Stock
+PROD-012,Wireless Charger Trio,WC-3TRI,69.99,5,Accessories,Low Stock
+PROD-013,Type-C Braided Cable 2m,CC-2M,15.99,500,Accessories,In Stock
+PROD-014,VR Headset Elite,VR-ELITE,899.00,3,Gaming,Low Stock
+PROD-015,Gaming Chair Ergonomic,GC-ERGO,250.00,0,Gaming,Out of Stock

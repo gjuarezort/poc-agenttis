@@ -1,0 +1,16 @@
+customer_id,name,email,country,total_spent,orders_count,last_active,status
+CUST-001,John Doe,john@example.com,USA,1250.50,12,2026-05-20,Active
+CUST-002,Jane Smith,jane@example.com,Canada,450.20,4,2026-05-28,Active
+CUST-003,Carlos Gomez,carlos@example.com,Mexico,75.00,1,2026-04-12,Inactive
+CUST-004,Elena Petrova,elena@example.com,Germany,3200.75,28,2026-06-01,Active
+CUST-005,Akihiro Tanaka,tanaka@example.com,Japan,890.00,8,2026-05-15,Active
+CUST-006,Sarah Jenkins,sarah@example.com,USA,230.10,3,2026-05-30,Active
+CUST-007,David Wilson,david@example.com,UK,145.50,2,2026-03-22,Inactive
+CUST-008,Amelie Laurent,amelie@example.com,France,1780.00,15,2026-06-02,Active
+CUST-009,Liam O'Connor,liam@example.com,Ireland,620.40,6,2026-05-25,Active
+CUST-010,Sofia Rossi,sofia@example.com,Italy,95.00,1,2026-05-01,Inactive
+CUST-011,Marcus Aurelius,marcus@example.com,Italy,4500.00,32,2026-06-03,Active
+CUST-012,Emily Watson,emily@example.com,UK,310.25,4,2026-05-29,Active
+CUST-013,Lucas Silva,lucas@example.com,Brazil,540.80,7,2026-05-27,Active
+CUST-014,Chloe Dupont,chloe@example.com,France,88.90,1,2026-02-18,Inactive
+CUST-015,Fatima Al-Sayed,fatima@example.com,UAE,2900.00,21,2026-06-01,Active
