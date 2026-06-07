@@ -1204,7 +1204,6 @@ export default function AgenttisDashboard() {
                 { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc"), tag: language === "es" ? "Inventario" : "Inventory", rows: "200" },
               ];
               const selected = demos.find(d => d.file === fileName) ?? null;
-              const [hovered, setHovered] = React.useState<string | null>(null);
               return (
                 <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
                   {/* Header */}
