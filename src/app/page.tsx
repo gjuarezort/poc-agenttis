@@ -434,6 +434,9 @@ export default function AgenttisDashboard() {
     { id:"demo1", name: "Demo: Clientes Uruguay", category:"CSV", status:"connected", lastSync:"Hace 2h", records:"500 filas" },
   ]);
   const [arTab, setArTab] = useState<"cobrar"|"pagar">("cobrar");
+  const [arPaidMap, setArPaidMap] = useState<Record<string, string>>({}); // factura → image data URL
+  const [arConfirmModal, setArConfirmModal] = useState<string | null>(null);
+  const [arConfirmImage, setArConfirmImage] = useState<string>("");
 
   // Chat/Playground state
   const [query, setQuery] = useState<string>("");
@@ -2547,8 +2550,13 @@ export default function AgenttisDashboard() {
           ];
           const rows = arTab === "cobrar" ? cobrar : pagar;
           const aging = (d: number) => d <= 0 ? { label:es?"Por vencer":"Not due", cls:"badge-success" } : d <= 30 ? { label:`0-30 ${es?"días":"days"}`, cls:"badge-success" } : d <= 60 ? { label:`31-60 ${es?"días":"days"}`, cls:"badge-warning" } : d <= 90 ? { label:`61-90 ${es?"días":"days"}`, cls:"badge-warning" } : { label:`+90 ${es?"días":"days"}`, cls:"badge-warning" };
+          const paidRows = rows.filter(r => arPaidMap[r.factura] !== undefined);
+          const pendingRows = rows.filter(r => arPaidMap[r.factura] === undefined);
           const total = rows.reduce((s,r) => s + r.monto, 0);
-          const vencido = rows.filter(r => r.dias > 30).reduce((s,r) => s + r.monto, 0);
+          const paidTotal = paidRows.reduce((s,r) => s + r.monto, 0);
+          const vencido = pendingRows.filter(r => r.dias > 30).reduce((s,r) => s + r.monto, 0);
+          const actionLabel = arTab === "cobrar" ? (es ? "Cobrado" : "Collected") : (es ? "Pagado" : "Paid");
+          const pendingLabel = arTab === "cobrar" ? (es ? "Confirmar cobro" : "Confirm collection") : (es ? "Confirmar pago" : "Confirm payment");
           return (
             <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
               <div>
@@ -2561,11 +2569,12 @@ export default function AgenttisDashboard() {
                 <button onClick={() => setArTab("pagar")}  className={`btn ${arTab==="pagar" ?"btn-primary":"btn-secondary"}`}><ArrowDownRight size={14}/> {es?"A pagar":"Payable"}</button>
               </div>
               {/* Summary */}
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"0.75rem" }}>
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4, 1fr)", gap:"0.75rem" }}>
                 {[
-                  { label:es?"Total":"Total",            value:fmt(total),   color:"var(--text-primary)" },
-                  { label:es?"Vencido (+30 días)":"Overdue (+30d)", value:fmt(vencido), color:vencido>0?"var(--color-danger)":"var(--color-success)" },
-                  { label:es?"Facturas":"Invoices",       value:String(rows.length), color:"var(--color-accent)" },
+                  { label:es?"Total":"Total",                                      value:fmt(total),            color:"var(--text-primary)" },
+                  { label:es?`${actionLabel}s`:`${actionLabel}`,                   value:fmt(paidTotal),        color:"var(--color-success)" },
+                  { label:es?"Vencido (+30 días)":"Overdue (+30d)",                value:fmt(vencido),          color:vencido>0?"var(--color-danger)":"var(--color-success)" },
+                  { label:es?"Pendientes":"Pending",                               value:String(pendingRows.length), color:"var(--color-warning)" },
                 ].map(c => (
                   <div key={c.label} className="glass-panel" style={{ padding:"1rem 1.25rem" }}>
                     <p style={{ margin:"0 0 0.3rem", fontSize:"0.72rem", color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>{c.label}</p>
@@ -2583,17 +2592,58 @@ export default function AgenttisDashboard() {
                       <th>{es?"Vencimiento":"Due date"}</th>
                       <th style={{ textAlign:"right" }}>{es?"Monto":"Amount"}</th>
                       <th>{es?"Aging":"Aging"}</th>
+                      <th>{es?"Estado":"Status"}</th>
+                      <th>{es?"Comprobante":"Proof"}</th>
                     </tr></thead>
                     <tbody>
                       {rows.map(r => {
                         const a = aging(r.dias);
+                        const isPaid = arPaidMap[r.factura] !== undefined;
+                        const img = arPaidMap[r.factura];
                         return (
-                          <tr key={r.factura}>
+                          <tr key={r.factura} style={{ opacity: isPaid ? 0.75 : 1 }}>
                             <td style={{ fontWeight:600, color:"var(--text-primary)" }}>{r.cliente}</td>
                             <td style={{ fontFamily:"var(--font-mono)", fontSize:"0.8rem" }}>{r.factura}</td>
                             <td style={{ fontSize:"0.85rem" }}>{r.vence}</td>
                             <td style={{ textAlign:"right", fontWeight:700 }}>{fmt(r.monto)}</td>
                             <td><span className={`badge ${a.cls}`} style={{ fontSize:"0.68rem" }}>{a.label}</span></td>
+                            <td>
+                              {isPaid
+                                ? <span className="badge badge-success" style={{ fontSize:"0.68rem", display:"flex", alignItems:"center", gap:"0.3rem", width:"fit-content" }}><CheckCircle2 size={11}/> {actionLabel}</span>
+                                : <span className="badge" style={{ fontSize:"0.68rem", background:"var(--bg-surface-hover)", color:"var(--text-muted)", border:"1px solid var(--border-color)" }}>{es?"Pendiente":"Pending"}</span>
+                              }
+                            </td>
+                            <td>
+                              {isPaid ? (
+                                <div style={{ display:"flex", alignItems:"center", gap:"0.5rem" }}>
+                                  {img ? (
+                                    <img
+                                      src={img}
+                                      alt="comprobante"
+                                      style={{ width:"32px", height:"32px", objectFit:"cover", borderRadius:"4px", border:"1px solid var(--border-color)", cursor:"pointer" }}
+                                      onClick={() => { setArConfirmModal(r.factura); setArConfirmImage(img); }}
+                                    />
+                                  ) : (
+                                    <span style={{ fontSize:"0.75rem", color:"var(--text-muted)" }}>{es?"Sin imagen":"No image"}</span>
+                                  )}
+                                  <button
+                                    className="btn btn-secondary"
+                                    style={{ fontSize:"0.7rem", padding:"0.2rem 0.5rem" }}
+                                    onClick={() => { const m = {...arPaidMap}; delete m[r.factura]; setArPaidMap(m); }}
+                                  >
+                                    <X size={11}/>
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  className="btn btn-primary"
+                                  style={{ fontSize:"0.72rem", padding:"0.25rem 0.65rem" }}
+                                  onClick={() => { setArConfirmModal(r.factura); setArConfirmImage(""); }}
+                                >
+                                  {pendingLabel}
+                                </button>
+                              )}
+                            </td>
                           </tr>
                         );
                       })}
@@ -2870,6 +2920,133 @@ export default function AgenttisDashboard() {
           <span>Documentation</span>
         </div>
       </footer>
+      {/* ── Confirmación de pago/cobro Modal ── */}
+      {arConfirmModal !== null && (() => {
+        const es = language === "es";
+        const allRows = [
+          { cliente:"Supermercado El Sol S.A.", factura:"e-001245", monto:180000 },
+          { cliente:"Farmacia Central",         factura:"e-001198", monto: 45000 },
+          { cliente:"Constructora Norte S.R.L.",factura:"e-001150", monto: 95000 },
+          { cliente:"Distribuidora Rioplatense",factura:"e-001089", monto: 45000 },
+          { cliente:"Restaurante La Paloma",    factura:"e-001321", monto:160000 },
+          { cliente:"Proveedor Insumos UY",     factura:"A-004512", monto:120000 },
+          { cliente:"Servicios Cloud SRL",      factura:"A-004498", monto: 18000 },
+          { cliente:"Alquiler Oficina Pocitos", factura:"A-004455", monto: 45000 },
+          { cliente:"Librería y Papelería",     factura:"A-004380", monto:  8500 },
+          { cliente:"Telefonía Corporativa",    factura:"A-004290", monto: 12000 },
+        ];
+        const row = allRows.find(r => r.factura === arConfirmModal);
+        const isViewing = arPaidMap[arConfirmModal] !== undefined;
+        const alreadyPaid = arTab === "cobrar";
+        const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
+        return (
+          <div
+            style={{ position:"fixed", top:0, left:0, right:0, bottom:0, background:"rgba(0,0,0,0.65)", backdropFilter:"blur(4px)", zIndex:600, display:"flex", alignItems:"center", justifyContent:"center", padding:"1rem" }}
+            onClick={(e) => { if (e.target === e.currentTarget) { setArConfirmModal(null); setArConfirmImage(""); } }}
+          >
+            <div className="glass-panel" style={{ width:"100%", maxWidth:"480px", padding:"1.75rem", position:"relative", background:"var(--bg-surface-solid)" }}>
+              <button onClick={() => { setArConfirmModal(null); setArConfirmImage(""); }} style={{ position:"absolute", top:"1rem", right:"1rem", background:"none", border:"none", cursor:"pointer", color:"var(--text-muted)" }}>
+                <X size={18}/>
+              </button>
+
+              {/* Header */}
+              <div style={{ display:"flex", alignItems:"center", gap:"0.75rem", marginBottom:"1.25rem" }}>
+                <div style={{ width:"36px", height:"36px", borderRadius:"50%", background:"var(--color-success)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <CheckCircle2 size={18} color="#fff"/>
+                </div>
+                <div>
+                  <h3 style={{ margin:0, fontSize:"1rem" }}>
+                    {isViewing
+                      ? (es?"Comprobante de pago":"Payment proof")
+                      : (alreadyPaid ? (es?"Confirmar cobro":"Confirm collection") : (es?"Confirmar pago":"Confirm payment"))
+                    }
+                  </h3>
+                  <p style={{ margin:0, fontSize:"0.78rem", color:"var(--text-muted)" }}>{row?.factura} · {row && fmt(row.monto)}</p>
+                </div>
+              </div>
+
+              {/* Invoice info */}
+              <div style={{ background:"var(--bg-surface-hover)", borderRadius:"var(--radius-md)", padding:"0.85rem 1rem", marginBottom:"1.25rem", border:"1px solid var(--border-color)" }}>
+                <p style={{ margin:0, fontSize:"0.85rem", fontWeight:600 }}>{row?.cliente}</p>
+                <p style={{ margin:"0.25rem 0 0", fontSize:"0.78rem", color:"var(--text-muted)", fontFamily:"var(--font-mono)" }}>{row?.factura}</p>
+              </div>
+
+              {/* Image area */}
+              {isViewing && arConfirmImage ? (
+                <div style={{ marginBottom:"1.25rem", textAlign:"center" }}>
+                  <img src={arConfirmImage} alt="comprobante" style={{ maxWidth:"100%", maxHeight:"280px", objectFit:"contain", borderRadius:"var(--radius-md)", border:"1px solid var(--border-color)" }}/>
+                </div>
+              ) : !isViewing ? (
+                <div style={{ marginBottom:"1.25rem" }}>
+                  <label style={{ display:"block", fontSize:"0.8rem", fontWeight:600, color:"var(--text-secondary)", marginBottom:"0.5rem" }}>
+                    {es?"Adjuntar comprobante (opcional)":"Attach proof (optional)"}
+                  </label>
+                  {arConfirmImage ? (
+                    <div style={{ position:"relative", textAlign:"center" }}>
+                      <img src={arConfirmImage} alt="preview" style={{ maxWidth:"100%", maxHeight:"200px", objectFit:"contain", borderRadius:"var(--radius-md)", border:"1px solid var(--border-color)" }}/>
+                      <button onClick={() => setArConfirmImage("")} style={{ position:"absolute", top:"0.4rem", right:"0.4rem", background:"rgba(0,0,0,0.6)", border:"none", borderRadius:"50%", width:"22px", height:"22px", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", color:"#fff" }}>
+                        <X size={12}/>
+                      </button>
+                    </div>
+                  ) : (
+                    <label style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:"0.5rem", padding:"1.5rem", border:"2px dashed var(--border-color)", borderRadius:"var(--radius-md)", cursor:"pointer", color:"var(--text-muted)", fontSize:"0.82rem" }}>
+                      <Upload size={22} style={{ opacity:0.5 }}/>
+                      {es?"Subir foto o PDF del comprobante":"Upload photo or PDF of the receipt"}
+                      <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        style={{ display:"none" }}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file && file.type.startsWith("image/")) {
+                            const reader = new FileReader();
+                            reader.onload = (ev) => setArConfirmImage(ev.target?.result as string ?? "");
+                            reader.readAsDataURL(file);
+                          } else if (file) {
+                            setArConfirmImage("__pdf__");
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                  {arConfirmImage === "__pdf__" && (
+                    <div style={{ display:"flex", alignItems:"center", gap:"0.5rem", padding:"0.65rem 0.75rem", background:"var(--bg-surface-hover)", borderRadius:"var(--radius-md)", border:"1px solid var(--border-color)", marginTop:"0.5rem" }}>
+                      <FileText size={16} style={{ color:"var(--color-primary)" }}/>
+                      <span style={{ fontSize:"0.82rem" }}>PDF {es?"adjuntado":"attached"}</span>
+                      <button onClick={() => setArConfirmImage("")} style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", color:"var(--text-muted)" }}><X size={14}/></button>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              {/* Actions */}
+              {isViewing ? (
+                <button className="btn btn-secondary" style={{ width:"100%" }} onClick={() => { setArConfirmModal(null); setArConfirmImage(""); }}>
+                  {es?"Cerrar":"Close"}
+                </button>
+              ) : (
+                <div style={{ display:"flex", gap:"0.75rem" }}>
+                  <button className="btn btn-secondary" style={{ flex:1 }} onClick={() => { setArConfirmModal(null); setArConfirmImage(""); }}>
+                    {es?"Cancelar":"Cancel"}
+                  </button>
+                  <button
+                    className="btn btn-primary"
+                    style={{ flex:2 }}
+                    onClick={() => {
+                      setArPaidMap(prev => ({ ...prev, [arConfirmModal!]: arConfirmImage }));
+                      setArConfirmModal(null);
+                      setArConfirmImage("");
+                    }}
+                  >
+                    <CheckCircle2 size={14}/> {alreadyPaid ? (es?"Confirmar cobro":"Confirm collection") : (es?"Confirmar pago":"Confirm payment")}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* ── Connection Wizard Modal (root level, always accessible) ── */}
       {wizardOpen && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)", zIndex: 500, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
