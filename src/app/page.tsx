@@ -877,8 +877,8 @@ export default function AgenttisDashboard() {
       {/* Right column: main + footer */}
       <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", position: "relative" }}>
 
-        {/* Floating language selector — top right */}
-        <div style={{
+        {/* Floating language selector — top right (home only) */}
+        {(activeTab === "home") && <div style={{
           position: "absolute",
           top: "1rem",
           right: "1rem",
@@ -917,7 +917,7 @@ export default function AgenttisDashboard() {
               border: "none",
             }}
           >ES</button>
-        </div>
+        </div>}
 
       {/* Main Content Layout */}
       <main className="container" style={{ flex: 1, padding: "1rem", maxWidth: "1500px" }}>
@@ -2451,6 +2451,26 @@ export default function AgenttisDashboard() {
               <div>
                 <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("settingsTitle")}</h2>
                 <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("settingsSubtitle")}</p>
+              </div>
+
+              {/* Language */}
+              <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", fontSize: "1rem" }}>
+                  <Globe size={16} style={{ color: "var(--color-primary)" }} />
+                  {language === "es" ? "Idioma" : "Language"}
+                </h3>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  {(["en", "es"] as const).map(lang => (
+                    <button
+                      key={lang}
+                      onClick={() => handleLanguageChange(lang)}
+                      className={language === lang ? "btn btn-primary" : "btn btn-secondary"}
+                      style={{ minWidth: "80px" }}
+                    >
+                      {lang === "en" ? "English" : "Español"}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* Token Efficiency & Costs */}
