@@ -1047,12 +1047,12 @@ export default function AgenttisDashboard() {
           ];
 
           const quickModules = [
-            { key: "reconciliation",     icon: <ArrowLeftRight size={20} />, label: language === "es" ? "Conciliación" : "Reconciliation", accent: "var(--color-primary)" },
+            { key: "playground",         icon: <Sparkles size={20} />,       label: language === "es" ? "Consultar IA" : "Ask AI",         accent: "var(--color-primary)" },
+            { key: "reconciliation",     icon: <ArrowLeftRight size={20} />, label: language === "es" ? "Conciliación" : "Reconciliation", accent: "#6366f1" },
             { key: "payroll",            icon: <Users size={20} />,          label: language === "es" ? "Nómina" : "Payroll",              accent: "var(--color-success)" },
             { key: "vatLiquidation",     icon: <Percent size={20} />,        label: language === "es" ? "IVA" : "VAT Filing",              accent: "var(--color-accent)" },
             { key: "treasury",           icon: <Wallet size={20} />,         label: language === "es" ? "Tesorería" : "Treasury",          accent: "#8b5cf6" },
             { key: "accountsReceivable", icon: <CreditCard size={20} />,     label: language === "es" ? "Cobrar/Pagar" : "A/R & A/P",     accent: "var(--color-warning)" },
-            { key: "monthlyClose",       icon: <CalendarCheck size={20} />,  label: language === "es" ? "Cierre Mensual" : "Monthly Close", accent: "#ec4899" },
           ];
 
           return (
@@ -1066,6 +1066,32 @@ export default function AgenttisDashboard() {
                 <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
                   {language === "es" ? "Domingo, 7 de junio de 2026 · Resumen del negocio" : "Sunday, June 7, 2026 · Business overview"}
                 </p>
+              </div>
+
+              {/* Quick access */}
+              <div>
+                <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                  {language === "es" ? "Acceso Rápido" : "Quick Access"}
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.75rem" }}>
+                  {quickModules.map((m, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveTab(m.key as typeof activeTab)}
+                      className="glass-panel glass-panel-interactive"
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                        gap: "0.5rem", padding: "1rem 0.5rem", cursor: "pointer",
+                        border: "1px solid var(--border-color)", background: "var(--bg-surface)",
+                        color: "var(--text-secondary)", fontSize: "0.74rem", fontWeight: 600,
+                        borderTop: `3px solid ${m.accent}`,
+                      }}
+                    >
+                      <span style={{ color: m.accent }}>{m.icon}</span>
+                      <span>{m.label}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               {/* KPI Cards */}
@@ -1137,32 +1163,6 @@ export default function AgenttisDashboard() {
                       </div>
                     ))}
                   </div>
-                </div>
-              </div>
-
-              {/* Quick access */}
-              <div>
-                <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                  {language === "es" ? "Acceso Rápido" : "Quick Access"}
-                </p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.75rem" }}>
-                  {quickModules.map((m, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setActiveTab(m.key as typeof activeTab)}
-                      className="glass-panel glass-panel-interactive"
-                      style={{
-                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        gap: "0.5rem", padding: "1rem 0.5rem", cursor: "pointer",
-                        border: "1px solid var(--border-color)", background: "var(--bg-surface)",
-                        color: "var(--text-secondary)", fontSize: "0.74rem", fontWeight: 600,
-                        borderTop: `3px solid ${m.accent}`,
-                      }}
-                    >
-                      <span style={{ color: m.accent }}>{m.icon}</span>
-                      <span>{m.label}</span>
-                    </button>
-                  ))}
                 </div>
               </div>
 
