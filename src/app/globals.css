@@ -449,3 +449,76 @@ tr:hover td {
 .animate-fade-in {
   animation: fadeIn var(--transition-normal) forwards;
 }
+
+/* Horizontal scroll without visible scrollbar */
+.scroll-x-hidden {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scroll-x-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+/* Info Tooltip */
+.info-tooltip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.35rem;
+  color: var(--text-muted);
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.info-tooltip:hover {
+  color: var(--color-primary);
+}
+
+.info-tooltip .tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  transform: none;
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: normal;
+  width: 240px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transition: opacity var(--transition-fast), visibility var(--transition-fast);
+  pointer-events: none;
+  z-index: 100;
+}
+
+[data-theme="light"] .info-tooltip .tooltip-text {
+  background: #ffffff;
+  color: #475569;
+  border-color: rgba(79, 70, 229, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.info-tooltip .tooltip-text::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 12px;
+  border: 5px solid transparent;
+  border-bottom-color: rgba(99, 102, 241, 0.35);
+}
+
+[data-theme="light"] .info-tooltip .tooltip-text::after {
+  border-bottom-color: rgba(79, 70, 229, 0.25);
+}
+
+.info-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}

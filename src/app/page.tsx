@@ -25,7 +25,24 @@ import {
   ShieldCheck,
   Sun,
   Moon,
-  Globe
+  Globe,
+  Info,
+  ChevronLeft,
+  ChevronRight,
+  Link,
+  BarChart2,
+  Package,
+  SlidersHorizontal,
+  Landmark,
+  CalendarCheck,
+  Bell,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  ArrowLeftRight,
+  Receipt,
+  CircleDot,
+  FileText
 } from "lucide-react";
 
 // ENTERPRISE TRANSLATION DICTIONARY (i18n)
@@ -35,11 +52,63 @@ const TRANSLATIONS = {
     tagline: "Enterprise Agentic Layer for PyMEs",
     mvpBuilder: "MVP Builder",
     tabs: {
+      home: "Home",
       data: "Data Connections",
-      playground: "Agent Playground",
+      playground: "Query Your Data",
       recipe: "Generated MCP Code",
       observability: "Metrics & Savings",
-      integrations: "Integration Catalog"
+      integrations: "Integration Catalog",
+      reconciliation: "Bank Reconciliation",
+      monthlyClose: "Monthly Close",
+      taxAlerts: "Tax Alerts",
+      settings: "Settings"
+    },
+    settingsTitle: "Settings",
+    settingsSubtitle: "Token efficiency, costs, and system configuration",
+    reconciliationTitle: "Bank Reconciliation",
+    reconciliationSubtitle: "Match your bank statement against your registered invoices and payments",
+    reconciliationBank: "Bank Statement",
+    reconciliationBooks: "Registered in Books",
+    reconciliationMatched: "Matched",
+    reconciliationUnmatched: "Unmatched",
+    reconciliationPending: "Pending review",
+    reconciliationRunBtn: "Run Reconciliation",
+    reconciliationDiff: "Difference",
+    monthlyCloseTitle: "Monthly Close",
+    monthlyCloseSubtitle: "Guided checklist to close the accounting period step by step",
+    monthlyClosePeriod: "Period",
+    monthlyCloseProgress: "Progress",
+    taxAlertsTitle: "Tax Alerts — DGI Uruguay",
+    taxAlertsSubtitle: "Upcoming tax deadlines and compliance obligations for Uruguay",
+    taxAlertsDue: "Due",
+    taxAlertsDaysLeft: "days left",
+    taxAlertsToday: "Today",
+    taxAlertsOverdue: "Overdue",
+    taxAlertsPaid: "Filed",
+    home: {
+      title: "Welcome back",
+      subtitle: "Here's a summary of your latest activity",
+      step1Title: "Last Processed Data",
+      step1Desc: "Most recent datasets analyzed by Agenttis",
+      step2Title: "Generated Reports",
+      step2Desc: "Automated reports produced by your agents",
+      step3Title: "Alerts",
+      step3Desc: "Issues and notifications that need your attention",
+      noData: "No data processed yet",
+      noReports: "No reports generated yet",
+      noAlerts: "No active alerts",
+      viewAll: "View all",
+      rowsProcessed: "rows processed",
+      columnsDetected: "columns detected",
+      generatedAt: "Generated",
+      alertCritical: "Critical",
+      alertWarning: "Warning",
+      alertInfo: "Info",
+      shortcutQueries: "Queries",
+      shortcutReports: "Reports",
+      shortcutData: "Data",
+      shortcutConnections: "Connections",
+      shortcutMetrics: "Metrics",
     },
     // Tab 1: Data Connection Hub
     dataTitle: "Connect Your Business Data",
@@ -66,7 +135,7 @@ const TRANSLATIONS = {
     rowsDetected: "{rows} Total Rows Detected",
     analyzingMessage: "Analyzing dataset structures and composing dynamic recipes...",
     // Tab 2: Playground
-    playTitle: "Agent Playground Chat",
+    playTitle: "Query Your Data",
     playSubtitle: "Simulating agent interaction with the dynamic MCP tools serving {fileName}.",
     clearChat: "Clear Chat",
     noMessages: "No Messages Yet",
@@ -122,7 +191,7 @@ const TRANSLATIONS = {
     logHeaderSpeed: "Speed",
     noLogsMessage: "No query logs registered yet. Ask questions in the Playground.",
     // Tab 5: Catalog
-    catalogTitle: "Integration Catalog Recipes",
+    catalogTitle: "Integration Catalog",
     catalogSubtitle: "Agenttis operates on prebuilt low-code recipes. Below are enterprise integrations. Activating them auto-constructs dynamic schemas and hosts standard endpoints for direct AI agent integration.",
     stripeTitle: "Stripe Checkout MCP",
     stripeDesc: "Exposes customers, subscription balances, invoices, and checkout status to AI. Allows agent-led billing lookups and revenue reconciliation.",
@@ -148,11 +217,63 @@ const TRANSLATIONS = {
     tagline: "Capa Agéntica Empresarial para PyMEs",
     mvpBuilder: "Constructor MVP",
     tabs: {
+      home: "Inicio",
       data: "Conexiones de Datos",
-      playground: "Playground de Agentes",
+      playground: "Consulta tu Información",
       recipe: "Código MCP Generado",
       observability: "Métricas y Ahorros",
-      integrations: "Catálogo de Integraciones"
+      integrations: "Catálogo de Integraciones",
+      reconciliation: "Conciliación Bancaria",
+      monthlyClose: "Cierre Mensual",
+      taxAlerts: "Alertas Fiscales",
+      settings: "Configuración"
+    },
+    settingsTitle: "Configuración",
+    settingsSubtitle: "Eficiencia de tokens, costos y configuración del sistema",
+    reconciliationTitle: "Conciliación Bancaria",
+    reconciliationSubtitle: "Cruzá tu extracto bancario contra facturas y pagos registrados",
+    reconciliationBank: "Extracto Bancario",
+    reconciliationBooks: "Registrado en Libros",
+    reconciliationMatched: "Conciliado",
+    reconciliationUnmatched: "Sin conciliar",
+    reconciliationPending: "Pendiente de revisión",
+    reconciliationRunBtn: "Ejecutar Conciliación",
+    reconciliationDiff: "Diferencia",
+    monthlyCloseTitle: "Cierre Mensual",
+    monthlyCloseSubtitle: "Checklist guiado para cerrar el período contable paso a paso",
+    monthlyClosePeriod: "Período",
+    monthlyCloseProgress: "Progreso",
+    taxAlertsTitle: "Alertas Fiscales — DGI Uruguay",
+    taxAlertsSubtitle: "Vencimientos impositivos y obligaciones fiscales para Uruguay",
+    taxAlertsDue: "Vence",
+    taxAlertsDaysLeft: "días",
+    taxAlertsToday: "Hoy",
+    taxAlertsOverdue: "Vencido",
+    taxAlertsPaid: "Presentado",
+    home: {
+      title: "Bienvenido",
+      subtitle: "Aquí tienes un resumen de tu actividad reciente",
+      step1Title: "Últimos Datos Procesados",
+      step1Desc: "Conjuntos de datos más recientes analizados por Agenttis",
+      step2Title: "Reportes Generados",
+      step2Desc: "Reportes automatizados producidos por tus agentes",
+      step3Title: "Alertas",
+      step3Desc: "Problemas y notificaciones que requieren tu atención",
+      noData: "No hay datos procesados aún",
+      noReports: "No hay reportes generados aún",
+      noAlerts: "Sin alertas activas",
+      viewAll: "Ver todos",
+      rowsProcessed: "filas procesadas",
+      columnsDetected: "columnas detectadas",
+      generatedAt: "Generado",
+      alertCritical: "Crítico",
+      alertWarning: "Advertencia",
+      alertInfo: "Info",
+      shortcutQueries: "Consultas",
+      shortcutReports: "Reportes",
+      shortcutData: "Datos",
+      shortcutConnections: "Conexiones",
+      shortcutMetrics: "Métricas",
     },
     // Tab 1: Data Connection Hub
     dataTitle: "Conecte sus Datos de Negocio",
@@ -179,7 +300,7 @@ const TRANSLATIONS = {
     rowsDetected: "{rows} Filas Totales Detectadas",
     analyzingMessage: "Analizando estructuras de datos y componiendo recetas dinámicas...",
     // Tab 2: Playground
-    playTitle: "Chat de Playground de Agentes",
+    playTitle: "Consulta tu Información",
     playSubtitle: "Simulando la interacción del agente con las herramientas MCP dinámicas que sirven a {fileName}.",
     clearChat: "Limpiar Chat",
     noMessages: "Aún no hay Mensajes",
@@ -235,7 +356,7 @@ const TRANSLATIONS = {
     logHeaderSpeed: "Velocidad",
     noLogsMessage: "No hay registros de consultas registrados aún. Haga preguntas en el Playground.",
     // Tab 5: Catalog
-    catalogTitle: "Recetas del Catálogo de Integraciones",
+    catalogTitle: "Catálogo de Integraciones",
     catalogSubtitle: "Agenttis funciona con recetas preconstruidas de bajo código. A continuación se muestran integraciones empresariales. Al activarlas se construyen esquemas dinámicos automáticamente y se alojan puntos de acceso estándar para la integración directa del agente de IA.",
     stripeTitle: "Stripe Checkout MCP",
     stripeDesc: "Expone clientes, saldos de suscripción, facturas y estados de pago a la IA. Permite búsquedas de facturación lideradas por agentes y reconciliación de ingresos.",
@@ -259,8 +380,9 @@ const TRANSLATIONS = {
 };
 
 export default function AgenttisDashboard() {
-  const [activeTab, setActiveTab] = useState<"data" | "playground" | "recipe" | "observability" | "integrations">("data");
-  
+  const [activeTab, setActiveTab] = useState<"home" | "data" | "playground" | "recipe" | "integrations" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings">("home");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   // Theme Manager & i18n states
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [language, setLanguage] = useState<"en" | "es">("en");
@@ -532,9 +654,94 @@ export default function AgenttisDashboard() {
         "Average price of products grouped by category"
       ];
 
+  const navItems: { key: typeof activeTab; icon: React.ReactNode; label: string; disabled?: boolean; divider?: boolean }[] = [
+    { key: "home",          icon: <Grid size={16} />,              label: tTab("home") },
+    { key: "data",          icon: <Database size={16} />,          label: tTab("data") },
+    { key: "playground",    icon: <Play size={16} />,              label: tTab("playground"),    disabled: !parsedData },
+    { key: "recipe",        icon: <FileCode size={16} />,          label: tTab("recipe"),        disabled: !parsedData },
+    { key: "reconciliation",icon: <ArrowLeftRight size={16} />,    label: tTab("reconciliation"), divider: true },
+    { key: "monthlyClose",  icon: <CalendarCheck size={16} />,     label: tTab("monthlyClose") },
+    { key: "taxAlerts",     icon: <Receipt size={16} />,           label: tTab("taxAlerts"),     divider: true },
+    { key: "integrations",  icon: <Package size={16} />,           label: tTab("integrations") },
+    { key: "settings",      icon: <SlidersHorizontal size={16} />, label: tTab("settings") },
+  ];
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "row" }}>
+
+      {/* Collapsible Sidebar — expands on hover */}
+      <aside
+        onMouseEnter={() => setSidebarOpen(true)}
+        onMouseLeave={() => setSidebarOpen(false)}
+        style={{
+          width: sidebarOpen ? "260px" : "52px",
+          minHeight: "100vh",
+          background: "var(--bg-surface-solid)",
+          borderRight: "1px solid var(--border-color)",
+          display: "flex",
+          flexDirection: "column",
+          transition: "width 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
+          overflow: "hidden",
+          flexShrink: 0,
+          zIndex: 20,
+        }}
+      >
+        {/* Sidebar logo */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "1rem 0",
+          borderBottom: "1px solid var(--border-color)",
+          minHeight: "64px",
+          gap: "0.5rem",
+          overflow: "hidden",
+        }}>
+          <div className="flex-center" style={{
+            background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
+            width: "28px", height: "28px", borderRadius: "6px",
+            color: "#fff", fontWeight: 800, fontSize: "0.95rem", flexShrink: 0,
+            boxShadow: "0 2px 8px var(--color-primary-glow)"
+          }}>A</div>
+        </div>
+
+        {/* Nav items */}
+        <nav style={{ flex: 1, padding: "0.75rem 0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          {navItems.map(item => (
+            <React.Fragment key={item.key}>
+            {item.divider && <div style={{ height: "1px", background: "var(--border-color)", margin: "0.4rem 0.5rem" }} />}
+            <button
+              className={`tab-btn ${activeTab === item.key ? "active" : ""}`}
+              onClick={() => !item.disabled && setActiveTab(item.key as typeof activeTab)}
+              title={!sidebarOpen ? item.label : undefined}
+              style={{
+                width: "100%",
+                justifyContent: sidebarOpen ? "flex-start" : "center",
+                gap: "0.6rem",
+                padding: "0.5rem 0.75rem",
+                opacity: item.disabled ? 0.45 : 1,
+                cursor: item.disabled ? "not-allowed" : "pointer",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+              }}
+            >
+              <span style={{ flexShrink: 0 }}>{item.icon}</span>
+              <span style={{
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                opacity: sidebarOpen ? 1 : 0,
+                transition: "opacity 0.1s ease",
+                maxWidth: sidebarOpen ? "200px" : "0px",
+              }}>{item.label}</span>
+            </button>
+            </React.Fragment>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Right column: header + main + footer */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+
       {/* Dynamic Header */}
       <header className="glass-panel" style={{
         margin: "1rem",
@@ -545,21 +752,9 @@ export default function AgenttisDashboard() {
         zIndex: 10,
         borderRadius: "var(--radius-lg)"
       }}>
-        
+
         {/* Left branding */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div className="flex-center" style={{
-            background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
-            width: "36px",
-            height: "36px",
-            borderRadius: "8px",
-            color: "#ffffff",
-            fontWeight: 800,
-            fontSize: "1.2rem",
-            boxShadow: "0 2px 8px var(--color-primary-glow)"
-          }}>
-            A
-          </div>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <span style={{ fontSize: "1.25rem", fontWeight: 800, letterSpacing: "-0.5px" }}>{t("appName")}</span>
@@ -568,44 +763,6 @@ export default function AgenttisDashboard() {
             <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 500 }}>{t("tagline")}</p>
           </div>
         </div>
-
-        {/* Center Navigation Tabs */}
-        <nav style={{ display: "flex", gap: "0.2rem" }}>
-          <button 
-            className={`tab-btn ${activeTab === "data" ? "active" : ""}`}
-            onClick={() => setActiveTab("data")}
-          >
-            <Database size={15} /> {tTab("data")}
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === "playground" ? "active" : ""}`}
-            disabled={!parsedData}
-            onClick={() => setActiveTab("playground")}
-            style={{ opacity: parsedData ? 1 : 0.5, cursor: parsedData ? "pointer" : "not-allowed" }}
-          >
-            <Play size={15} /> {tTab("playground")}
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === "recipe" ? "active" : ""}`}
-            disabled={!parsedData}
-            onClick={() => setActiveTab("recipe")}
-            style={{ opacity: parsedData ? 1 : 0.5, cursor: parsedData ? "pointer" : "not-allowed" }}
-          >
-            <FileCode size={15} /> {tTab("recipe")}
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === "observability" ? "active" : ""}`}
-            onClick={() => setActiveTab("observability")}
-          >
-            <Activity size={15} /> {tTab("observability")}
-          </button>
-          <button 
-            className={`tab-btn ${activeTab === "integrations" ? "active" : ""}`}
-            onClick={() => setActiveTab("integrations")}
-          >
-            <Settings size={15} /> {tTab("integrations")}
-          </button>
-        </nav>
 
         {/* Right Switch Controls (Language & Theme Manager) */}
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
@@ -665,6 +822,160 @@ export default function AgenttisDashboard() {
       {/* Main Content Layout */}
       <main className="container" style={{ flex: 1, padding: "1rem", maxWidth: "1500px" }}>
         
+        {/* TAB HOME */}
+        {activeTab === "home" && (() => {
+          const ht = (TRANSLATIONS[language] as any).home;
+          const mockData = parsedData
+            ? [{ name: parsedData.fileName ?? "dataset.csv", rows: parsedData.totalRows, cols: parsedData.columns.length, time: "Just now" }]
+            : [];
+          const mockReports = [
+            { name: language === "es" ? "Reporte de Ventas — Jun 2026" : "Sales Report — Jun 2026",       type: language === "es" ? "Ventas" : "Sales",     time: language === "es" ? "Hace 2h" : "2h ago",   status: "success" },
+            { name: language === "es" ? "Análisis de Inventario" : "Inventory Analysis",                  type: language === "es" ? "Inventario" : "Stock",  time: language === "es" ? "Hace 5h" : "5h ago",   status: "success" },
+            { name: language === "es" ? "Resumen de Clientes Activos" : "Active Customers Summary",       type: language === "es" ? "Clientes" : "CRM",      time: language === "es" ? "Ayer" : "Yesterday",   status: "success" },
+          ];
+          const mockAlerts = [
+            { level: "critical", msg: language === "es" ? "Conector Stripe sin respuesta desde hace 30 min" : "Stripe connector unresponsive for 30 min",   time: language === "es" ? "Hace 10 min" : "10 min ago" },
+            { level: "warning",  msg: language === "es" ? "Dataset 'clientes_2024.csv' supera el límite recomendado de filas" : "Dataset 'customers_2024.csv' exceeds recommended row limit", time: language === "es" ? "Hace 1h" : "1h ago" },
+            { level: "info",     msg: language === "es" ? "Nueva versión del servidor MCP disponible (v2.1)" : "New MCP server version available (v2.1)",   time: language === "es" ? "Hace 3h" : "3h ago" },
+          ];
+          const levelColor: Record<string, string> = { critical: "var(--color-danger)", warning: "var(--color-warning)", info: "var(--color-accent)" };
+          const levelBadgeClass: Record<string, string> = { critical: "badge-warning", warning: "badge-warning", info: "badge-info" };
+          const blockHeader = (_num: number, accent: string, _bg: string, title: string, desc: string) => (
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+              <div style={{ width: "3px", height: "32px", borderRadius: "2px", background: accent, flexShrink: 0 }} />
+              <div>
+                <h3 style={{ margin: 0, fontSize: "1rem" }}>{title}</h3>
+                <p style={{ margin: 0, fontSize: "0.78rem" }}>{desc}</p>
+              </div>
+            </div>
+          );
+
+          return (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+
+              {/* Page heading */}
+              <div>
+                <h2 style={{ margin: "0 0 0.2rem 0" }}>{ht.title}</h2>
+                <p style={{ margin: 0, fontSize: "0.9rem" }}>{ht.subtitle}</p>
+              </div>
+
+              {/* Shortcut buttons */}
+              <div style={{ display: "flex", gap: "0.75rem" }}>
+                {[
+                  { label: ht.shortcutQueries,     icon: <Search size={20} />,   tab: "playground" },
+                  { label: ht.shortcutReports,      icon: <LineChart size={20} />, tab: "monthlyClose" },
+                  { label: ht.shortcutData,         icon: <Database size={20} />, tab: "data" },
+                  { label: ht.shortcutConnections,  icon: <Link size={20} />,     tab: "integrations" },
+                  { label: ht.shortcutMetrics,      icon: <BarChart2 size={20} />,tab: "settings" },
+                ].map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveTab(s.tab as typeof activeTab)}
+                    className="glass-panel glass-panel-interactive"
+                    style={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "0.5rem",
+                      padding: "1rem 0.5rem",
+                      cursor: "pointer",
+                      border: "1px solid var(--border-color)",
+                      background: "var(--bg-surface)",
+                      color: "var(--text-secondary)",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    <span style={{ color: "var(--color-primary)" }}>{s.icon}</span>
+                    <span>{s.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Grid: 2 columns, odd last block spans full width */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
+
+                {/* BLOCK 1 — Last Processed Data */}
+                <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+                  {blockHeader(1, "var(--color-primary)", "var(--color-primary-glow)", ht.step1Title, ht.step1Desc)}
+                  {mockData.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)", fontSize: "0.85rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                      <Database size={22} style={{ marginBottom: "0.5rem", opacity: 0.35, display: "block", margin: "0 auto 0.5rem" }} />
+                      <p style={{ margin: 0 }}>{ht.noData}</p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      {mockData.map((d, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                            <FileCode size={14} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
+                            <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{d.name}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.rows} {ht.rowsProcessed}</span>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.cols} {ht.columnsDetected}</span>
+                            <span className="badge badge-success" style={{ fontSize: "0.65rem" }}>{d.time}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* BLOCK 2 — Generated Reports */}
+                <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+                  {blockHeader(2, "var(--color-accent)", "rgba(6,182,212,0.12)", ht.step2Title, ht.step2Desc)}
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                    {mockReports.map((r, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", minWidth: 0 }}>
+                          <LineChart size={14} style={{ color: "var(--color-accent)", flexShrink: 0 }} />
+                          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
+                        </div>
+                        <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexShrink: 0 }}>
+                          <span className="badge badge-info" style={{ fontSize: "0.65rem" }}>{r.type}</span>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{r.time}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* BLOCK 3 — Alerts (spans full width) */}
+                <div className="glass-panel" style={{ padding: "1.25rem 1.5rem", gridColumn: "1 / -1" }}>
+                  {blockHeader(3, "var(--color-danger)", "rgba(239,68,68,0.1)", ht.step3Title, ht.step3Desc)}
+                  {mockAlerts.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)", fontSize: "0.85rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                      <ShieldCheck size={22} style={{ marginBottom: "0.5rem", opacity: 0.35, display: "block", margin: "0 auto 0.5rem" }} />
+                      <p style={{ margin: 0 }}>{ht.noAlerts}</p>
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                      {mockAlerts.map((a, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: `1px solid ${levelColor[a.level]}40` }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: levelColor[a.level], flexShrink: 0 }} />
+                            <span style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>{a.msg}</span>
+                          </div>
+                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexShrink: 0 }}>
+                            <span className={`badge ${levelBadgeClass[a.level]}`} style={{ fontSize: "0.65rem" }}>
+                              {a.level === "critical" ? ht.alertCritical : a.level === "warning" ? ht.alertWarning : ht.alertInfo}
+                            </span>
+                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{a.time}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+              </div>
+            </div>
+          );
+        })()}
+
         {/* TAB 1: DATA CONNECTION HUB */}
         {activeTab === "data" && (
           <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
@@ -674,13 +985,14 @@ export default function AgenttisDashboard() {
               {/* Custom CSV Upload */}
               <div className="glass-panel" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
                     <Sparkles size={18} style={{ color: "var(--color-primary)" }} />
                     <h2 style={{ margin: 0 }}>{t("dataTitle")}</h2>
+                    <span className="info-tooltip">
+                      <Info size={15} />
+                      <span className="tooltip-text">{t("dataSubtitle")}</span>
+                    </span>
                   </div>
-                  <p style={{ marginBottom: "1.25rem", fontSize: "0.9rem" }}>
-                    {t("dataSubtitle")}
-                  </p>
                   
                   <div style={{
                     border: "2px dashed var(--border-color)",
@@ -740,10 +1052,13 @@ export default function AgenttisDashboard() {
 
               {/* Demo Connections */}
               <div className="glass-panel" style={{ padding: "1.75rem" }}>
-                <h2 style={{ marginBottom: "0.5rem" }}>{t("demoTitle")}</h2>
-                <p style={{ marginBottom: "1.25rem", fontSize: "0.9rem" }}>
-                  {t("demoSubtitle")}
-                </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "1.25rem" }}>
+                  <h2 style={{ margin: 0 }}>{t("demoTitle")}</h2>
+                  <span className="info-tooltip">
+                    <Info size={15} />
+                    <span className="tooltip-text">{t("demoSubtitle")}</span>
+                  </span>
+                </div>
                 
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                   
@@ -761,10 +1076,15 @@ export default function AgenttisDashboard() {
                     }}
                   >
                     <div>
-                      <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", color: fileName === "customers_sales.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
-                        {t("demoCustomers")}
-                      </h4>
-                      <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t("demoCustomersDesc")}</p>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <h4 style={{ margin: 0, fontSize: "0.95rem", color: fileName === "customers_sales.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
+                          {t("demoCustomers")}
+                        </h4>
+                        <span className="info-tooltip">
+                          <Info size={13} />
+                          <span className="tooltip-text">{t("demoCustomersDesc")}</span>
+                        </span>
+                      </div>
                     </div>
                     <ArrowRight size={16} style={{ color: "var(--color-primary)" }} />
                   </div>
@@ -783,10 +1103,15 @@ export default function AgenttisDashboard() {
                     }}
                   >
                     <div>
-                      <h4 style={{ margin: "0 0 0.2rem 0", fontSize: "0.95rem", color: fileName === "inventory_items.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
-                        {t("demoInventory")}
-                      </h4>
-                      <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t("demoInventoryDesc")}</p>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <h4 style={{ margin: 0, fontSize: "0.95rem", color: fileName === "inventory_items.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
+                          {t("demoInventory")}
+                        </h4>
+                        <span className="info-tooltip">
+                          <Info size={13} />
+                          <span className="tooltip-text">{t("demoInventoryDesc")}</span>
+                        </span>
+                      </div>
                     </div>
                     <ArrowRight size={16} style={{ color: "var(--color-primary)" }} />
                   </div>
@@ -807,12 +1132,15 @@ export default function AgenttisDashboard() {
                 {/* Visual Schema definition */}
                 <div className="glass-panel" style={{ padding: "1.25rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
-                    <h3 style={{ margin: 0 }}>{t("schemaTitle")}</h3>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <h3 style={{ margin: 0 }}>{t("schemaTitle")}</h3>
+                      <span className="info-tooltip">
+                        <Info size={14} />
+                        <span className="tooltip-text">{t("schemaSubtitle")}</span>
+                      </span>
+                    </div>
                     <span className="badge badge-success">{t("rowsDetected").replace("{rows}", parsedData.totalRows)}</span>
                   </div>
-                  <p style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
-                    {t("schemaSubtitle")}
-                  </p>
                   
                   <div style={{ maxHeight: "300px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -848,10 +1176,13 @@ export default function AgenttisDashboard() {
 
                 {/* Table Data list Preview */}
                 <div className="glass-panel" style={{ padding: "1.25rem" }}>
-                  <h3 style={{ marginBottom: "0.25rem" }}>{t("previewTitle")} ({fileName})</h3>
-                  <p style={{ fontSize: "0.85rem", marginBottom: "1rem" }}>
-                    {t("previewSubtitle")}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "0.75rem" }}>
+                    <h3 style={{ margin: 0 }}>{t("previewTitle")} ({fileName})</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("previewSubtitle")}</span>
+                    </span>
+                  </div>
 
                   <div className="table-container" style={{ maxHeight: "300px", overflowY: "auto" }}>
                     <table>
@@ -923,8 +1254,13 @@ export default function AgenttisDashboard() {
             <div className="glass-panel" style={{ display: "flex", flexDirection: "column", height: "100%", padding: "1.25rem" }}>
               <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <h3 style={{ margin: 0 }}>{t("playTitle")}</h3>
-                  <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-secondary)" }}>{t("playSubtitle").replace("{fileName}", fileName)}</p>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <h3 style={{ margin: 0 }}>{t("playTitle")}</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("playSubtitle").replace("{fileName}", fileName)}</span>
+                    </span>
+                  </div>
                 </div>
                 <button 
                   onClick={() => setChatHistory([])}
@@ -952,12 +1288,11 @@ export default function AgenttisDashboard() {
                     <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", marginBottom: "1.25rem" }}>
                       {t("noMessagesDesc")}
                     </p>
-                    
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
-                      {samplePrompts.map((p, i) => (
-                        <div 
-                          key={i} 
-                          className="glass-panel glass-panel-interactive" 
+                      {samplePrompts.slice(0, 3).map((p, i) => (
+                        <div
+                          key={i}
+                          className="glass-panel glass-panel-interactive"
                           onClick={() => setQuery(p)}
                           style={{
                             padding: "0.5rem 0.75rem",
@@ -1051,81 +1386,22 @@ export default function AgenttisDashboard() {
 
             {/* Right Column details */}
             <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", height: "100%", overflowY: "auto" }}>
-              
-              {/* Token efficiency chart */}
-              {chatHistory.length > 0 && chatHistory[chatHistory.length - 1].role === "agent" && chatHistory[chatHistory.length - 1].metrics ? (
-                (() => {
-                  const currentMetrics = chatHistory[chatHistory.length - 1].metrics;
-                  return (
-                    <div className="glass-panel" style={{ padding: "1.25rem", borderLeft: "4px solid var(--color-primary)" }}>
-                      <h4 style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.75rem" }}>
-                        <TrendingDown size={16} style={{ color: "var(--color-primary)" }} /> {t("efficiencyTitle")}
-                      </h4>
-                      
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                        
-                        <div>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.2rem" }}>
-                            <span>{t("tokenConsumption")}</span>
-                            <span style={{ color: "var(--color-primary)", fontWeight: 700 }}>
-                              -{t("tokensSaved").replace("{percent}", currentMetrics.savingsPercent)}
-                            </span>
-                          </div>
-                          
-                          <div style={{ height: "8px", background: "var(--bg-surface-solid)", borderRadius: "4px", overflow: "hidden", position: "relative", marginBottom: "0.2rem", border: "1px solid var(--border-color)" }}>
-                            <div style={{ height: "100%", width: `${currentMetrics.savingsPercent}%`, background: "var(--color-primary)" }}></div>
-                          </div>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.7rem", color: "var(--text-muted)" }}>
-                            <span>{t("fullContext")}: {currentMetrics.fullContextTokens.toLocaleString()} t</span>
-                            <span>{t("mcpTool")}: {currentMetrics.mcpTokens.toLocaleString()} t</span>
-                          </div>
-                        </div>
 
-                        <div>
-                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.2rem" }}>
-                            <span>{t("latencyTitle")}</span>
-                            <span style={{ color: "var(--color-success)", fontWeight: 700 }}>
-                              {t("xTimesFaster").replace("{x}", String(Math.round(currentMetrics.fullContextLatency / currentMetrics.mcpLatency)))}
-                            </span>
-                          </div>
-                          
-                          <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.7rem" }}>
-                              <span style={{ width: "80px", color: "var(--text-muted)" }}>{t("fullContext")}:</span>
-                              <div style={{ height: "4px", flex: 1, background: "rgba(239, 68, 68, 0.2)", borderRadius: "2px" }}></div>
-                              <span style={{ width: "40px", textAlign: "right" }}>{currentMetrics.fullContextLatency}ms</span>
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.7rem" }}>
-                              <span style={{ width: "80px", color: "var(--text-muted)" }}>{t("mcpTool")}:</span>
-                              <div style={{ height: "4px", width: `${Math.max(5, (currentMetrics.mcpLatency / currentMetrics.fullContextLatency) * 100)}%`, background: "var(--color-success)", borderRadius: "2px" }}></div>
-                              <span style={{ width: "40px", textAlign: "right" }}>{currentMetrics.mcpLatency}ms</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div style={{
-                          marginTop: "0.25rem",
-                          padding: "0.5rem 0.75rem",
-                          background: "var(--bg-surface-solid)",
-                          border: "1px solid var(--border-color)",
-                          borderRadius: "var(--radius-sm)",
-                          display: "flex",
-                          justifyContent: "space-between",
-                          fontSize: "0.8rem"
-                        }}>
-                          <span style={{ color: "var(--text-secondary)" }}>{t("estSavings")}</span>
-                          <strong style={{ color: "var(--color-success)" }}>${currentMetrics.costSaved.toFixed(5)} USD</strong>
-                        </div>
-
-                      </div>
-                    </div>
-                  );
-                })()
-              ) : (
-                <div className="glass-panel flex-center" style={{ padding: "1.25rem", height: "120px", textAlign: "center", color: "var(--text-muted)", fontSize: "0.8rem" }}>
-                  {t("metricsPlaceholder")}
+              {/* Link to Settings */}
+              <div
+                className="glass-panel glass-panel-interactive"
+                onClick={() => setActiveTab("settings")}
+                style={{ padding: "0.75rem 1rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <TrendingDown size={14} style={{ color: "var(--color-primary)" }} />
+                  <span style={{ fontSize: "0.82rem", fontWeight: 600 }}>{t("efficiencyTitle")}</span>
                 </div>
-              )}
+                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{language === "es" ? "Ver en Configuración" : "See in Settings"}</span>
+                  <ArrowRight size={13} style={{ color: "var(--text-muted)" }} />
+                </div>
+              </div>
 
               {/* Traces */}
               <div className="glass-panel" style={{ padding: "1.25rem", flex: 1, display: "flex", flexDirection: "column" }}>
@@ -1320,10 +1596,10 @@ export default function AgenttisDashboard() {
           </div>
         )}
 
-        {/* TAB 4: METRICS & OBSERVABILITY SUMMARY */}
-        {activeTab === "observability" && (
+        {/* TAB 4: METRICS & OBSERVABILITY SUMMARY — content moved to Settings */}
+        {false && (
           <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            
+
             {/* Cumulative count blocks */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1.25rem" }}>
               
@@ -1534,13 +1810,14 @@ export default function AgenttisDashboard() {
           <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
             
             <div className="glass-panel" style={{ padding: "1.75rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.4rem" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                 <Settings size={20} style={{ color: "var(--color-primary)" }} />
                 <h2 style={{ margin: 0 }}>{t("catalogTitle")}</h2>
+                <span className="info-tooltip">
+                  <Info size={15} />
+                  <span className="tooltip-text">{t("catalogSubtitle")}</span>
+                </span>
               </div>
-              <p style={{ margin: 0, fontSize: "0.9rem" }}>
-                {t("catalogSubtitle")}
-              </p>
             </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "1.25rem" }}>
@@ -1552,10 +1829,13 @@ export default function AgenttisDashboard() {
                     <span style={{ fontSize: "1.3rem" }}>💳</span>
                     <span className="badge badge-success">Ready</span>
                   </div>
-                  <h3 style={{ marginBottom: "0.4rem", fontSize: "1.1rem" }}>{t("stripeTitle")}</h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    {t("stripeDesc")}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{t("stripeTitle")}</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("stripeDesc")}</span>
+                    </span>
+                  </div>
                   
                   <div style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem" }}>
@@ -1581,10 +1861,13 @@ export default function AgenttisDashboard() {
                     <span style={{ fontSize: "1.3rem" }}>🎯</span>
                     <span className="badge badge-success">Ready</span>
                   </div>
-                  <h3 style={{ marginBottom: "0.4rem", fontSize: "1.1rem" }}>{t("hubspotTitle")}</h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    {t("hubspotDesc")}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{t("hubspotTitle")}</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("hubspotDesc")}</span>
+                    </span>
+                  </div>
                   
                   <div style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem" }}>
@@ -1610,10 +1893,13 @@ export default function AgenttisDashboard() {
                     <span style={{ fontSize: "1.3rem" }}>📝</span>
                     <span className="badge badge-success">Ready</span>
                   </div>
-                  <h3 style={{ marginBottom: "0.4rem", fontSize: "1.1rem" }}>{t("notionTitle")}</h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    {t("notionDesc")}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{t("notionTitle")}</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("notionDesc")}</span>
+                    </span>
+                  </div>
                   
                   <div style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem" }}>
@@ -1639,10 +1925,13 @@ export default function AgenttisDashboard() {
                     <span style={{ fontSize: "1.3rem" }}>💬</span>
                     <span className="badge badge-warning" style={{ background: "rgba(245, 158, 11, 0.1)", color: "#d97706" }}>Beta</span>
                   </div>
-                  <h3 style={{ marginBottom: "0.4rem", fontSize: "1.1rem" }}>{t("slackTitle")}</h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>
-                    {t("slackDesc")}
-                  </p>
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "0.4rem" }}>
+                    <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{t("slackTitle")}</h3>
+                    <span className="info-tooltip">
+                      <Info size={14} />
+                      <span className="tooltip-text">{t("slackDesc")}</span>
+                    </span>
+                  </div>
                   
                   <div style={{ marginTop: "0.75rem", display: "flex", flexDirection: "column", gap: "0.3rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem" }}>
@@ -1666,11 +1955,371 @@ export default function AgenttisDashboard() {
           </div>
         )}
 
+        {/* TAB: BANK RECONCILIATION */}
+        {activeTab === "reconciliation" && (() => {
+          const bankRows = [
+            { date: "02/06/2025", desc: language === "es" ? "Cobro factura #1042 — Cliente ABC" : "Invoice #1042 — Client ABC", amount: 45200, matched: true },
+            { date: "04/06/2025", desc: language === "es" ? "Pago proveedor Impresos SA" : "Supplier payment Impresos SA", amount: -12500, matched: true },
+            { date: "07/06/2025", desc: language === "es" ? "Transferencia recibida" : "Incoming transfer", amount: 18000, matched: false },
+            { date: "10/06/2025", desc: language === "es" ? "Débito automático ANTEL" : "Direct debit ANTEL", amount: -3200, matched: true },
+            { date: "14/06/2025", desc: "Redpagos — DGI IVA", amount: -28600, matched: false },
+            { date: "18/06/2025", desc: language === "es" ? "Cobro factura #1055 — Cliente XYZ" : "Invoice #1055 — Client XYZ", amount: 67000, matched: true },
+          ];
+          const matched = bankRows.filter(r => r.matched).length;
+          const unmatched = bankRows.filter(r => !r.matched).length;
+          const totalBank = bankRows.reduce((s, r) => s + r.amount, 0);
+          const totalBooks = totalBank - 5400;
+          return (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div>
+                <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("reconciliationTitle")}</h2>
+                <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("reconciliationSubtitle")}</p>
+              </div>
+
+              {/* Summary cards */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
+                {[
+                  { label: t("reconciliationBank"), value: `$${totalBank.toLocaleString()}`, color: "var(--color-primary)", icon: <Landmark size={16} /> },
+                  { label: t("reconciliationBooks"), value: `$${totalBooks.toLocaleString()}`, color: "var(--color-accent)", icon: <FileText size={16} /> },
+                  { label: t("reconciliationMatched"), value: matched, color: "var(--color-success)", icon: <CheckCircle2 size={16} /> },
+                  { label: t("reconciliationUnmatched"), value: unmatched, color: "var(--color-danger)", icon: <XCircle size={16} /> },
+                ].map((card, i) => (
+                  <div key={i} className="glass-panel" style={{ padding: "1rem 1.25rem" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", color: card.color, marginBottom: "0.4rem" }}>
+                      {card.icon}
+                      <span style={{ fontSize: "0.75rem", fontWeight: 600 }}>{card.label}</span>
+                    </div>
+                    <p style={{ margin: 0, fontSize: "1.3rem", fontWeight: 800, color: "var(--text-primary)" }}>{card.value}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Difference banner */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.75rem 1.25rem", background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: "var(--radius-md)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <AlertTriangle size={15} style={{ color: "var(--color-danger)" }} />
+                  <span style={{ fontSize: "0.85rem", fontWeight: 600 }}>{t("reconciliationDiff")}</span>
+                </div>
+                <strong style={{ color: "var(--color-danger)", fontSize: "1rem" }}>$5.400</strong>
+              </div>
+
+              {/* Movements table */}
+              <div className="glass-panel" style={{ padding: "1.25rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                  <h3 style={{ margin: 0, fontSize: "1rem" }}>{t("reconciliationBank")} — Junio 2025</h3>
+                  <button className="btn btn-primary" style={{ padding: "0.4rem 0.9rem", fontSize: "0.78rem" }}>
+                    <ArrowLeftRight size={13} /> {t("reconciliationRunBtn")}
+                  </button>
+                </div>
+                <div className="table-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th style={{ fontSize: "0.78rem" }}>{language === "es" ? "Fecha" : "Date"}</th>
+                        <th style={{ fontSize: "0.78rem" }}>{language === "es" ? "Descripción" : "Description"}</th>
+                        <th style={{ fontSize: "0.78rem", textAlign: "right" }}>{language === "es" ? "Importe" : "Amount"}</th>
+                        <th style={{ fontSize: "0.78rem", textAlign: "center" }}>{language === "es" ? "Estado" : "Status"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bankRows.map((row, i) => (
+                        <tr key={i}>
+                          <td style={{ fontSize: "0.8rem", fontFamily: "var(--font-mono)" }}>{row.date}</td>
+                          <td style={{ fontSize: "0.8rem" }}>{row.desc}</td>
+                          <td style={{ fontSize: "0.8rem", textAlign: "right", fontWeight: 600, color: row.amount > 0 ? "var(--color-success)" : "var(--color-danger)" }}>
+                            {row.amount > 0 ? "+" : ""}${Math.abs(row.amount).toLocaleString()}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {row.matched
+                              ? <span className="badge badge-success" style={{ fontSize: "0.65rem" }}>{t("reconciliationMatched")}</span>
+                              : <span className="badge badge-warning" style={{ fontSize: "0.65rem" }}>{t("reconciliationPending")}</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: MONTHLY CLOSE */}
+        {activeTab === "monthlyClose" && (() => {
+          const period = "Junio 2025";
+          const steps = [
+            { id: 1, label: language === "es" ? "Importar extractos bancarios" : "Import bank statements", status: "done", detail: language === "es" ? "BROU, Itaú — 6 movimientos importados" : "BROU, Itaú — 6 movements imported" },
+            { id: 2, label: language === "es" ? "Conciliación bancaria" : "Bank reconciliation", status: "warning", detail: language === "es" ? "2 movimientos sin conciliar ($5.400)" : "2 unmatched movements ($5,400)" },
+            { id: 3, label: language === "es" ? "Verificar facturas emitidas (e-Factura DGI)" : "Verify issued invoices (DGI e-Invoice)", status: "done", detail: language === "es" ? "14 facturas — todas enviadas a DGI" : "14 invoices — all sent to DGI" },
+            { id: 4, label: language === "es" ? "Verificar facturas recibidas" : "Verify received invoices", status: "done", detail: language === "es" ? "9 facturas registradas" : "9 invoices registered" },
+            { id: 5, label: language === "es" ? "Calcular IVA del período (22% / 10%)" : "Calculate period VAT (22% / 10%)", status: "warning", detail: language === "es" ? "IVA a pagar: $28.600 — vence 20/07" : "VAT payable: $28,600 — due 07/20" },
+            { id: 6, label: language === "es" ? "Liquidar BPS del mes" : "Calculate monthly BPS", status: "pending", detail: language === "es" ? "Pendiente de cálculo" : "Pending calculation" },
+            { id: 7, label: language === "es" ? "Registrar pago IRAE (anticipo)" : "Register IRAE advance payment", status: "pending", detail: language === "es" ? "Vence 10/07" : "Due 07/10" },
+            { id: 8, label: language === "es" ? "Cierre y asientos de ajuste" : "Closing entries and adjustments", status: "pending", detail: language === "es" ? "Requiere pasos anteriores" : "Requires previous steps" },
+          ];
+          const done = steps.filter(s => s.status === "done").length;
+          const pct = Math.round((done / steps.length) * 100);
+          const statusIcon = (s: string) => s === "done" ? <CheckCircle2 size={16} style={{ color: "var(--color-success)", flexShrink: 0 }} /> : s === "warning" ? <AlertTriangle size={16} style={{ color: "var(--color-warning)", flexShrink: 0 }} /> : <CircleDot size={16} style={{ color: "var(--text-muted)", flexShrink: 0 }} />;
+          const statusBg = (s: string) => s === "done" ? "rgba(16,185,129,0.06)" : s === "warning" ? "rgba(245,158,11,0.06)" : "transparent";
+          return (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", maxWidth: "760px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("monthlyCloseTitle")}</h2>
+                  <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("monthlyCloseSubtitle")}</p>
+                </div>
+                <span className="badge badge-info" style={{ fontSize: "0.78rem", padding: "0.25rem 0.75rem" }}>{period}</span>
+              </div>
+
+              {/* Progress bar */}
+              <div className="glass-panel" style={{ padding: "1rem 1.25rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.82rem", marginBottom: "0.5rem" }}>
+                  <span style={{ fontWeight: 600 }}>{t("monthlyCloseProgress")}</span>
+                  <span style={{ color: "var(--color-primary)", fontWeight: 700 }}>{done}/{steps.length} — {pct}%</span>
+                </div>
+                <div style={{ height: "8px", background: "var(--bg-surface-hover)", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                  <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, var(--color-primary), var(--color-accent))", borderRadius: "4px", transition: "width 0.4s ease" }} />
+                </div>
+              </div>
+
+              {/* Steps */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {steps.map((step, i) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "0.75rem 1rem", background: statusBg(step.status), border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                    {statusIcon(step.status)}
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{step.label}</p>
+                      <p style={{ margin: 0, fontSize: "0.75rem" }}>{step.detail}</p>
+                    </div>
+                    <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>#{step.id}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: TAX ALERTS */}
+        {activeTab === "taxAlerts" && (() => {
+          const today = new Date("2025-06-07");
+          const diff = (d: string) => Math.round((new Date(d).getTime() - today.getTime()) / 86400000);
+          const taxes = [
+            { tax: "IVA Mensual", desc: language === "es" ? "Declaración jurada IVA — Mayo 2025" : "IVA Monthly Return — May 2025", due: "2025-06-20", rate: "22% / 10%", amount: "$28.600", status: "pending" },
+            { tax: "IRAE Anticipo", desc: language === "es" ? "Anticipo mensual IRAE" : "IRAE Monthly Advance", due: "2025-06-10", rate: "25%", amount: "$15.200", status: "overdue" },
+            { tax: "BPS Patronal", desc: language === "es" ? "Aporte patronal BPS — Mayo 2025" : "BPS Employer Contribution — May 2025", due: "2025-06-15", rate: "7.5%", amount: "$8.400", status: "overdue" },
+            { tax: "e-Factura DGI", desc: language === "es" ? "Reporte mensual comprobantes electrónicos" : "Monthly e-Invoice report", due: "2025-06-30", rate: "—", amount: "—", status: "pending" },
+            { tax: "IRPF Retenciones", desc: language === "es" ? "Declaración retenciones IRPF" : "IRPF Withholding Return", due: "2025-07-10", rate: "0–36%", amount: "$4.100", status: "upcoming" },
+            { tax: "IVA Mensual", desc: language === "es" ? "Declaración jurada IVA — Junio 2025" : "IVA Monthly Return — Jun 2025", due: "2025-07-20", rate: "22% / 10%", amount: "—", status: "upcoming" },
+            { tax: "IRAE Anual", desc: language === "es" ? "Cierre ejercicio IRAE 2024" : "IRAE Annual Return 2024", due: "2025-08-30", rate: "25%", amount: "—", status: "filed" },
+          ];
+          const statusStyle = (s: string) => s === "overdue"
+            ? { color: "var(--color-danger)", bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.25)", badge: "badge-warning" }
+            : s === "pending"
+            ? { color: "var(--color-warning)", bg: "rgba(245,158,11,0.06)", border: "rgba(245,158,11,0.2)", badge: "badge-warning" }
+            : s === "filed"
+            ? { color: "var(--color-success)", bg: "rgba(16,185,129,0.06)", border: "rgba(16,185,129,0.15)", badge: "badge-success" }
+            : { color: "var(--color-accent)", bg: "transparent", border: "var(--border-color)", badge: "badge-info" };
+          const statusLabel = (s: string) => s === "overdue" ? t("taxAlertsOverdue") : s === "pending" ? t("taxAlertsDue") : s === "filed" ? t("taxAlertsPaid") : language === "es" ? "Próximo" : "Upcoming";
+          const daysLabel = (due: string, status: string) => {
+            if (status === "filed") return null;
+            const d = diff(due);
+            if (d < 0) return <span style={{ fontSize: "0.72rem", color: "var(--color-danger)", fontWeight: 700 }}>{Math.abs(d)} {t("taxAlertsDaysLeft")} {language === "es" ? "vencido" : "overdue"}</span>;
+            if (d === 0) return <span style={{ fontSize: "0.72rem", color: "var(--color-danger)", fontWeight: 700 }}>{t("taxAlertsToday")}</span>;
+            return <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{d} {t("taxAlertsDaysLeft")}</span>;
+          };
+          return (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <div>
+                  <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("taxAlertsTitle")}</h2>
+                  <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("taxAlertsSubtitle")}</p>
+                </div>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <span className="badge badge-warning" style={{ fontSize: "0.72rem" }}>2 {language === "es" ? "vencidos" : "overdue"}</span>
+                  <span className="badge badge-info" style={{ fontSize: "0.72rem" }}>2 {language === "es" ? "pendientes" : "pending"}</span>
+                </div>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                {taxes.map((tax, i) => {
+                  const st = statusStyle(tax.status);
+                  return (
+                    <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr auto", alignItems: "center", gap: "1rem", padding: "0.85rem 1.1rem", background: st.bg, border: `1px solid ${st.border}`, borderRadius: "var(--radius-md)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                        <div style={{ width: "3px", height: "36px", borderRadius: "2px", background: st.color, flexShrink: 0 }} />
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.15rem" }}>
+                            <span style={{ fontSize: "0.88rem", fontWeight: 700, color: "var(--text-primary)" }}>{tax.tax}</span>
+                            <span className={`badge ${st.badge}`} style={{ fontSize: "0.62rem" }}>{statusLabel(tax.status)}</span>
+                          </div>
+                          <p style={{ margin: 0, fontSize: "0.78rem" }}>{tax.desc}</p>
+                        </div>
+                      </div>
+                      <div style={{ textAlign: "right", display: "flex", flexDirection: "column", gap: "0.15rem", alignItems: "flex-end" }}>
+                        <span style={{ fontSize: "0.82rem", fontFamily: "var(--font-mono)", color: "var(--text-primary)", fontWeight: 600 }}>{tax.amount}</span>
+                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>{tax.due}</span>
+                        {daysLabel(tax.due, tax.status)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: SETTINGS */}
+        {activeTab === "settings" && (() => {
+          const lastMetrics = chatHistory.length > 0
+            ? chatHistory.filter(m => m.role === "agent" && m.metrics).slice(-1)[0]?.metrics
+            : null;
+          return (
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", maxWidth: "860px" }}>
+
+              <div>
+                <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("settingsTitle")}</h2>
+                <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("settingsSubtitle")}</p>
+              </div>
+
+              {/* Token Efficiency & Costs */}
+              <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", fontSize: "1rem" }}>
+                  <TrendingDown size={16} style={{ color: "var(--color-primary)" }} />
+                  {t("efficiencyTitle")}
+                </h3>
+
+                {lastMetrics ? (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+
+                    {/* Token consumption */}
+                    <div className="glass-panel" style={{ padding: "1.25rem", background: "var(--bg-surface-solid)" }}>
+                      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)" }}>{t("tokenConsumption")}</p>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.4rem" }}>
+                        <span style={{ color: "var(--text-muted)" }}>{t("fullContext")}</span>
+                        <span style={{ fontWeight: 700 }}>{lastMetrics.fullContextTokens.toLocaleString()} t</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", marginBottom: "0.75rem" }}>
+                        <span style={{ color: "var(--text-muted)" }}>{t("mcpTool")}</span>
+                        <span style={{ fontWeight: 700, color: "var(--color-success)" }}>{lastMetrics.mcpTokens.toLocaleString()} t</span>
+                      </div>
+                      <div style={{ height: "8px", background: "var(--bg-surface-hover)", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                        <div style={{ height: "100%", width: `${lastMetrics.savingsPercent}%`, background: "linear-gradient(90deg, var(--color-primary), var(--color-accent))", borderRadius: "4px" }} />
+                      </div>
+                      <p style={{ margin: "0.4rem 0 0 0", fontSize: "0.75rem", color: "var(--color-primary)", fontWeight: 700, textAlign: "right" }}>
+                        -{t("tokensSaved").replace("{percent}", lastMetrics.savingsPercent)}
+                      </p>
+                    </div>
+
+                    {/* Latency */}
+                    <div className="glass-panel" style={{ padding: "1.25rem", background: "var(--bg-surface-solid)" }}>
+                      <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.82rem", fontWeight: 600, color: "var(--text-primary)" }}>{t("latencyTitle")}</p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "0.5rem" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.78rem" }}>
+                          <span style={{ width: "80px", color: "var(--text-muted)", flexShrink: 0 }}>{t("fullContext")}</span>
+                          <div style={{ flex: 1, height: "6px", background: "rgba(239,68,68,0.25)", borderRadius: "3px" }} />
+                          <span style={{ width: "45px", textAlign: "right", fontWeight: 600 }}>{lastMetrics.fullContextLatency}ms</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.78rem" }}>
+                          <span style={{ width: "80px", color: "var(--text-muted)", flexShrink: 0 }}>{t("mcpTool")}</span>
+                          <div style={{ width: `${Math.max(8, (lastMetrics.mcpLatency / lastMetrics.fullContextLatency) * 100)}%`, height: "6px", background: "var(--color-success)", borderRadius: "3px" }} />
+                          <span style={{ width: "45px", textAlign: "right", fontWeight: 600, color: "var(--color-success)" }}>{lastMetrics.mcpLatency}ms</span>
+                        </div>
+                      </div>
+                      <p style={{ margin: "0.25rem 0 0 0", fontSize: "0.75rem", color: "var(--color-success)", fontWeight: 700, textAlign: "right" }}>
+                        {t("xTimesFaster").replace("{x}", String(Math.round(lastMetrics.fullContextLatency / lastMetrics.mcpLatency)))}
+                      </p>
+                    </div>
+
+                    {/* Cost saved — spans full width */}
+                    <div style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.85rem 1.25rem", background: "rgba(16,185,129,0.08)", border: "1px solid rgba(16,185,129,0.2)", borderRadius: "var(--radius-md)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Coins size={16} style={{ color: "var(--color-success)" }} />
+                        <span style={{ fontSize: "0.9rem", fontWeight: 600 }}>{t("estSavings")}</span>
+                      </div>
+                      <strong style={{ fontSize: "1.1rem", color: "var(--color-success)" }}>${lastMetrics.costSaved.toFixed(5)} USD</strong>
+                    </div>
+
+                  </div>
+                ) : (
+                  <div style={{ textAlign: "center", padding: "2rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)", color: "var(--text-muted)" }}>
+                    <TrendingDown size={24} style={{ opacity: 0.3, marginBottom: "0.5rem" }} />
+                    <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                      {language === "es"
+                        ? "Realiza una consulta en 'Consulta tu Información' para ver métricas de eficiencia."
+                        : "Run a query in 'Query Your Data' to see efficiency metrics here."}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Cumulative Metrics */}
+              <div className="glass-panel" style={{ padding: "1.5rem" }}>
+                <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", fontSize: "1rem" }}>
+                  <Activity size={16} style={{ color: "var(--color-accent)" }} />
+                  {t("tokenCompTitle")}
+                </h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem", marginBottom: "1.25rem" }}>
+                  {[
+                    { label: t("queriesProcessed"), value: stats.totalQueries, color: "var(--color-primary)", icon: <Play size={15} /> },
+                    { label: t("avgTokensSaved"),   value: `${stats.avgSavingsPercent}%`, color: "var(--color-accent)", icon: <Coins size={15} /> },
+                    { label: t("cumCostSaved"),      value: `$${stats.totalCostSaved.toFixed(4)}`, color: "var(--color-success)", icon: <LineChart size={15} /> },
+                    { label: t("speedup"),           value: stats.avgMcpLatency > 0 ? `${(stats.avgFullLatency / stats.avgMcpLatency).toFixed(1)}x` : "0x", color: "var(--color-warning)", icon: <Clock size={15} /> },
+                  ].map((c, i) => (
+                    <div key={i} style={{ padding: "0.85rem 1rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.35rem", color: c.color, marginBottom: "0.3rem" }}>
+                        {c.icon}<span style={{ fontSize: "0.72rem", fontWeight: 600 }}>{c.label}</span>
+                      </div>
+                      <p style={{ margin: 0, fontSize: "1.2rem", fontWeight: 800, color: "var(--text-primary)" }}>{c.value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Trace log table */}
+                <h4 style={{ marginBottom: "0.75rem", fontSize: "0.9rem" }}>{t("traceLogTitle")}</h4>
+                <div className="table-container">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>{t("logHeaderTime")}</th>
+                        <th>{t("logHeaderQuery")}</th>
+                        <th>{t("logHeaderTool")}</th>
+                        <th>{t("logHeaderTokens")}</th>
+                        <th>{t("logHeaderSavings")}</th>
+                        <th>{t("logHeaderCost")}</th>
+                        <th>{t("logHeaderSpeed")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {observabilityLogs.length === 0 ? (
+                        <tr><td colSpan={7} style={{ textAlign: "center", padding: "1.25rem", color: "var(--text-muted)" }}>{t("noLogsMessage")}</td></tr>
+                      ) : (
+                        observabilityLogs.map((log) => (
+                          <tr key={log.id}>
+                            <td>{log.timestamp}</td>
+                            <td style={{ fontWeight: 600, color: "var(--text-primary)", maxWidth: "220px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{log.query}</td>
+                            <td><span className="badge badge-info" style={{ fontFamily: "var(--font-mono)" }}>{log.toolCalled}</span></td>
+                            <td>{log.metrics.mcpTokens}</td>
+                            <td style={{ color: "var(--color-success)", fontWeight: "bold" }}>-{log.metrics.savingsPercent}%</td>
+                            <td style={{ color: "var(--color-success)" }}>+${log.metrics.costSaved.toFixed(5)}</td>
+                            <td>{log.metrics.mcpLatency}ms</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          );
+        })()}
+
       </main>
 
       {/* Footer */}
       <footer style={{
-        padding: "1rem 2rem",
+        padding: "0.75rem 2rem",
+        marginTop: "2rem",
         borderTop: "1px solid var(--border-color)",
         color: "var(--text-muted)",
         fontSize: "0.8rem",
@@ -1687,6 +2336,7 @@ export default function AgenttisDashboard() {
           <span>Documentation</span>
         </div>
       </footer>
+      </div> {/* end right column */}
     </div>
   );
 }
