@@ -992,154 +992,180 @@ export default function AgenttisDashboard() {
         
         {/* TAB HOME */}
         {activeTab === "home" && (() => {
-          const ht = (TRANSLATIONS[language] as any).home;
-          const mockData = parsedData
-            ? [{ name: parsedData.fileName ?? "dataset.csv", rows: parsedData.totalRows, cols: parsedData.columns.length, time: "Just now" }]
-            : [];
-          const mockReports = [
-            { name: language === "es" ? "Reporte de Ventas — Jun 2026" : "Sales Report — Jun 2026",       type: language === "es" ? "Ventas" : "Sales",     time: language === "es" ? "Hace 2h" : "2h ago",   status: "success" },
-            { name: language === "es" ? "Análisis de Inventario" : "Inventory Analysis",                  type: language === "es" ? "Inventario" : "Stock",  time: language === "es" ? "Hace 5h" : "5h ago",   status: "success" },
-            { name: language === "es" ? "Resumen de Clientes Activos" : "Active Customers Summary",       type: language === "es" ? "Clientes" : "CRM",      time: language === "es" ? "Ayer" : "Yesterday",   status: "success" },
+          const kpis = [
+            {
+              label: language === "es" ? "Caja Total" : "Total Cash",
+              value: "$1.842.350",
+              sub: language === "es" ? "BROU + Itaú + Efectivo" : "BROU + Itaú + Cash",
+              icon: <Wallet size={18} />,
+              accent: "var(--color-success)",
+              trend: language === "es" ? "↑ +2.3% vs mes anterior" : "↑ +2.3% vs last month",
+              up: true,
+            },
+            {
+              label: language === "es" ? "A Cobrar Vencido" : "Overdue Receivables",
+              value: "$234.500",
+              sub: language === "es" ? "3 facturas vencidas" : "3 overdue invoices",
+              icon: <AlertCircle size={18} />,
+              accent: "var(--color-danger)",
+              trend: language === "es" ? "↑ +1 esta semana" : "↑ +1 this week",
+              up: false,
+            },
+            {
+              label: language === "es" ? "Próx. Vencimiento" : "Next Deadline",
+              value: "20 jun",
+              sub: language === "es" ? "IVA mensual — DGI" : "Monthly VAT — DGI",
+              icon: <CalendarCheck size={18} />,
+              accent: "var(--color-warning)",
+              trend: language === "es" ? "13 días restantes" : "13 days remaining",
+              up: null,
+            },
+            {
+              label: language === "es" ? "Empleados Activos" : "Active Employees",
+              value: "8",
+              sub: language === "es" ? "Nómina jun: $892.400" : "Jun payroll: $892,400",
+              icon: <Users size={18} />,
+              accent: "var(--color-accent)",
+              trend: language === "es" ? "Nómina cerrada" : "Payroll closed",
+              up: null,
+            },
           ];
-          const mockAlerts = [
-            { level: "critical", msg: language === "es" ? "Conector Stripe sin respuesta desde hace 30 min" : "Stripe connector unresponsive for 30 min",   time: language === "es" ? "Hace 10 min" : "10 min ago" },
-            { level: "warning",  msg: language === "es" ? "Dataset 'clientes_2024.csv' supera el límite recomendado de filas" : "Dataset 'customers_2024.csv' exceeds recommended row limit", time: language === "es" ? "Hace 1h" : "1h ago" },
-            { level: "info",     msg: language === "es" ? "Nueva versión del servidor MCP disponible (v2.1)" : "New MCP server version available (v2.1)",   time: language === "es" ? "Hace 3h" : "3h ago" },
+
+          const deadlines = [
+            { name: "BPS mensual",          detail: language === "es" ? "Aportes patronales y personales" : "Employee & employer contributions", date: "10 jun", daysLeft: -3 },
+            { name: "IRPF retenciones",     detail: language === "es" ? "Retenciones a dependientes" : "Employee IRPF withholdings",           date: "10 jun", daysLeft: -3 },
+            { name: "IVA mensual DGI",      detail: language === "es" ? "Declaración jurada mensual" : "Monthly VAT return",                   date: "20 jun", daysLeft: 13 },
+            { name: "e-Factura contingencia", detail: language === "es" ? "Revisión de comprobantes" : "Invoice contingency review",           date: "25 jun", daysLeft: 18 },
+            { name: "IRAE anticipo",        detail: language === "es" ? "Anticipo mensual impuesto a la renta" : "Monthly income tax advance",  date: "30 jun", daysLeft: 23 },
           ];
-          const levelColor: Record<string, string> = { critical: "var(--color-danger)", warning: "var(--color-warning)", info: "var(--color-accent)" };
-          const levelBadgeClass: Record<string, string> = { critical: "badge-warning", warning: "badge-warning", info: "badge-info" };
-          const blockHeader = (_num: number, accent: string, _bg: string, title: string, desc: string) => (
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-              <div style={{ width: "3px", height: "32px", borderRadius: "2px", background: accent, flexShrink: 0 }} />
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1rem" }}>{title}</h3>
-                <p style={{ margin: 0, fontSize: "0.78rem" }}>{desc}</p>
-              </div>
-            </div>
-          );
+
+          const recentActivity = [
+            { icon: <ArrowLeftRight size={14} />, text: language === "es" ? "Conciliación bancaria BROU ejecutada" : "BROU bank reconciliation completed",    time: language === "es" ? "Hace 2h" : "2h ago",        color: "var(--color-primary)" },
+            { icon: <Users size={14} />,          text: language === "es" ? "Nómina junio procesada — 8 empleados" : "June payroll processed — 8 employees",  time: language === "es" ? "Hace 5h" : "5h ago",        color: "var(--color-success)" },
+            { icon: <Percent size={14} />,        text: language === "es" ? "IVA mayo presentado ante DGI" : "May VAT return filed with DGI",                  time: language === "es" ? "Ayer" : "Yesterday",        color: "var(--color-accent)" },
+            { icon: <AlertCircle size={14} />,    text: language === "es" ? "3 facturas vencidas detectadas" : "3 overdue invoices detected",                  time: language === "es" ? "Ayer" : "Yesterday",        color: "var(--color-danger)" },
+          ];
+
+          const quickModules = [
+            { key: "reconciliation",     icon: <ArrowLeftRight size={20} />, label: language === "es" ? "Conciliación" : "Reconciliation", accent: "var(--color-primary)" },
+            { key: "payroll",            icon: <Users size={20} />,          label: language === "es" ? "Nómina" : "Payroll",              accent: "var(--color-success)" },
+            { key: "vatLiquidation",     icon: <Percent size={20} />,        label: language === "es" ? "IVA" : "VAT Filing",              accent: "var(--color-accent)" },
+            { key: "treasury",           icon: <Wallet size={20} />,         label: language === "es" ? "Tesorería" : "Treasury",          accent: "#8b5cf6" },
+            { key: "accountsReceivable", icon: <CreditCard size={20} />,     label: language === "es" ? "Cobrar/Pagar" : "A/R & A/P",     accent: "var(--color-warning)" },
+            { key: "monthlyClose",       icon: <CalendarCheck size={20} />,  label: language === "es" ? "Cierre Mensual" : "Monthly Close", accent: "#ec4899" },
+          ];
 
           return (
-            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
 
-              {/* Page heading */}
+              {/* Greeting */}
               <div>
-                <h2 style={{ margin: "0 0 0.2rem 0" }}>{ht.title}</h2>
-                <p style={{ margin: 0, fontSize: "0.9rem" }}>{ht.subtitle}</p>
+                <h2 style={{ margin: "0 0 0.2rem 0" }}>
+                  {language === "es" ? "Buenos días, equipo contable" : "Good morning, accounting team"}
+                </h2>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-secondary)" }}>
+                  {language === "es" ? "Domingo, 7 de junio de 2026 · Resumen del negocio" : "Sunday, June 7, 2026 · Business overview"}
+                </p>
               </div>
 
-              {/* Shortcut buttons */}
-              <div style={{ display: "flex", gap: "0.75rem" }}>
-                {[
-                  { label: ht.shortcutQueries,     icon: <Search size={20} />,   tab: "playground" },
-                  { label: ht.shortcutReports,      icon: <LineChart size={20} />, tab: "monthlyClose" },
-                  { label: ht.shortcutData,         icon: <Database size={20} />, tab: "data" },
-                  { label: ht.shortcutConnections,  icon: <Link size={20} />,     tab: "integrations" },
-                  { label: ht.shortcutMetrics,      icon: <BarChart2 size={20} />,tab: "settings" },
-                ].map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveTab(s.tab as typeof activeTab)}
-                    className="glass-panel glass-panel-interactive"
-                    style={{
-                      flex: 1,
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: "0.5rem",
-                      padding: "1rem 0.5rem",
-                      cursor: "pointer",
-                      border: "1px solid var(--border-color)",
-                      background: "var(--bg-surface)",
-                      color: "var(--text-secondary)",
-                      fontSize: "0.78rem",
-                      fontWeight: 600,
-                    }}
-                  >
-                    <span style={{ color: "var(--color-primary)" }}>{s.icon}</span>
-                    <span>{s.label}</span>
-                  </button>
+              {/* KPI Cards */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
+                {kpis.map((kpi, i) => (
+                  <div key={i} className="glass-panel" style={{ padding: "1.25rem", borderLeft: `3px solid ${kpi.accent}` }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
+                      <span style={{ fontSize: "0.72rem", fontWeight: 600, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{kpi.label}</span>
+                      <span style={{ color: kpi.accent, opacity: 0.85 }}>{kpi.icon}</span>
+                    </div>
+                    <div style={{ fontSize: "1.55rem", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1, marginBottom: "0.35rem" }}>{kpi.value}</div>
+                    <div style={{ fontSize: "0.74rem", color: "var(--text-muted)", marginBottom: "0.5rem" }}>{kpi.sub}</div>
+                    <div style={{ fontSize: "0.72rem", fontWeight: 600, color: kpi.up === true ? "var(--color-success)" : kpi.up === false ? "var(--color-danger)" : "var(--text-muted)" }}>
+                      {kpi.trend}
+                    </div>
+                  </div>
                 ))}
               </div>
 
-              {/* Grid: 2 columns, odd last block spans full width */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
+              {/* Two columns: Deadlines + Activity */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
 
-                {/* BLOCK 1 — Last Processed Data */}
+                {/* Vencimientos del mes */}
                 <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-                  {blockHeader(1, "var(--color-primary)", "var(--color-primary-glow)", ht.step1Title, ht.step1Desc)}
-                  {mockData.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)", fontSize: "0.85rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                      <Database size={22} style={{ marginBottom: "0.5rem", opacity: 0.35, display: "block", margin: "0 auto 0.5rem" }} />
-                      <p style={{ margin: 0 }}>{ht.noData}</p>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      {mockData.map((d, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                            <FileCode size={14} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
-                            <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{d.name}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <CalendarCheck size={16} style={{ color: "var(--color-warning)" }} />
+                    <h3 style={{ margin: 0, fontSize: "0.95rem" }}>{language === "es" ? "Vencimientos del Mes" : "Monthly Deadlines"}</h3>
+                    <span className="badge badge-warning" style={{ fontSize: "0.62rem", marginLeft: "auto" }}>Jun 2026</span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
+                    {deadlines.map((d, i) => {
+                      const isOverdue = d.daysLeft < 0;
+                      const isSoon = !isOverdue && d.daysLeft <= 14;
+                      const borderColor = isOverdue ? "var(--color-danger)" : isSoon ? "var(--color-warning)" : "var(--border-color)";
+                      const badgeClass = isOverdue ? "badge-warning" : isSoon ? "badge-warning" : "badge-info";
+                      const badgeText = isOverdue
+                        ? (language === "es" ? "Vencido" : "Overdue")
+                        : `${d.daysLeft} ${language === "es" ? "días" : "days"}`;
+                      return (
+                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.55rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: `1px solid ${borderColor}40` }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "0.1rem", minWidth: 0 }}>
+                            <span style={{ fontSize: "0.83rem", fontWeight: 600, color: isOverdue ? "var(--color-danger)" : "var(--text-primary)" }}>{d.name}</span>
+                            <span style={{ fontSize: "0.71rem", color: "var(--text-muted)" }}>{d.detail}</span>
                           </div>
-                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.rows} {ht.rowsProcessed}</span>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.cols} {ht.columnsDetected}</span>
-                            <span className="badge badge-success" style={{ fontSize: "0.65rem" }}>{d.time}</span>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.2rem", flexShrink: 0, marginLeft: "0.75rem" }}>
+                            <span style={{ fontSize: "0.74rem", fontWeight: 600, color: "var(--text-secondary)" }}>{d.date}</span>
+                            <span className={`badge ${badgeClass}`} style={{ fontSize: "0.61rem" }}>{badgeText}</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      );
+                    })}
+                  </div>
                 </div>
 
-                {/* BLOCK 2 — Generated Reports */}
+                {/* Actividad reciente */}
                 <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-                  {blockHeader(2, "var(--color-accent)", "rgba(6,182,212,0.12)", ht.step2Title, ht.step2Desc)}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <Activity size={16} style={{ color: "var(--color-primary)" }} />
+                    <h3 style={{ margin: 0, fontSize: "0.95rem" }}>{language === "es" ? "Actividad Reciente" : "Recent Activity"}</h3>
+                  </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                    {mockReports.map((r, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", minWidth: 0 }}>
-                          <LineChart size={14} style={{ color: "var(--color-accent)", flexShrink: 0 }} />
-                          <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.name}</span>
+                    {recentActivity.map((a, i) => (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.65rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
+                        <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: `${a.color}20`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: a.color }}>
+                          {a.icon}
                         </div>
-                        <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexShrink: 0 }}>
-                          <span className="badge badge-info" style={{ fontSize: "0.65rem" }}>{r.type}</span>
-                          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{r.time}</span>
-                        </div>
+                        <span style={{ fontSize: "0.83rem", color: "var(--text-primary)", flex: 1 }}>{a.text}</span>
+                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", flexShrink: 0 }}>{a.time}</span>
                       </div>
                     ))}
                   </div>
                 </div>
-
-                {/* BLOCK 3 — Alerts (spans full width) */}
-                <div className="glass-panel" style={{ padding: "1.25rem 1.5rem", gridColumn: "1 / -1" }}>
-                  {blockHeader(3, "var(--color-danger)", "rgba(239,68,68,0.1)", ht.step3Title, ht.step3Desc)}
-                  {mockAlerts.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)", fontSize: "0.85rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                      <ShieldCheck size={22} style={{ marginBottom: "0.5rem", opacity: 0.35, display: "block", margin: "0 auto 0.5rem" }} />
-                      <p style={{ margin: 0 }}>{ht.noAlerts}</p>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                      {mockAlerts.map((a, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: `1px solid ${levelColor[a.level]}40` }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: levelColor[a.level], flexShrink: 0 }} />
-                            <span style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>{a.msg}</span>
-                          </div>
-                          <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexShrink: 0 }}>
-                            <span className={`badge ${levelBadgeClass[a.level]}`} style={{ fontSize: "0.65rem" }}>
-                              {a.level === "critical" ? ht.alertCritical : a.level === "warning" ? ht.alertWarning : ht.alertInfo}
-                            </span>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{a.time}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
               </div>
+
+              {/* Quick access */}
+              <div>
+                <p style={{ margin: "0 0 0.75rem 0", fontSize: "0.72rem", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                  {language === "es" ? "Acceso Rápido" : "Quick Access"}
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: "0.75rem" }}>
+                  {quickModules.map((m, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveTab(m.key as typeof activeTab)}
+                      className="glass-panel glass-panel-interactive"
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                        gap: "0.5rem", padding: "1rem 0.5rem", cursor: "pointer",
+                        border: "1px solid var(--border-color)", background: "var(--bg-surface)",
+                        color: "var(--text-secondary)", fontSize: "0.74rem", fontWeight: 600,
+                        borderTop: `3px solid ${m.accent}`,
+                      }}
+                    >
+                      <span style={{ color: m.accent }}>{m.icon}</span>
+                      <span>{m.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
             </div>
           );
         })()}
