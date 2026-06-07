@@ -42,7 +42,18 @@ import {
   ArrowLeftRight,
   Receipt,
   CircleDot,
-  FileText
+  FileText,
+  X,
+  Cloud,
+  Server,
+  Building2,
+  Plus,
+  HardDrive,
+  FolderOpen,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  Table,
 } from "lucide-react";
 
 // ENTERPRISE TRANSLATION DICTIONARY (i18n)
@@ -394,6 +405,16 @@ export default function AgenttisDashboard() {
   const [parsedData, setParsedData] = useState<any>(null);
   const [previewRows, setPreviewRows] = useState<any[]>([]);
   const [analysisError, setAnalysisError] = useState<string>("");
+
+  // Wizard & connections state
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const [wizardStep, setWizardStep] = useState(1);
+  const [wizardSourceType, setWizardSourceType] = useState("");
+  const [wizardConfig, setWizardConfig] = useState<Record<string, string>>({});
+  const [wizardConnecting, setWizardConnecting] = useState(false);
+  const [mockConnections, setMockConnections] = useState<Array<{id:string, name:string, category:string, status:"connected"|"error"|"pending", lastSync:string, records:string}>>([
+    { id:"demo1", name: "Demo: Clientes Uruguay", category:"CSV", status:"connected", lastSync:"Hace 2h", records:"500 filas" },
+  ]);
 
   // Chat/Playground state
   const [query, setQuery] = useState<string>("");
@@ -1056,274 +1077,404 @@ export default function AgenttisDashboard() {
         })()}
 
         {/* TAB 1: DATA CONNECTION HUB */}
-        {activeTab === "data" && (
-          <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            
-            <div className="grid-cols-2" style={{ gap: "1.25rem" }}>
-              
-              {/* Custom CSV Upload */}
-              <div className="glass-panel" style={{ padding: "1.75rem", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem" }}>
-                    <Sparkles size={18} style={{ color: "var(--color-primary)" }} />
-                    <h2 style={{ margin: 0 }}>{t("dataTitle")}</h2>
-                    <span className="info-tooltip">
-                      <Info size={15} />
-                      <span className="tooltip-text">{t("dataSubtitle")}</span>
-                    </span>
-                  </div>
-                  
-                  <div style={{
-                    border: "2px dashed var(--border-color)",
-                    borderRadius: "var(--radius-md)",
-                    padding: "2rem 1rem",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    background: "var(--bg-surface-solid)",
-                    transition: "all var(--transition-fast)",
-                    position: "relative"
-                  }}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    const file = e.dataTransfer.files?.[0];
-                    if (file) {
-                      setLoading(true);
-                      const reader = new FileReader();
-                      reader.onload = async (ev) => {
-                        await processCSVData(ev.target?.result as string, file.name);
-                        setLoading(false);
-                      };
-                      reader.readAsText(file);
-                    }
-                  }}
-                  >
-                    <input 
-                      type="file" 
-                      accept=".csv"
-                      onChange={handleFileUpload}
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        opacity: 0,
-                        cursor: "pointer"
-                      }}
-                    />
-                    <Upload size={32} style={{ color: "var(--color-primary)", marginBottom: "0.75rem" }} />
-                    <p style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: "0.9rem" }}>
-                      {t("uploadDragDrop")}
-                    </p>
-                    <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", marginTop: "0.3rem" }}>
-                      {t("uploadNote")}
-                    </p>
-                  </div>
-                </div>
+        {activeTab === "data" && (() => {
+          const sourceCategories = [
+            {
+              id: "files", label: language === "es" ? "Archivos" : "Files",
+              icon: <HardDrive size={20} />, color: "var(--color-primary)",
+              sources: [
+                { id: "excel", label: "Excel / CSV", desc: ".xlsx, .csv, .xls" },
+                { id: "pdf",   label: language === "es" ? "PDF / e-Factura" : "PDF / e-Invoice", desc: ".pdf, .xml DGI" },
+              ]
+            },
+            {
+              id: "cloud", label: "Cloud Storage",
+              icon: <Cloud size={20} />, color: "var(--color-accent)",
+              sources: [
+                { id: "gdrive",   label: "Google Drive",   desc: "Sheets, Docs, carpetas" },
+                { id: "onedrive", label: "OneDrive",        desc: "Excel, SharePoint" },
+                { id: "dropbox",  label: "Dropbox",         desc: language === "es" ? "Archivos y carpetas" : "Files & folders" },
+              ]
+            },
+            {
+              id: "database", label: language === "es" ? "Base de Datos" : "Database",
+              icon: <Server size={20} />, color: "#8b5cf6",
+              sources: [
+                { id: "postgres",  label: "PostgreSQL",         desc: "SQL + JSON" },
+                { id: "mysql",     label: "MySQL / MariaDB",    desc: "" },
+                { id: "sqlserver", label: "SQL Server",         desc: "Microsoft" },
+                { id: "gsheets",   label: "Google Sheets API",  desc: "" },
+              ]
+            },
+            {
+              id: "accounting", label: language === "es" ? "Software Contable" : "Accounting ERP",
+              icon: <Landmark size={20} />, color: "var(--color-warning)",
+              sources: [
+                { id: "tango",    label: "Tango Gestión",  desc: language === "es" ? "Popular en UY/AR" : "Popular in UY/AR" },
+                { id: "bejerman", label: "Bejerman",        desc: "" },
+                { id: "xero",     label: "Xero",            desc: "API v2" },
+                { id: "odoo",     label: "Odoo",            desc: "Open source" },
+              ]
+            },
+            {
+              id: "banks", label: language === "es" ? "Bancos Uruguay" : "Uruguayan Banks",
+              icon: <Building2 size={20} />, color: "var(--color-success)",
+              sources: [
+                { id: "brou",       label: "BROU",            desc: language === "es" ? "Banco República" : "Banco República" },
+                { id: "itau",       label: "Itaú Uruguay",    desc: "" },
+                { id: "santander",  label: "Santander",       desc: "" },
+                { id: "bbva",       label: "BBVA",            desc: "" },
+                { id: "scotiabank", label: "Scotiabank",      desc: "" },
+              ]
+            },
+            {
+              id: "billing", label: language === "es" ? "Facturación" : "Billing",
+              icon: <Receipt size={20} />, color: "#f43f5e",
+              sources: [
+                { id: "dgi",        label: "e-Factura DGI",   desc: language === "es" ? "Portal DGI Uruguay" : "DGI Uruguay portal" },
+                { id: "mercadopago",label: "Mercado Pago",    desc: "API v1" },
+                { id: "stripe",     label: "Stripe",           desc: "Payments API" },
+              ]
+            },
+          ];
 
-                {analysisError && (
-                  <div style={{ marginTop: "1rem", padding: "0.6rem", background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.15)", borderRadius: "var(--radius-sm)", color: "var(--color-danger)", fontSize: "0.8rem" }}>
-                    {analysisError}
-                  </div>
-                )}
+          const wizardFields: Record<string, {label:string, key:string, type?:string, placeholder?:string}[]> = {
+            excel:      [{ label: language === "es" ? "Archivo" : "File", key: "file", type: "file" }],
+            pdf:        [{ label: language === "es" ? "Archivo PDF/XML" : "PDF/XML file", key: "file", type: "file" }],
+            gdrive:     [{ label: "Folder ID o URL", key: "folder", placeholder: "https://drive.google.com/drive/folders/..." }, { label: language === "es" ? "Cuenta Google" : "Google Account", key: "email", placeholder: "empresa@gmail.com" }],
+            onedrive:   [{ label: "SharePoint URL", key: "url", placeholder: "https://empresa.sharepoint.com/..." }],
+            dropbox:    [{ label: "Access Token", key: "token", type: "password", placeholder: "sl.B..." }],
+            postgres:   [{ label: "Host", key: "host", placeholder: "localhost" }, { label: language === "es" ? "Puerto" : "Port", key: "port", placeholder: "5432" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "admin" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
+            mysql:      [{ label: "Host", key: "host", placeholder: "localhost" }, { label: language === "es" ? "Puerto" : "Port", key: "port", placeholder: "3306" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "admin" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
+            sqlserver:  [{ label: "Server", key: "host", placeholder: "SERVIDOR\\INSTANCIA" }, { label: language === "es" ? "Base de datos" : "Database", key: "db", placeholder: "Contabilidad" }, { label: language === "es" ? "Usuario" : "User", key: "user", placeholder: "sa" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password", placeholder: "••••••••" }],
+            gsheets:    [{ label: "Spreadsheet ID", key: "id", placeholder: "1BxiMVs0XRA5..." }, { label: "Service Account JSON", key: "sa", type: "password", placeholder: "{ ... }" }],
+            tango:      [{ label: language === "es" ? "Empresa" : "Company", key: "company", placeholder: "Mi empresa SRL" }, { label: "API Key", key: "key", type: "password", placeholder: "TGO-..." }],
+            bejerman:   [{ label: "Host / URL", key: "host", placeholder: "http://servidor:8080" }, { label: language === "es" ? "Usuario" : "User", key: "user" }, { label: language === "es" ? "Contraseña" : "Password", key: "pass", type: "password" }],
+            xero:       [{ label: "Client ID", key: "clientId", placeholder: "XXXXXXXX-XXXX-..." }, { label: "Client Secret", key: "secret", type: "password" }],
+            odoo:       [{ label: "URL", key: "url", placeholder: "https://miempresa.odoo.com" }, { label: language === "es" ? "Base de datos" : "Database", key: "db" }, { label: language === "es" ? "Usuario" : "User", key: "user" }, { label: "API Key", key: "key", type: "password" }],
+            brou:       [{ label: language === "es" ? "N° de cuenta" : "Account No.", key: "account", placeholder: "001-XXXXXXXX-X" }, { label: "Token BROU Open Banking", key: "token", type: "password" }],
+            itau:       [{ label: "Client ID", key: "clientId" }, { label: "Client Secret", key: "secret", type: "password" }],
+            santander:  [{ label: "API Key Santander", key: "key", type: "password" }],
+            bbva:       [{ label: "API Key BBVA", key: "key", type: "password" }],
+            scotiabank: [{ label: "API Key Scotiabank", key: "key", type: "password" }],
+            dgi:        [{ label: language === "es" ? "RUT empresa" : "Company RUT", key: "rut", placeholder: "21XXXXXXX" }, { label: language === "es" ? "Certificado (.pfx)" : "Certificate (.pfx)", key: "cert", type: "file" }],
+            mercadopago:[{ label: "Access Token", key: "token", type: "password", placeholder: "APP_USR-..." }],
+            stripe:     [{ label: "Secret Key", key: "key", type: "password", placeholder: "sk_live_..." }],
+          };
+
+          const selectedSource = sourceCategories.flatMap(c => c.sources.map(s => ({...s, catColor: c.color, catLabel: c.label}))).find(s => s.id === wizardSourceType);
+          const fields = wizardFields[wizardSourceType] ?? [];
+          const statusColor = (s: string) => s === "connected" ? "var(--color-success)" : s === "error" ? "var(--color-danger)" : "var(--color-warning)";
+          const statusLabel = (s: string) => s === "connected" ? (language === "es" ? "Conectado" : "Connected") : s === "error" ? "Error" : (language === "es" ? "Pendiente" : "Pending");
+
+          const allConnections = [
+            ...mockConnections,
+            ...(parsedData ? [{ id: "file-active", name: fileName, category: "CSV", status: "connected" as const, lastSync: language === "es" ? "Ahora mismo" : "Just now", records: `${parsedData.totalRows} ${language === "es" ? "filas" : "rows"}` }] : []),
+          ];
+
+          return (
+          <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+
+            {/* ── Section header ── */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+              <div>
+                <h2 style={{ margin: "0 0 0.2rem" }}>{language === "es" ? "Conexión de Datos" : "Data Connections"}</h2>
+                <p style={{ margin: 0, fontSize: "0.85rem" }}>{language === "es" ? "Conectá tus fuentes de datos para que los agentes puedan operar sobre tu información contable." : "Connect your data sources so agents can operate on your accounting data."}</p>
               </div>
+              <button
+                className="btn btn-primary"
+                onClick={() => { setWizardOpen(true); setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); }}
+                style={{ flexShrink: 0 }}
+              >
+                <Plus size={15} /> {language === "es" ? "Agregar Conexión" : "Add Connection"}
+              </button>
+            </div>
 
-              {/* Demo Connections */}
-              <div className="glass-panel" style={{ padding: "1.75rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "1.25rem" }}>
-                  <h2 style={{ margin: 0 }}>{t("demoTitle")}</h2>
-                  <span className="info-tooltip">
-                    <Info size={15} />
-                    <span className="tooltip-text">{t("demoSubtitle")}</span>
-                  </span>
-                </div>
-                
-                <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                  
-                  <div 
-                    className="glass-panel glass-panel-interactive" 
-                    onClick={() => loadSampleCSV("/samples/customers_sales.csv", "customers_sales.csv")}
-                    style={{
-                      padding: "1rem 1.25rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      background: fileName === "customers_sales.csv" ? "var(--color-primary-glow)" : "var(--bg-surface-solid)",
-                      borderColor: fileName === "customers_sales.csv" ? "var(--color-primary)" : "var(--border-color)"
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <h4 style={{ margin: 0, fontSize: "0.95rem", color: fileName === "customers_sales.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
-                          {t("demoCustomers")}
-                        </h4>
-                        <span className="info-tooltip">
-                          <Info size={13} />
-                          <span className="tooltip-text">{t("demoCustomersDesc")}</span>
-                        </span>
-                      </div>
+            {/* ── Active connections ── */}
+            {allConnections.length > 0 && (
+              <div className="glass-panel" style={{ padding: "1rem 1.25rem" }}>
+                <p style={{ margin: "0 0 0.75rem", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
+                  {language === "es" ? "Conexiones activas" : "Active connections"} ({allConnections.length})
+                </p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.6rem" }}>
+                  {allConnections.map(conn => (
+                    <div key={conn.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.4rem 0.75rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "9999px", fontSize: "0.8rem" }}>
+                      <span style={{ width: "7px", height: "7px", borderRadius: "50%", background: statusColor(conn.status), flexShrink: 0, boxShadow: conn.status === "connected" ? `0 0 6px ${statusColor(conn.status)}` : "none" }} />
+                      <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>{conn.name}</span>
+                      <span style={{ color: "var(--text-muted)" }}>·</span>
+                      <span style={{ color: "var(--text-muted)" }}>{conn.category}</span>
+                      <span style={{ color: "var(--text-muted)" }}>·</span>
+                      <span style={{ color: "var(--text-muted)" }}>{conn.records}</span>
+                      <button onClick={() => setMockConnections(prev => prev.filter(c => c.id !== conn.id))} style={{ background: "none", border: "none", padding: "0 0 0 0.2rem", color: "var(--text-muted)", cursor: "pointer", display: "flex", alignItems: "center" }}>
+                        <X size={11} />
+                      </button>
                     </div>
-                    <ArrowRight size={16} style={{ color: "var(--color-primary)" }} />
-                  </div>
-
-                  <div 
-                    className="glass-panel glass-panel-interactive" 
-                    onClick={() => loadSampleCSV("/samples/inventory_items.csv", "inventory_items.csv")}
-                    style={{
-                      padding: "1rem 1.25rem",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      background: fileName === "inventory_items.csv" ? "var(--color-primary-glow)" : "var(--bg-surface-solid)",
-                      borderColor: fileName === "inventory_items.csv" ? "var(--color-primary)" : "var(--border-color)"
-                    }}
-                  >
-                    <div>
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <h4 style={{ margin: 0, fontSize: "0.95rem", color: fileName === "inventory_items.csv" ? "var(--color-primary)" : "var(--text-primary)" }}>
-                          {t("demoInventory")}
-                        </h4>
-                        <span className="info-tooltip">
-                          <Info size={13} />
-                          <span className="tooltip-text">{t("demoInventoryDesc")}</span>
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight size={16} style={{ color: "var(--color-primary)" }} />
-                  </div>
-
+                  ))}
                 </div>
+              </div>
+            )}
+
+            {/* ── Drag & Drop zone ── */}
+            <div
+              style={{ border: "2px dashed var(--border-color)", borderRadius: "var(--radius-lg)", padding: "2.5rem 1rem", textAlign: "center", cursor: "pointer", background: "var(--bg-surface-solid)", transition: "all var(--transition-fast)", position: "relative" }}
+              onDragOver={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary)"; (e.currentTarget as HTMLElement).style.background = "var(--color-primary-glow)"; }}
+              onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-color)"; (e.currentTarget as HTMLElement).style.background = "var(--bg-surface-solid)"; }}
+              onDrop={(e) => {
+                e.preventDefault();
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-color)";
+                (e.currentTarget as HTMLElement).style.background = "var(--bg-surface-solid)";
+                const file = e.dataTransfer.files?.[0];
+                if (!file) return;
+                if (file.name.endsWith(".csv")) {
+                  setLoading(true);
+                  const reader = new FileReader();
+                  reader.onload = async (ev) => { await processCSVData(ev.target?.result as string, file.name); setLoading(false); };
+                  reader.readAsText(file);
+                } else {
+                  setAnalysisError(language === "es" ? `Formato .${file.name.split('.').pop()} detectado. Por ahora solo CSV es procesable en demo — el resto se conecta vía 'Agregar Conexión'.` : `Format .${file.name.split('.').pop()} detected. Only CSV is processable in demo — others connect via 'Add Connection'.`);
+                }
+              }}
+            >
+              <input type="file" accept=".csv,.xlsx,.xls,.pdf,.xml" onChange={handleFileUpload} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
+              <Upload size={36} style={{ color: "var(--color-primary)", marginBottom: "0.75rem" }} />
+              <p style={{ color: "var(--text-primary)", fontWeight: 600, margin: "0 0 0.35rem", fontSize: "0.95rem" }}>
+                {language === "es" ? "Arrastrá o hacé clic para cargar un archivo" : "Drag & drop or click to upload a file"}
+              </p>
+              <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
+                {language === "es" ? "Soporta CSV (procesable), Excel, PDF, XML e-Factura" : "Supports CSV (processable), Excel, PDF, XML e-Invoice"}
+              </p>
+              <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", marginTop: "1rem" }}>
+                {[".csv", ".xlsx", ".pdf", ".xml"].map(ext => (
+                  <span key={ext} style={{ padding: "0.15rem 0.5rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "4px", fontSize: "0.7rem", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>{ext}</span>
+                ))}
               </div>
             </div>
 
-            {/* Inferred Schema details & Grid preview */}
+            {analysisError && (
+              <div style={{ padding: "0.6rem 1rem", background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.15)", borderRadius: "var(--radius-sm)", color: "var(--color-danger)", fontSize: "0.82rem", display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
+                <XCircle size={15} style={{ flexShrink: 0, marginTop: "0.1rem" }} /> {analysisError}
+              </div>
+            )}
+
+            {/* ── Source type grid ── */}
+            <div>
+              <p style={{ margin: "0 0 0.75rem", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
+                {language === "es" ? "Tipos de fuente disponibles" : "Available source types"}
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "0.75rem" }}>
+                {sourceCategories.map(cat => (
+                  <div key={cat.id} className="glass-panel glass-panel-interactive" style={{ padding: "1rem 1.25rem", cursor: "pointer" }}
+                    onClick={() => { setWizardSourceType(cat.sources[0].id); setWizardOpen(true); setWizardStep(1); setWizardConfig({}); }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", marginBottom: "0.6rem" }}>
+                      <div style={{ color: cat.color, display: "flex" }}>{cat.icon}</div>
+                      <span style={{ fontWeight: 700, fontSize: "0.88rem", color: "var(--text-primary)" }}>{cat.label}</span>
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.3rem" }}>
+                      {cat.sources.slice(0, 3).map(s => (
+                        <span key={s.id} style={{ fontSize: "0.7rem", padding: "0.1rem 0.4rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "4px", color: "var(--text-secondary)" }}>{s.label}</span>
+                      ))}
+                      {cat.sources.length > 3 && <span style={{ fontSize: "0.7rem", color: "var(--text-muted)" }}>+{cat.sources.length - 3}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Demo sample datasets ── */}
+            <div>
+              <p style={{ margin: "0 0 0.75rem", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
+                {language === "es" ? "Datasets de demo" : "Demo datasets"}
+              </p>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+                {[
+                  { file: "customers_sales.csv", label: t("demoCustomers"), desc: t("demoCustomersDesc"), icon: <Table size={16} /> },
+                  { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc"), icon: <FolderOpen size={16} /> },
+                ].map(demo => (
+                  <div key={demo.file} className="glass-panel glass-panel-interactive"
+                    onClick={() => loadSampleCSV(`/samples/${demo.file}`, demo.file)}
+                    style={{ padding: "0.9rem 1.1rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", background: fileName === demo.file ? "var(--color-primary-glow)" : "var(--bg-surface-solid)", borderColor: fileName === demo.file ? "var(--color-primary)" : "var(--border-color)" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
+                      <span style={{ color: fileName === demo.file ? "var(--color-primary)" : "var(--text-muted)" }}>{demo.icon}</span>
+                      <div>
+                        <p style={{ margin: 0, fontWeight: 600, fontSize: "0.88rem", color: fileName === demo.file ? "var(--color-primary)" : "var(--text-primary)" }}>{demo.label}</p>
+                        <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-muted)" }}>{demo.desc}</p>
+                      </div>
+                    </div>
+                    <ArrowRight size={15} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ── Loaded data: schema + preview ── */}
             {loading ? (
-              <div className="glass-panel flex-center" style={{ height: "250px", flexDirection: "column", gap: "0.75rem" }}>
-                <div className="spinner"></div>
-                <p style={{ color: "var(--text-secondary)" }}>{t("analyzingMessage")}</p>
+              <div className="glass-panel flex-center" style={{ height: "200px", flexDirection: "column", gap: "0.75rem" }}>
+                <div className="spinner" /><p style={{ color: "var(--text-secondary)" }}>{t("analyzingMessage")}</p>
               </div>
             ) : parsedData ? (
               <div className="grid-cols-2" style={{ gap: "1.25rem" }}>
-                
-                {/* Visual Schema definition */}
                 <div className="glass-panel" style={{ padding: "1.25rem" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <h3 style={{ margin: 0 }}>{t("schemaTitle")}</h3>
-                      <span className="info-tooltip">
-                        <Info size={14} />
-                        <span className="tooltip-text">{t("schemaSubtitle")}</span>
-                      </span>
+                      <span className="info-tooltip"><Info size={14} /><span className="tooltip-text">{t("schemaSubtitle")}</span></span>
                     </div>
                     <span className="badge badge-success">{t("rowsDetected").replace("{rows}", parsedData.totalRows)}</span>
                   </div>
-                  
-                  <div style={{ maxHeight: "300px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                  <div style={{ maxHeight: "280px", overflowY: "auto", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
                     <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                      <thead>
-                        <tr>
-                          <th>{t("schemaHeaderField")}</th>
-                          <th>{t("schemaHeaderType")}</th>
-                          <th>{t("schemaHeaderSamples")}</th>
-                        </tr>
-                      </thead>
+                      <thead><tr><th>{t("schemaHeaderField")}</th><th>{t("schemaHeaderType")}</th><th>{t("schemaHeaderSamples")}</th></tr></thead>
                       <tbody>
                         {parsedData.columns.map((col: any, idx: number) => (
                           <tr key={idx}>
                             <td style={{ fontWeight: 600, color: "var(--text-primary)" }}>{col.name}</td>
-                            <td>
-                              <span className={`badge ${
-                                col.type === "number" ? "badge-success" : 
-                                col.type === "date" ? "badge-info" : 
-                                col.type === "boolean" ? "badge-warning" : "btn-secondary"
-                              }`} style={{ fontSize: "0.65rem" }}>
-                                {col.type}
-                              </span>
-                            </td>
-                            <td style={{ fontSize: "0.8rem", fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>
-                              {col.sampleValues.slice(0, 3).map(String).join(", ")}
-                            </td>
+                            <td><span className={`badge ${col.type === "number" ? "badge-success" : col.type === "date" ? "badge-info" : col.type === "boolean" ? "badge-warning" : "btn-secondary"}`} style={{ fontSize: "0.65rem" }}>{col.type}</span></td>
+                            <td style={{ fontSize: "0.8rem", fontFamily: "var(--font-mono)", color: "var(--text-secondary)" }}>{col.sampleValues.slice(0, 3).map(String).join(", ")}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
                 </div>
-
-                {/* Table Data list Preview */}
                 <div className="glass-panel" style={{ padding: "1.25rem" }}>
                   <div style={{ display: "flex", alignItems: "center", marginBottom: "0.75rem" }}>
                     <h3 style={{ margin: 0 }}>{t("previewTitle")} ({fileName})</h3>
-                    <span className="info-tooltip">
-                      <Info size={14} />
-                      <span className="tooltip-text">{t("previewSubtitle")}</span>
-                    </span>
+                    <span className="info-tooltip"><Info size={14} /><span className="tooltip-text">{t("previewSubtitle")}</span></span>
                   </div>
-
-                  <div className="table-container" style={{ maxHeight: "300px", overflowY: "auto" }}>
+                  <div className="table-container" style={{ maxHeight: "280px", overflowY: "auto" }}>
                     <table>
-                      <thead>
-                        <tr>
-                          {parsedData.columns.map((col: any, idx: number) => (
-                            <th key={idx}>{col.name}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {previewRows.map((row: any, rIdx: number) => (
-                          <tr key={rIdx}>
-                            {parsedData.columns.map((col: any, cIdx: number) => (
-                              <td key={cIdx}>{row[col.name] !== undefined ? String(row[col.name]) : ""}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
+                      <thead><tr>{parsedData.columns.map((col: any, idx: number) => <th key={idx}>{col.name}</th>)}</tr></thead>
+                      <tbody>{previewRows.map((row: any, rIdx: number) => <tr key={rIdx}>{parsedData.columns.map((col: any, cIdx: number) => <td key={cIdx}>{row[col.name] !== undefined ? String(row[col.name]) : ""}</td>)}</tr>)}</tbody>
                     </table>
                   </div>
-
-                  {/* Context Metrics Box */}
-                  <div style={{
-                    marginTop: "1.25rem",
-                    padding: "0.75rem 1rem",
-                    background: "var(--bg-surface-solid)",
-                    border: "1px solid var(--border-color)",
-                    borderRadius: "var(--radius-md)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "1rem"
-                  }}>
+                  <div style={{ marginTop: "1rem", padding: "0.7rem 1rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                      <Zap size={18} style={{ color: "var(--color-primary)" }} />
+                      <Zap size={16} style={{ color: "var(--color-primary)" }} />
                       <div>
-                        <h4 style={{ margin: 0, fontSize: "0.9rem" }}>{t("tokenOptimizations")}</h4>
-                        <p style={{ margin: 0, fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                          {t("tokenPayloadDesc").replace("{tokens}", parsedData.fullCsvTokens.toLocaleString())}
-                        </p>
+                        <h4 style={{ margin: 0, fontSize: "0.85rem" }}>{t("tokenOptimizations")}</h4>
+                        <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--text-secondary)" }}>{t("tokenPayloadDesc").replace("{tokens}", parsedData.fullCsvTokens.toLocaleString())}</p>
                       </div>
                     </div>
-                    <button 
-                      className="btn btn-primary"
-                      onClick={() => setActiveTab("playground")}
-                      style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem" }}
-                    >
+                    <button className="btn btn-primary" onClick={() => setActiveTab("playground")} style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", flexShrink: 0 }}>
                       {t("openPlaygroundBtn")} <ArrowRight size={12} />
                     </button>
                   </div>
-
                 </div>
-
               </div>
-            ) : (
-              <div className="glass-panel flex-center" style={{ height: "180px", color: "var(--text-secondary)" }}>
-                {t("noDataMessage")}
+            ) : null}
+
+            {/* ── Wizard Modal ── */}
+            {wizardOpen && (
+              <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
+                onClick={(e) => { if (e.target === e.currentTarget) setWizardOpen(false); }}>
+                <div className="glass-panel" style={{ width: "100%", maxWidth: "620px", padding: "1.75rem", position: "relative", maxHeight: "90vh", overflowY: "auto" }}>
+
+                  {/* Modal header */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+                    <div>
+                      <h3 style={{ margin: "0 0 0.2rem" }}>{language === "es" ? "Nueva Conexión" : "New Connection"}</h3>
+                      <div style={{ display: "flex", gap: "0.4rem" }}>
+                        {[1,2,3].map(n => (
+                          <div key={n} style={{ height: "3px", width: "40px", borderRadius: "2px", background: wizardStep >= n ? "var(--color-primary)" : "var(--border-color)", transition: "background 0.2s" }} />
+                        ))}
+                        <span style={{ fontSize: "0.72rem", color: "var(--text-muted)", marginLeft: "0.25rem" }}>{language === "es" ? `Paso ${wizardStep} de 3` : `Step ${wizardStep} of 3`}</span>
+                      </div>
+                    </div>
+                    <button onClick={() => setWizardOpen(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: "0.25rem" }}>
+                      <X size={18} />
+                    </button>
+                  </div>
+
+                  {/* Step 1 — Choose source */}
+                  {wizardStep === 1 && (
+                    <div>
+                      <p style={{ margin: "0 0 1rem", fontSize: "0.88rem", color: "var(--text-secondary)" }}>
+                        {language === "es" ? "¿Desde dónde querés traer los datos?" : "Where do you want to bring data from?"}
+                      </p>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        {sourceCategories.map(cat => (
+                          <div key={cat.id}>
+                            <p style={{ margin: "0 0 0.4rem", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>{cat.label}</p>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                              {cat.sources.map(src => (
+                                <button key={src.id}
+                                  onClick={() => { setWizardSourceType(src.id); setWizardStep(2); setWizardConfig({}); }}
+                                  style={{ padding: "0.4rem 0.85rem", fontSize: "0.82rem", fontWeight: 600, borderRadius: "var(--radius-sm)", border: `1px solid ${wizardSourceType === src.id ? cat.color : "var(--border-color)"}`, background: wizardSourceType === src.id ? `${cat.color}20` : "var(--bg-surface-solid)", color: wizardSourceType === src.id ? cat.color : "var(--text-secondary)", cursor: "pointer", transition: "all 0.15s" }}>
+                                  {src.label}
+                                  {src.desc && <span style={{ fontWeight: 400, marginLeft: "0.3rem", opacity: 0.6, fontSize: "0.72rem" }}>· {src.desc}</span>}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 2 — Configuration */}
+                  {wizardStep === 2 && (
+                    <div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1.25rem", padding: "0.6rem 0.85rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
+                        <span style={{ color: selectedSource?.catColor ?? "var(--color-primary)", fontSize: "1.1rem" }}>⬡</span>
+                        <span style={{ fontWeight: 700, color: "var(--text-primary)" }}>{selectedSource?.label}</span>
+                        <span style={{ color: "var(--text-muted)", fontSize: "0.8rem" }}>— {selectedSource?.catLabel}</span>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+                        {fields.map(f => (
+                          <div key={f.key}>
+                            <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-primary)", marginBottom: "0.3rem" }}>{f.label}</label>
+                            {f.type === "file"
+                              ? <input type="file" onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.files?.[0]?.name ?? "" }))} style={{ fontSize: "0.82rem" }} />
+                              : <input type={f.type ?? "text"} placeholder={f.placeholder} value={wizardConfig[f.key] ?? ""} onChange={e => setWizardConfig(prev => ({ ...prev, [f.key]: e.target.value }))} />
+                            }
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.5rem" }}>
+                        <button className="btn btn-secondary" onClick={() => setWizardStep(1)}>{language === "es" ? "← Volver" : "← Back"}</button>
+                        <button className="btn btn-primary" disabled={wizardConnecting} onClick={() => {
+                          setWizardConnecting(true);
+                          setTimeout(() => { setWizardConnecting(false); setWizardStep(3); }, 1400);
+                        }}>
+                          {wizardConnecting ? <><RefreshCw size={13} style={{ animation: "spin 0.8s linear infinite" }} /> {language === "es" ? "Conectando..." : "Connecting..."}</> : <><Wifi size={13} /> {language === "es" ? "Probar conexión" : "Test connection"}</>}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step 3 — Success */}
+                  {wizardStep === 3 && (
+                    <div style={{ textAlign: "center", padding: "1rem 0" }}>
+                      <div style={{ width: "56px", height: "56px", borderRadius: "50%", background: "rgba(16,185,129,0.12)", border: "2px solid var(--color-success)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
+                        <CheckCircle2 size={28} style={{ color: "var(--color-success)" }} />
+                      </div>
+                      <h3 style={{ margin: "0 0 0.4rem" }}>{language === "es" ? "¡Conexión exitosa!" : "Connection successful!"}</h3>
+                      <p style={{ fontSize: "0.88rem", color: "var(--text-secondary)", margin: "0 0 0.5rem" }}>
+                        <strong style={{ color: "var(--text-primary)" }}>{selectedSource?.label}</strong> {language === "es" ? "está lista para usarse con los agentes contables." : "is ready to use with accounting agents."}
+                      </p>
+                      <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0 0 1.75rem" }}>
+                        {language === "es" ? "Los datos estarán disponibles en Conciliación, Cierre Mensual y Alertas Fiscales." : "Data will be available in Reconciliation, Monthly Close and Tax Alerts."}
+                      </p>
+                      <div style={{ display: "flex", gap: "0.75rem", justifyContent: "center" }}>
+                        <button className="btn btn-secondary" onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); }}>
+                          {language === "es" ? "Agregar otra" : "Add another"}
+                        </button>
+                        <button className="btn btn-primary" onClick={() => {
+                          setMockConnections(prev => [...prev, { id: `conn-${Date.now()}`, name: selectedSource?.label ?? wizardSourceType, category: selectedSource?.catLabel ?? "", status: "connected", lastSync: language === "es" ? "Ahora mismo" : "Just now", records: language === "es" ? "Sincronizando..." : "Syncing..." }]);
+                          setWizardOpen(false);
+                        }}>
+                          {language === "es" ? "Comenzar a usar →" : "Start using →"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
+
           </div>
-        )}
+          );
+        })()}
 
         {/* TAB 2: PLAYGROUND INTERACTIVE CHAT */}
         {activeTab === "playground" && parsedData && (
