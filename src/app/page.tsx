@@ -1200,34 +1200,58 @@ export default function AgenttisDashboard() {
             {/* ── Demo sample datasets ── */}
             {(() => {
               const demos = [
-                { file: "customers_sales.csv", label: t("demoCustomers"), desc: t("demoCustomersDesc") },
-                { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc") },
+                { file: "customers_sales.csv", label: t("demoCustomers"), desc: t("demoCustomersDesc"), tag: language === "es" ? "CRM" : "CRM", rows: "500" },
+                { file: "inventory_items.csv", label: t("demoInventory"), desc: t("demoInventoryDesc"), tag: language === "es" ? "Inventario" : "Inventory", rows: "200" },
               ];
               const selected = demos.find(d => d.file === fileName) ?? null;
+              const [hovered, setHovered] = React.useState<string | null>(null);
               return (
-                <div className="glass-panel" style={{ padding: "1rem 1.25rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
-                    <p style={{ margin: 0, fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)", flexShrink: 0 }}>
-                      {language === "es" ? "Dataset de demo" : "Demo dataset"}
-                    </p>
-                    <select
-                      value={fileName && demos.some(d => d.file === fileName) ? fileName : ""}
-                      onChange={e => { if (e.target.value) loadSampleCSV(`/samples/${e.target.value}`, e.target.value); }}
-                      style={{ flex: 1, maxWidth: "360px", fontSize: "0.85rem" }}
-                    >
-                      <option value="">{language === "es" ? "— Seleccionar dataset —" : "— Select dataset —"}</option>
-                      {demos.map(d => <option key={d.file} value={d.file}>{d.label}</option>)}
-                    </select>
-                    {selected && (
-                      <button className="btn btn-primary" onClick={() => loadSampleCSV(`/samples/${selected.file}`, selected.file)} style={{ padding: "0.4rem 0.85rem", fontSize: "0.8rem", flexShrink: 0 }}>
-                        {language === "es" ? "Cargar" : "Load"} <ArrowRight size={12} />
-                      </button>
-                    )}
+                <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+                  {/* Header */}
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                    <FolderOpen size={15} style={{ color: "var(--color-accent)" }} />
+                    <span style={{ fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
+                      {language === "es" ? "Datos de prueba" : "Sample data"}
+                    </span>
+                    <span className="badge badge-info" style={{ fontSize: "0.62rem", padding: "0.1rem 0.4rem" }}>Demo</span>
                   </div>
+
+                  {/* Dropdown row */}
+                  <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                    <div style={{ position: "relative", flex: 1 }}>
+                      <Database size={14} style={{ position: "absolute", left: "0.65rem", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)", pointerEvents: "none" }} />
+                      <select
+                        value={fileName && demos.some(d => d.file === fileName) ? fileName : ""}
+                        onChange={e => { if (e.target.value) loadSampleCSV(`/samples/${e.target.value}`, e.target.value); }}
+                        style={{ paddingLeft: "2rem", fontSize: "0.85rem", fontWeight: 500 }}
+                      >
+                        <option value="">{language === "es" ? "Seleccioná un dataset de prueba…" : "Choose a sample dataset…"}</option>
+                        {demos.map(d => <option key={d.file} value={d.file}>{d.label}</option>)}
+                      </select>
+                    </div>
+                    <button
+                      className="btn btn-primary"
+                      disabled={!selected || loading}
+                      onClick={() => selected && loadSampleCSV(`/samples/${selected.file}`, selected.file)}
+                      style={{ flexShrink: 0, opacity: selected ? 1 : 0.45 }}
+                    >
+                      {loading ? <><RefreshCw size={13} style={{ animation: "spin 0.8s linear infinite" }} /> {language === "es" ? "Cargando…" : "Loading…"}</> : <>{language === "es" ? "Cargar" : "Load"} <ArrowRight size={13} /></>}
+                    </button>
+                  </div>
+
+                  {/* Selected dataset info */}
                   {selected && (
-                    <p style={{ margin: "0.6rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)" }}>
-                      {selected.desc}
-                    </p>
+                    <div style={{ marginTop: "0.85rem", padding: "0.75rem 1rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color-glow)", display: "flex", alignItems: "flex-start", gap: "0.75rem" }}>
+                      <CheckCircle2 size={15} style={{ color: "var(--color-success)", flexShrink: 0, marginTop: "0.1rem" }} />
+                      <div style={{ flex: 1 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.2rem" }}>
+                          <span style={{ fontWeight: 600, fontSize: "0.85rem", color: "var(--text-primary)" }}>{selected.label}</span>
+                          <span className="badge badge-info" style={{ fontSize: "0.62rem" }}>{selected.tag}</span>
+                          <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>· ~{selected.rows} {language === "es" ? "filas" : "rows"}</span>
+                        </div>
+                        <p style={{ margin: 0, fontSize: "0.78rem", color: "var(--text-muted)" }}>{selected.desc}</p>
+                      </div>
+                    </div>
                   )}
                 </div>
               );
