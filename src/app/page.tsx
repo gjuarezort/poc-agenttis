@@ -54,6 +54,16 @@ import {
   Wifi,
   WifiOff,
   Table,
+  Users,
+  Percent,
+  CreditCard,
+  Wallet,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
+  AlertCircle,
+  DollarSign,
+  UserCheck,
 } from "lucide-react";
 
 // ENTERPRISE TRANSLATION DICTIONARY (i18n)
@@ -72,6 +82,10 @@ const TRANSLATIONS = {
       reconciliation: "Bank Reconciliation",
       monthlyClose: "Monthly Close",
       taxAlerts: "Tax Alerts",
+      payroll: "Payroll",
+      vatLiquidation: "VAT Filing",
+      accountsReceivable: "Accounts Payable/Receivable",
+      treasury: "Treasury",
       settings: "Settings"
     },
     settingsTitle: "Settings",
@@ -237,6 +251,10 @@ const TRANSLATIONS = {
       reconciliation: "Conciliación Bancaria",
       monthlyClose: "Cierre Mensual",
       taxAlerts: "Alertas Fiscales",
+      payroll: "Nómina",
+      vatLiquidation: "Liquidación IVA",
+      accountsReceivable: "Cuentas a Cobrar/Pagar",
+      treasury: "Tesorería",
       settings: "Configuración"
     },
     settingsTitle: "Configuración",
@@ -391,7 +409,7 @@ const TRANSLATIONS = {
 };
 
 export default function AgenttisDashboard() {
-  const [activeTab, setActiveTab] = useState<"home" | "data" | "playground" | "recipe" | "integrations" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings">("home");
+  const [activeTab, setActiveTab] = useState<"home" | "data" | "playground" | "recipe" | "integrations" | "reconciliation" | "monthlyClose" | "taxAlerts" | "payroll" | "vatLiquidation" | "accountsReceivable" | "treasury" | "settings">("home");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Theme Manager & i18n states
@@ -680,9 +698,13 @@ export default function AgenttisDashboard() {
     { key: "data",          icon: <Database size={16} />,          label: tTab("data"),          sectionLabel: language === "es" ? "Core" : "Core" },
     { key: "playground",    icon: <Play size={16} />,              label: tTab("playground"),    disabled: !parsedData },
     { key: "recipe",        icon: <FileCode size={16} />,          label: tTab("recipe"),        disabled: !parsedData },
-    { key: "reconciliation",icon: <ArrowLeftRight size={16} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Apps" },
-    { key: "monthlyClose",  icon: <CalendarCheck size={16} />,     label: tTab("monthlyClose") },
-    { key: "taxAlerts",     icon: <Receipt size={16} />,           label: tTab("taxAlerts") },
+    { key: "reconciliation",    icon: <ArrowLeftRight size={16} />, label: tTab("reconciliation"),    sectionLabel: language === "es" ? "Aplicaciones" : "Apps" },
+    { key: "monthlyClose",      icon: <CalendarCheck size={16} />, label: tTab("monthlyClose") },
+    { key: "taxAlerts",         icon: <Receipt size={16} />,       label: tTab("taxAlerts") },
+    { key: "payroll",           icon: <Users size={16} />,         label: tTab("payroll") },
+    { key: "vatLiquidation",    icon: <Percent size={16} />,       label: tTab("vatLiquidation") },
+    { key: "accountsReceivable",icon: <CreditCard size={16} />,    label: tTab("accountsReceivable") },
+    { key: "treasury",          icon: <Wallet size={16} />,        label: tTab("treasury") },
     { key: "integrations",  icon: <Package size={16} />,           label: tTab("integrations"),  sectionLabel: language === "es" ? "Sistema" : "System" },
     { key: "settings",      icon: <SlidersHorizontal size={16} />, label: tTab("settings") },
   ];
@@ -2273,6 +2295,362 @@ export default function AgenttisDashboard() {
                     </div>
                   );
                 })}
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: NÓMINA */}
+        {activeTab === "payroll" && (() => {
+          const es = language === "es";
+          const employees = [
+            { name: "María González",   role: es?"Administrativa":"Administrative", bruto: 45000, bpsEmp: 6750,  irpf: 2250,  patronal: 3375 },
+            { name: "Carlos Rodríguez", role: es?"Contador":"Accountant",           bruto: 65000, bpsEmp: 9750,  irpf: 5200,  patronal: 4875 },
+            { name: "Ana Martínez",     role: es?"Ventas":"Sales",                  bruto: 38000, bpsEmp: 5700,  irpf: 1140,  patronal: 2850 },
+            { name: "Luis Pérez",       role: es?"Operaciones":"Operations",        bruto: 52000, bpsEmp: 7800,  irpf: 3380,  patronal: 3900 },
+          ];
+          const totalBruto    = employees.reduce((s,e) => s + e.bruto, 0);
+          const totalBpsEmp   = employees.reduce((s,e) => s + e.bpsEmp, 0);
+          const totalIrpf     = employees.reduce((s,e) => s + e.irpf, 0);
+          const totalNeto     = employees.reduce((s,e) => s + (e.bruto - e.bpsEmp - e.irpf), 0);
+          const totalPatronal = employees.reduce((s,e) => s + e.patronal, 0);
+          const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
+          return (
+            <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                <div>
+                  <h2 style={{ margin:"0 0 0.2rem" }}>{es?"Nómina — Junio 2026":"Payroll — June 2026"}</h2>
+                  <p style={{ margin:0, fontSize:"0.85rem" }}>{es?"Sueldos, retenciones IRPF y aportes BPS del período.":"Salaries, IRPF withholdings and BPS contributions for the period."}</p>
+                </div>
+                <div style={{ display:"flex", gap:"0.5rem" }}>
+                  <button className="btn btn-secondary"><Download size={14}/> {es?"Exportar":"Export"}</button>
+                  <button className="btn btn-primary"><UserCheck size={14}/> {es?"Generar recibos":"Generate payslips"}</button>
+                </div>
+              </div>
+              {/* Summary cards */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"0.75rem" }}>
+                {[
+                  { label: es?"Total bruto":"Total gross",      value: fmt(totalBruto),    color:"var(--color-primary)" },
+                  { label: es?"Total neto a pagar":"Net payable", value: fmt(totalNeto),   color:"var(--color-success)" },
+                  { label: es?"Retenciones IRPF":"IRPF withheld", value: fmt(totalIrpf),  color:"var(--color-warning)" },
+                  { label: es?"BPS patronal":"BPS employer",    value: fmt(totalPatronal), color:"var(--color-accent)" },
+                ].map(c => (
+                  <div key={c.label} className="glass-panel" style={{ padding:"1rem 1.25rem" }}>
+                    <p style={{ margin:"0 0 0.4rem", fontSize:"0.72rem", color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>{c.label}</p>
+                    <p style={{ margin:0, fontSize:"1.25rem", fontWeight:800, color:c.color }}>{c.value}</p>
+                    <p style={{ margin:"0.1rem 0 0", fontSize:"0.72rem", color:"var(--text-muted)" }}>UYU</p>
+                  </div>
+                ))}
+              </div>
+              {/* Employee table */}
+              <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                <h3 style={{ margin:"0 0 1rem", fontSize:"0.95rem" }}>{es?"Detalle por empleado":"Employee breakdown"}</h3>
+                <div className="table-container">
+                  <table>
+                    <thead><tr>
+                      <th>{es?"Empleado":"Employee"}</th>
+                      <th>{es?"Cargo":"Role"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Sueldo bruto":"Gross"}</th>
+                      <th style={{ textAlign:"right" }}>BPS {es?"empleado":"employee"} (15%)</th>
+                      <th style={{ textAlign:"right" }}>IRPF</th>
+                      <th style={{ textAlign:"right" }}>{es?"Neto":"Net"}</th>
+                      <th style={{ textAlign:"right" }}>BPS {es?"patronal":"employer"} (7.5%)</th>
+                    </tr></thead>
+                    <tbody>
+                      {employees.map(emp => (
+                        <tr key={emp.name}>
+                          <td style={{ fontWeight:600, color:"var(--text-primary)" }}>{emp.name}</td>
+                          <td>{emp.role}</td>
+                          <td style={{ textAlign:"right" }}>{fmt(emp.bruto)}</td>
+                          <td style={{ textAlign:"right", color:"var(--color-warning)" }}>-{fmt(emp.bpsEmp)}</td>
+                          <td style={{ textAlign:"right", color:"var(--color-warning)" }}>-{fmt(emp.irpf)}</td>
+                          <td style={{ textAlign:"right", color:"var(--color-success)", fontWeight:700 }}>{fmt(emp.bruto - emp.bpsEmp - emp.irpf)}</td>
+                          <td style={{ textAlign:"right", color:"var(--color-accent)" }}>{fmt(emp.patronal)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr style={{ borderTop:"2px solid var(--border-color)" }}>
+                        <td colSpan={2} style={{ fontWeight:700, color:"var(--text-primary)" }}>TOTAL</td>
+                        <td style={{ textAlign:"right", fontWeight:700 }}>{fmt(totalBruto)}</td>
+                        <td style={{ textAlign:"right", fontWeight:700, color:"var(--color-warning)" }}>-{fmt(totalBpsEmp)}</td>
+                        <td style={{ textAlign:"right", fontWeight:700, color:"var(--color-warning)" }}>-{fmt(totalIrpf)}</td>
+                        <td style={{ textAlign:"right", fontWeight:700, color:"var(--color-success)" }}>{fmt(totalNeto)}</td>
+                        <td style={{ textAlign:"right", fontWeight:700, color:"var(--color-accent)" }}>{fmt(totalPatronal)}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+              {/* BPS alert */}
+              <div style={{ padding:"0.75rem 1rem", background:"rgba(245,158,11,0.08)", border:"1px solid rgba(245,158,11,0.2)", borderRadius:"var(--radius-md)", display:"flex", alignItems:"center", gap:"0.6rem" }}>
+                <AlertCircle size={15} style={{ color:"var(--color-warning)", flexShrink:0 }} />
+                <span style={{ fontSize:"0.82rem", color:"var(--text-secondary)" }}>
+                  {es?`Vencimiento BPS: 20 de julio 2026 — Total a depositar: ${fmt(totalBpsEmp + totalPatronal)}`:`BPS due date: July 20 2026 — Total to deposit: ${fmt(totalBpsEmp + totalPatronal)}`}
+                </span>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: LIQUIDACIÓN IVA */}
+        {activeTab === "vatLiquidation" && (() => {
+          const es = language === "es";
+          const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
+          const ventas22 = { base: 890000, iva: 195800 };
+          const ventas10 = { base: 120000, iva:  12000 };
+          const compras22 = { base: 420000, iva:  92400 };
+          const compras10 = { base:  45000, iva:   4500 };
+          const totalDebito  = ventas22.iva + ventas10.iva;
+          const totalCredito = compras22.iva + compras10.iva;
+          const saldo = totalDebito - totalCredito;
+          const months = [
+            { mes: es?"Enero":"Jan",    debito:185000, credito:88000 },
+            { mes: es?"Febrero":"Feb",  debito:192000, credito:91000 },
+            { mes: es?"Marzo":"Mar",    debito:178000, credito:84000 },
+            { mes: es?"Abril":"Apr",    debito:210000, credito:97000 },
+            { mes: es?"Mayo":"May",     debito:198000, credito:93000 },
+            { mes: es?"Junio":"Jun",    debito:totalDebito, credito:totalCredito },
+          ];
+          return (
+            <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" }}>
+                <div>
+                  <h2 style={{ margin:"0 0 0.2rem" }}>{es?"Liquidación IVA — Junio 2026":"VAT Filing — June 2026"}</h2>
+                  <p style={{ margin:0, fontSize:"0.85rem" }}>{es?"Débito fiscal (ventas) vs crédito fiscal (compras). Vence el 25 de julio.":"Output tax (sales) vs input tax (purchases). Due July 25th."}</p>
+                </div>
+                <button className="btn btn-primary"><FileText size={14}/> {es?"Borrador DDJJ":"Draft Declaration"}</button>
+              </div>
+              {/* Main cards */}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"1rem" }}>
+                <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                  <p style={{ margin:"0 0 0.5rem", fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.06em", color:"var(--text-muted)" }}>{es?"Débito fiscal (ventas)":"Output tax (sales)"}</p>
+                  <p style={{ margin:"0 0 0.75rem", fontSize:"1.4rem", fontWeight:800, color:"var(--color-danger)" }}>{fmt(totalDebito)}</p>
+                  <div style={{ display:"flex", flexDirection:"column", gap:"0.35rem" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>{es?"Base IVA 22%":"Base VAT 22%"}</span><span>{fmt(ventas22.base)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>IVA 22%</span><span style={{ color:"var(--color-danger)" }}>{fmt(ventas22.iva)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>{es?"Base IVA 10%":"Base VAT 10%"}</span><span>{fmt(ventas10.base)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>IVA 10%</span><span style={{ color:"var(--color-danger)" }}>{fmt(ventas10.iva)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                  <p style={{ margin:"0 0 0.5rem", fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.06em", color:"var(--text-muted)" }}>{es?"Crédito fiscal (compras)":"Input tax (purchases)"}</p>
+                  <p style={{ margin:"0 0 0.75rem", fontSize:"1.4rem", fontWeight:800, color:"var(--color-success)" }}>{fmt(totalCredito)}</p>
+                  <div style={{ display:"flex", flexDirection:"column", gap:"0.35rem" }}>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>{es?"Base IVA 22%":"Base VAT 22%"}</span><span>{fmt(compras22.base)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>IVA 22%</span><span style={{ color:"var(--color-success)" }}>{fmt(compras22.iva)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>{es?"Base IVA 10%":"Base VAT 10%"}</span><span>{fmt(compras10.base)}</span>
+                    </div>
+                    <div style={{ display:"flex", justifyContent:"space-between", fontSize:"0.8rem" }}>
+                      <span style={{ color:"var(--text-muted)" }}>IVA 10%</span><span style={{ color:"var(--color-success)" }}>{fmt(compras10.iva)}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="glass-panel" style={{ padding:"1.25rem", border:"2px solid var(--color-primary)", background:"var(--color-primary-glow)" }}>
+                  <p style={{ margin:"0 0 0.5rem", fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.06em", color:"var(--text-muted)" }}>{es?"Saldo a pagar DGI":"Net VAT payable"}</p>
+                  <p style={{ margin:"0 0 0.5rem", fontSize:"1.6rem", fontWeight:800, color:"var(--color-primary)" }}>{fmt(saldo)}</p>
+                  <span className="badge badge-warning" style={{ fontSize:"0.7rem" }}>{es?"Vence 25 jul 2026":"Due Jul 25 2026"}</span>
+                  <p style={{ margin:"0.75rem 0 0", fontSize:"0.75rem", color:"var(--text-muted)" }}>{es?"Período: junio 2026":"Period: June 2026"}</p>
+                </div>
+              </div>
+              {/* Historical table */}
+              <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                <h3 style={{ margin:"0 0 1rem", fontSize:"0.95rem" }}>{es?"Histórico 2026":"2026 History"}</h3>
+                <div className="table-container">
+                  <table>
+                    <thead><tr>
+                      <th>{es?"Mes":"Month"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Débito fiscal":"Output tax"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Crédito fiscal":"Input tax"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Saldo":"Balance"}</th>
+                      <th>{es?"Estado":"Status"}</th>
+                    </tr></thead>
+                    <tbody>
+                      {months.map((m, i) => {
+                        const sal = m.debito - m.credito;
+                        const isPending = i === months.length - 1;
+                        return (
+                          <tr key={m.mes}>
+                            <td style={{ fontWeight:600, color:"var(--text-primary)" }}>{m.mes}</td>
+                            <td style={{ textAlign:"right" }}>{fmt(m.debito)}</td>
+                            <td style={{ textAlign:"right" }}>{fmt(m.credito)}</td>
+                            <td style={{ textAlign:"right", fontWeight:700, color: sal > 0 ? "var(--color-danger)" : "var(--color-success)" }}>{fmt(sal)}</td>
+                            <td><span className={`badge ${isPending ? "badge-warning" : "badge-success"}`}>{isPending ? (es?"Pendiente":"Pending") : (es?"Pagado":"Paid")}</span></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: CUENTAS A COBRAR/PAGAR */}
+        {activeTab === "accountsReceivable" && (() => {
+          const es = language === "es";
+          const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
+          const [arTab, setArTab] = React.useState<"cobrar"|"pagar">("cobrar");
+          const cobrar = [
+            { cliente:"Supermercado El Sol S.A.", factura:"e-001245", fecha:"2026-05-10", vence:"2026-06-10", monto:180000, dias:28 },
+            { cliente:"Farmacia Central",         factura:"e-001198", fecha:"2026-05-01", vence:"2026-05-31", monto: 45000, dias:37 },
+            { cliente:"Constructora Norte S.R.L.",factura:"e-001150", fecha:"2026-04-15", vence:"2026-05-15", monto: 95000, dias:53 },
+            { cliente:"Distribuidora Rioplatense",factura:"e-001089", fecha:"2026-03-20", vence:"2026-04-20", monto: 45000, dias:78 },
+            { cliente:"Restaurante La Paloma",    factura:"e-001321", fecha:"2026-06-01", vence:"2026-07-01", monto:160000, dias:-5 },
+          ];
+          const pagar = [
+            { cliente:"Proveedor Insumos UY",    factura:"A-004512", fecha:"2026-06-01", vence:"2026-07-01", monto:120000, dias:-5 },
+            { cliente:"Servicios Cloud SRL",     factura:"A-004498", fecha:"2026-06-01", vence:"2026-06-30", monto: 18000, dias:0  },
+            { cliente:"Alquiler Oficina Pocitos", factura:"A-004455", fecha:"2026-05-25", vence:"2026-06-25", monto: 45000, dias:5  },
+            { cliente:"Librería y Papelería",    factura:"A-004380", fecha:"2026-05-10", vence:"2026-06-10", monto:  8500, dias:20 },
+            { cliente:"Telefonía Corporativa",   factura:"A-004290", fecha:"2026-04-25", vence:"2026-05-25", monto: 12000, dias:35 },
+          ];
+          const rows = arTab === "cobrar" ? cobrar : pagar;
+          const aging = (d: number) => d <= 0 ? { label:es?"Por vencer":"Not due", cls:"badge-success" } : d <= 30 ? { label:`0-30 ${es?"días":"days"}`, cls:"badge-success" } : d <= 60 ? { label:`31-60 ${es?"días":"days"}`, cls:"badge-warning" } : d <= 90 ? { label:`61-90 ${es?"días":"days"}`, cls:"badge-warning" } : { label:`+90 ${es?"días":"days"}`, cls:"badge-warning" };
+          const total = rows.reduce((s,r) => s + r.monto, 0);
+          const vencido = rows.filter(r => r.dias > 30).reduce((s,r) => s + r.monto, 0);
+          return (
+            <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
+              <div>
+                <h2 style={{ margin:"0 0 0.2rem" }}>{es?"Cuentas a Cobrar / Pagar":"Accounts Receivable / Payable"}</h2>
+                <p style={{ margin:0, fontSize:"0.85rem" }}>{es?"Seguimiento de facturas emitidas y recibidas con aging automático.":"Track issued and received invoices with automatic aging."}</p>
+              </div>
+              {/* Tab toggle */}
+              <div style={{ display:"flex", gap:"0.5rem" }}>
+                <button onClick={() => setArTab("cobrar")} className={`btn ${arTab==="cobrar"?"btn-primary":"btn-secondary"}`}><ArrowUpRight size={14}/> {es?"A cobrar":"Receivable"}</button>
+                <button onClick={() => setArTab("pagar")}  className={`btn ${arTab==="pagar" ?"btn-primary":"btn-secondary"}`}><ArrowDownRight size={14}/> {es?"A pagar":"Payable"}</button>
+              </div>
+              {/* Summary */}
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:"0.75rem" }}>
+                {[
+                  { label:es?"Total":"Total",            value:fmt(total),   color:"var(--text-primary)" },
+                  { label:es?"Vencido (+30 días)":"Overdue (+30d)", value:fmt(vencido), color:vencido>0?"var(--color-danger)":"var(--color-success)" },
+                  { label:es?"Facturas":"Invoices",       value:String(rows.length), color:"var(--color-accent)" },
+                ].map(c => (
+                  <div key={c.label} className="glass-panel" style={{ padding:"1rem 1.25rem" }}>
+                    <p style={{ margin:"0 0 0.3rem", fontSize:"0.72rem", color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.06em" }}>{c.label}</p>
+                    <p style={{ margin:0, fontSize:"1.3rem", fontWeight:800, color:c.color }}>{c.value}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Table */}
+              <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                <div className="table-container">
+                  <table>
+                    <thead><tr>
+                      <th>{arTab==="cobrar"?(es?"Cliente":"Client"):(es?"Proveedor":"Supplier")}</th>
+                      <th>{es?"Factura":"Invoice"}</th>
+                      <th>{es?"Vencimiento":"Due date"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Monto":"Amount"}</th>
+                      <th>{es?"Aging":"Aging"}</th>
+                    </tr></thead>
+                    <tbody>
+                      {rows.map(r => {
+                        const a = aging(r.dias);
+                        return (
+                          <tr key={r.factura}>
+                            <td style={{ fontWeight:600, color:"var(--text-primary)" }}>{r.cliente}</td>
+                            <td style={{ fontFamily:"var(--font-mono)", fontSize:"0.8rem" }}>{r.factura}</td>
+                            <td style={{ fontSize:"0.85rem" }}>{r.vence}</td>
+                            <td style={{ textAlign:"right", fontWeight:700 }}>{fmt(r.monto)}</td>
+                            <td><span className={`badge ${a.cls}`} style={{ fontSize:"0.68rem" }}>{a.label}</span></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB: TESORERÍA */}
+        {activeTab === "treasury" && (() => {
+          const es = language === "es";
+          const fmt = (n: number) => `$${n.toLocaleString("es-UY")}`;
+          const cuentas = [
+            { banco:"BROU", tipo:es?"Cuenta Corriente":"Checking", saldo:1250000, color:"var(--color-primary)" },
+            { banco:"BROU", tipo:es?"Caja de Ahorro":"Savings",    saldo: 380000, color:"var(--color-primary)" },
+            { banco:"Itaú", tipo:es?"Cuenta Corriente":"Checking", saldo: 820000, color:"var(--color-accent)" },
+            { banco:es?"Efectivo":"Cash", tipo:"",                  saldo:  45000, color:"var(--color-success)" },
+          ];
+          const totalSaldo = cuentas.reduce((s,c) => s + c.saldo, 0);
+          const proyeccion = [
+            { semana:es?"Sem 1 (7 jul)":"Wk 1 (Jul 7)",   cobros:180000, pagos: 95000 },
+            { semana:es?"Sem 2 (14 jul)":"Wk 2 (Jul 14)", cobros:340000, pagos:220000 },
+            { semana:es?"Sem 3 (21 jul)":"Wk 3 (Jul 21)", cobros: 95000, pagos:310000 },
+            { semana:es?"Sem 4 (28 jul)":"Wk 4 (Jul 28)", cobros:180000, pagos: 45000 },
+          ];
+          let saldoAcum = totalSaldo;
+          return (
+            <div className="animate-fade-in" style={{ display:"flex", flexDirection:"column", gap:"1.25rem" }}>
+              <div>
+                <h2 style={{ margin:"0 0 0.2rem" }}>{es?"Tesorería — Posición al 7 jun 2026":"Treasury — Position as of Jun 7 2026"}</h2>
+                <p style={{ margin:0, fontSize:"0.85rem" }}>{es?"Saldo actual por cuenta y proyección de flujo de caja para las próximas 4 semanas.":"Current balance by account and cash flow projection for the next 4 weeks."}</p>
+              </div>
+              {/* Total */}
+              <div className="glass-panel" style={{ padding:"1.25rem 1.5rem", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+                <div>
+                  <p style={{ margin:"0 0 0.3rem", fontSize:"0.72rem", textTransform:"uppercase", letterSpacing:"0.06em", color:"var(--text-muted)" }}>{es?"Posición total":"Total position"}</p>
+                  <p style={{ margin:0, fontSize:"2rem", fontWeight:800, color:"var(--color-success)" }}>{fmt(totalSaldo)}</p>
+                  <p style={{ margin:"0.2rem 0 0", fontSize:"0.75rem", color:"var(--text-muted)" }}>UYU · {cuentas.length} {es?"cuentas":"accounts"}</p>
+                </div>
+                <Wallet size={40} style={{ color:"var(--color-success)", opacity:0.3 }} />
+              </div>
+              {/* Accounts */}
+              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(200px,1fr))", gap:"0.75rem" }}>
+                {cuentas.map((c,i) => (
+                  <div key={i} className="glass-panel" style={{ padding:"1rem 1.25rem", borderLeft:`3px solid ${c.color}` }}>
+                    <p style={{ margin:"0 0 0.2rem", fontWeight:700, fontSize:"0.88rem", color:"var(--text-primary)" }}>{c.banco}</p>
+                    {c.tipo && <p style={{ margin:"0 0 0.5rem", fontSize:"0.75rem", color:"var(--text-muted)" }}>{c.tipo}</p>}
+                    <p style={{ margin:0, fontSize:"1.15rem", fontWeight:800, color:c.color }}>{fmt(c.saldo)}</p>
+                  </div>
+                ))}
+              </div>
+              {/* Cash flow projection */}
+              <div className="glass-panel" style={{ padding:"1.25rem" }}>
+                <h3 style={{ margin:"0 0 1rem", fontSize:"0.95rem" }}>{es?"Proyección flujo de caja — próximas 4 semanas":"Cash flow projection — next 4 weeks"}</h3>
+                <div className="table-container">
+                  <table>
+                    <thead><tr>
+                      <th>{es?"Semana":"Week"}</th>
+                      <th style={{ textAlign:"right", color:"var(--color-success)" }}>{es?"Cobros esperados":"Expected inflows"}</th>
+                      <th style={{ textAlign:"right", color:"var(--color-danger)" }}>{es?"Pagos programados":"Scheduled outflows"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Neto":"Net"}</th>
+                      <th style={{ textAlign:"right" }}>{es?"Saldo acumulado":"Running balance"}</th>
+                    </tr></thead>
+                    <tbody>
+                      {proyeccion.map(p => {
+                        const neto = p.cobros - p.pagos;
+                        saldoAcum += neto;
+                        return (
+                          <tr key={p.semana}>
+                            <td style={{ fontWeight:600, color:"var(--text-primary)" }}>{p.semana}</td>
+                            <td style={{ textAlign:"right", color:"var(--color-success)" }}>+{fmt(p.cobros)}</td>
+                            <td style={{ textAlign:"right", color:"var(--color-danger)" }}>-{fmt(p.pagos)}</td>
+                            <td style={{ textAlign:"right", fontWeight:700, color: neto >= 0 ? "var(--color-success)" : "var(--color-danger)" }}>{neto >= 0 ? "+" : ""}{fmt(neto)}</td>
+                            <td style={{ textAlign:"right", fontWeight:700 }}>{fmt(saldoAcum)}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           );
