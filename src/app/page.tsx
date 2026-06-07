@@ -1173,48 +1173,6 @@ export default function AgenttisDashboard() {
               </div>
             )}
 
-            {/* ── Drag & Drop zone ── */}
-            <div
-              style={{ border: "2px dashed var(--border-color)", borderRadius: "var(--radius-lg)", padding: "2.5rem 1rem", textAlign: "center", cursor: "pointer", background: "var(--bg-surface-solid)", transition: "all var(--transition-fast)", position: "relative" }}
-              onDragOver={(e) => { e.preventDefault(); (e.currentTarget as HTMLElement).style.borderColor = "var(--color-primary)"; (e.currentTarget as HTMLElement).style.background = "var(--color-primary-glow)"; }}
-              onDragLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "var(--border-color)"; (e.currentTarget as HTMLElement).style.background = "var(--bg-surface-solid)"; }}
-              onDrop={(e) => {
-                e.preventDefault();
-                (e.currentTarget as HTMLElement).style.borderColor = "var(--border-color)";
-                (e.currentTarget as HTMLElement).style.background = "var(--bg-surface-solid)";
-                const file = e.dataTransfer.files?.[0];
-                if (!file) return;
-                if (file.name.endsWith(".csv")) {
-                  setLoading(true);
-                  const reader = new FileReader();
-                  reader.onload = async (ev) => { await processCSVData(ev.target?.result as string, file.name); setLoading(false); };
-                  reader.readAsText(file);
-                } else {
-                  setAnalysisError(language === "es" ? `Formato .${file.name.split('.').pop()} detectado. Por ahora solo CSV es procesable en demo — el resto se conecta vía 'Agregar Conexión'.` : `Format .${file.name.split('.').pop()} detected. Only CSV is processable in demo — others connect via 'Add Connection'.`);
-                }
-              }}
-            >
-              <input type="file" accept=".csv,.xlsx,.xls,.pdf,.xml" onChange={handleFileUpload} style={{ position: "absolute", inset: 0, opacity: 0, cursor: "pointer" }} />
-              <Upload size={36} style={{ color: "var(--color-primary)", marginBottom: "0.75rem" }} />
-              <p style={{ color: "var(--text-primary)", fontWeight: 600, margin: "0 0 0.35rem", fontSize: "0.95rem" }}>
-                {language === "es" ? "Arrastrá o hacé clic para cargar un archivo" : "Drag & drop or click to upload a file"}
-              </p>
-              <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", margin: 0 }}>
-                {language === "es" ? "Soporta CSV (procesable), Excel, PDF, XML e-Factura" : "Supports CSV (processable), Excel, PDF, XML e-Invoice"}
-              </p>
-              <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", marginTop: "1rem" }}>
-                {[".csv", ".xlsx", ".pdf", ".xml"].map(ext => (
-                  <span key={ext} style={{ padding: "0.15rem 0.5rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "4px", fontSize: "0.7rem", fontFamily: "var(--font-mono)", color: "var(--text-muted)" }}>{ext}</span>
-                ))}
-              </div>
-            </div>
-
-            {analysisError && (
-              <div style={{ padding: "0.6rem 1rem", background: "rgba(239, 68, 68, 0.08)", border: "1px solid rgba(239, 68, 68, 0.15)", borderRadius: "var(--radius-sm)", color: "var(--color-danger)", fontSize: "0.82rem", display: "flex", alignItems: "flex-start", gap: "0.5rem" }}>
-                <XCircle size={15} style={{ flexShrink: 0, marginTop: "0.1rem" }} /> {analysisError}
-              </div>
-            )}
-
             {/* ── Source type grid ── */}
             <div>
               <p style={{ margin: "0 0 0.75rem", fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>
