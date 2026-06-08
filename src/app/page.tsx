@@ -24,21 +24,23 @@ import { SettingsTab } from "../components/settings/SettingsTab";
 import { IntegrationsTab } from "../components/settings/IntegrationsTab";
 
 function DashboardContent() {
-  const { activeTab } = useDashboard();
+  const { activeTab, sidebarOpen } = useDashboard();
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", flexDirection: "row", background: "var(--bg-base)", color: "var(--text-primary)", transition: "background-color var(--transition-normal), color var(--transition-normal)" }}>
-      {/* Left Sticky Sidebar */}
-      <Sidebar />
+      {/* Left Sticky Sidebar Wrapper */}
+      <div className={`sidebar-container ${!sidebarOpen ? "collapsed" : ""}`}>
+        <Sidebar />
+      </div>
 
       {/* Right column: main + footer */}
-      <div className="main-canvas">
+      <div className="main-canvas" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
         
         {/* Top bar */}
         <Topbar />
 
         {/* Main content area */}
-        <main className="content-area">
+        <main className="container" style={{ flex: 1, padding: "1.5rem 2rem", maxWidth: "1500px" }}>
           {activeTab === "home" && <HomeTab />}
           {activeTab === "connections" && <DataConnectionsTab />}
           {activeTab === "skills" && <SkillsTab />}
