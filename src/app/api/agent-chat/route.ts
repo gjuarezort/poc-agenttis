@@ -3,7 +3,7 @@ import Papa from "papaparse";
 
 export async function POST(req: NextRequest) {
   try {
-    const { csvContent, query, language = "en" } = await req.json();
+    const { csvContent, query, language = "en", allowedSources, allowedSkills, activeSourceId } = await req.json();
 
     if (!csvContent || !query) {
       return NextResponse.json({ error: "Missing csvContent or query" }, { status: 400 });
@@ -47,8 +47,119 @@ export async function POST(req: NextRequest) {
     // Normalize query for parsing
     const qLower = query.toLowerCase();
 
+    // ── GOVERNANCE AND SECURITY RULES CHECKS ──
+    const activeSourceIdClean = activeSourceId || "file-active";
+    const sourceAllowed = !allowedSources || allowedSources.includes(activeSourceIdClean) || allowedSources.includes("all");
+    
+    if (!sourceAllowed) {
+      const stepsText = {
+        1: isSpanish
+          ? `Analizando la consulta del usuario: "${query}".`
+          : `Analyzing user query: "${query}".`,
+        2: isSpanish
+          ? `Acceso Denegado: Este agente no tiene permisos para acceder a la fuente de datos "${activeSourceIdClean}".`
+          : `Access Denied: This agent does not have permissions to access data source "${activeSourceIdClean}".`
+      };
+      
+      const trace = [
+        { step: 1, type: "thought" as const, message: stepsText[1] },
+        { step: 2, type: "tool_call" as const, message: stepsText[2], details: { status: "permission_denied", requiredSource: activeSourceIdClean } }
+      ];
+
+      return NextResponse.json({
+        query,
+        answer: isSpanish 
+          ? `Error de Gobernanza: No tienes permisos para consultar la fuente de datos activa (${activeSourceIdClean}).`
+          : `Governance Error: Access denied. This agent is not authorized to query the active data source (${activeSourceIdClean}).`,
+        trace,
+        metrics: {
+          fullContextTokens: 0,
+          fullContextLatency: 0,
+          fullContextCost: 0,
+          mcpTokens: 0,
+          mcpLatency: 45,
+          mcpCost: 0,
+          tokensSaved: 0,
+          savingsPercent: 0,
+          costSaved: 0
+        }
+      });
+    }
+
+    // Action Skill mapping based on keywords
+    let actionSkillId = "";
+    if (qLower.includes("refund") || qLower.includes("reembolsar") || qLower.includes("devolución") || qLower.includes("devolver")) {
+      actionSkillId = "refund_invoice";
+    } else if (qLower.includes("stock") || qLower.includes("inventario") || qLower.includes("existencias") || qLower.includes("ajustar")) {
+      actionSkillId = "adjust_stock";
+    } else if (qLower.includes("presenta") || qLower.includes("declarar") || qLower.includes("impuesto") || qLower.includes("tax") || qLower.includes("compliance")) {
+      actionSkillId = "submit_tax_report";
+    }
+
+    if (actionSkillId) {
+      const skillAllowed = !allowedSkills || allowedSkills.includes(actionSkillId) || allowedSkills.includes("all");
+      if (!skillAllowed) {
+        const stepsText = {
+          1: isSpanish
+            ? `Analizando la consulta del usuario: "${query}". Se detectó requerimiento de la habilidad de acción: ${actionSkillId}.`
+            : `Analyzing user query: "${query}". Detected requirement for action skill: ${actionSkillId}.`,
+          2: isSpanish
+            ? `Operación Bloqueada: La habilidad de acción "${actionSkillId}" no está autorizada para el perfil de este agente.`
+            : `Operation Blocked: The action skill "${actionSkillId}" is not authorized for this agent profile.`
+        };
+
+        const trace = [
+          { step: 1, type: "thought" as const, message: stepsText[1] },
+          { step: 2, type: "tool_call" as const, message: stepsText[2], details: { status: "permission_denied", requiredSkill: actionSkillId } }
+        ];
+
+        return NextResponse.json({
+          query,
+          answer: isSpanish
+            ? `Error de Seguridad: La acción de tipo \`${actionSkillId}\` está restringida para tu rol de agente.`
+            : `Security Error: The action skill \`${actionSkillId}\` is restricted for your agent role.`,
+          trace,
+          metrics: {
+            fullContextTokens: 0,
+            fullContextLatency: 0,
+            fullContextCost: 0,
+            mcpTokens: 0,
+            mcpLatency: 50,
+            mcpCost: 0,
+            tokensSaved: 0,
+            savingsPercent: 0,
+            costSaved: 0
+          }
+        });
+      }
+    }
+
     // SEMANTIC ROUTER / PARSER
     let matched = false;
+
+    // Check if we matched an allowed action skill and should simulate execution
+    if (actionSkillId && (!allowedSkills || allowedSkills.includes(actionSkillId) || allowedSkills.includes("all"))) {
+      toolName = actionSkillId;
+      toolArgs = actionSkillId === "refund_invoice"
+        ? { invoice_id: "1042", amount: 45200 }
+        : actionSkillId === "adjust_stock"
+        ? { sku: "PROD-99", quantity: -5 }
+        : { period: "2025-06", type: "Sales Tax Filing" };
+
+      toolResultText = JSON.stringify({
+        status: 200,
+        success: true,
+        transactionId: "tx_" + Math.random().toString(36).substr(2, 9),
+        executionTimeMs: 142,
+        timestamp: new Date().toISOString()
+      }, null, 2);
+
+      finalAnswer = isSpanish
+        ? `¡Acción ejecutada con éxito! Invoqué la herramienta de acción \`${actionSkillId}\` (POST API). Se procesó correctamente y se guardó en el log de auditoría.`
+        : `Action executed successfully! Invoked the action tool \`${actionSkillId}\` (POST API). It completed successfully and has been logged to the audit system.`;
+      
+      matched = true;
+    }
 
     // Translated terms helper
     const tOp = (op: string) => {
