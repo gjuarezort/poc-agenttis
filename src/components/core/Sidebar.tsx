@@ -88,7 +88,6 @@ export const Sidebar: React.FC = () => {
               padding: 0,
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem",
               cursor: "pointer",
               transition: "all 0.25s"
             }}
@@ -177,7 +176,7 @@ export const Sidebar: React.FC = () => {
                   textAlign: isExpanded ? "left" : "center",
                   transition: "all 0.35s"
                 }}>
-                  {isExpanded ? (
+                  {isExpanded && (
                     <span style={{
                       fontSize: "0.62rem",
                       fontWeight: 700,
@@ -188,8 +187,6 @@ export const Sidebar: React.FC = () => {
                     }}>
                       {item.sectionLabel}
                     </span>
-                  ) : (
-                    <div style={{ width: "100%", height: "1px", background: "var(--border-color)", margin: "0.4rem 0" }} />
                   )}
                 </div>
               )}

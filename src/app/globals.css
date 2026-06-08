@@ -560,7 +560,7 @@ tr:hover td {
 }
 
 .sidebar-container.collapsed {
-  width: 78px;
+  width: 64px;
 }
 
 .sidebar {
@@ -581,8 +581,8 @@ tr:hover td {
 }
 
 .sidebar.collapsed {
-  width: 78px;
-  padding: 1.5rem 0.6rem;
+  width: 64px;
+  padding: 1.5rem 0.4rem;
 }
 
 .sidebar.overlay-shadow {
