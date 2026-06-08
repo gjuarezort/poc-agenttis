@@ -80,21 +80,17 @@ export const Sidebar: React.FC = () => {
           }}
           onMouseEnter={() => !isExpanded && setSidebarHovered(true)}
         >
-          {/* Brand (Visible when expanded) */}
+          {/* Brand (Logo always visible, text only when expanded) */}
           <div 
             className={`sidebar-brand ${!isExpanded ? "collapsed" : ""}`} 
             style={{ 
               marginBottom: 0,
-              opacity: isExpanded ? 1 : 0,
-              maxWidth: isExpanded ? "180px" : "0px",
-              overflow: "hidden",
-              transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-              pointerEvents: isExpanded ? "auto" : "none",
               padding: 0,
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
-              cursor: "pointer"
+              cursor: "pointer",
+              transition: "all 0.25s"
             }}
             onClick={() => {
               if (isExpanded) {
@@ -116,52 +112,57 @@ export const Sidebar: React.FC = () => {
             }}>
               A
             </div>
-            <div style={{ whiteSpace: "nowrap" }}>
+            <div style={{ 
+              whiteSpace: "nowrap",
+              opacity: isExpanded ? 1 : 0,
+              maxWidth: isExpanded ? "180px" : "0px",
+              overflow: "hidden",
+              transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              pointerEvents: isExpanded ? "auto" : "none"
+            }}>
               <span style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "-0.2px" }}>
                 Agenttis
               </span>
             </div>
           </div>
 
-          {/* Toggle Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setSidebarOpen(!sidebarOpen);
-              if (sidebarOpen) setSidebarHovered(false);
-            }}
-            className="sidebar-toggle-btn"
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "var(--text-secondary)",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "42px",
-              height: "42px",
-              borderRadius: "50%",
-              transition: "background 0.2s, color 0.2s",
-              outline: "none",
-              flexShrink: 0
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.background = "var(--bg-surface-hover)";
-              e.currentTarget.style.color = "var(--text-primary)";
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.background = "transparent";
-              e.currentTarget.style.color = "var(--text-secondary)";
-            }}
-            title={sidebarOpen ? (language === "es" ? "Cerrar barra lateral" : "Close sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
-          >
-            {isExpanded ? (
+          {/* Toggle Button (Only visible when expanded to close it) */}
+          {isExpanded && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setSidebarOpen(!sidebarOpen);
+                if (sidebarOpen) setSidebarHovered(false);
+              }}
+              className="sidebar-toggle-btn animate-fade-in"
+              style={{
+                background: "transparent",
+                border: "none",
+                color: "var(--text-secondary)",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "42px",
+                height: "42px",
+                borderRadius: "50%",
+                transition: "background 0.2s, color 0.2s",
+                outline: "none",
+                flexShrink: 0
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.background = "var(--bg-surface-hover)";
+                e.currentTarget.style.color = "var(--text-primary)";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--text-secondary)";
+              }}
+              title={sidebarOpen ? (language === "es" ? "Cerrar barra lateral" : "Close sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
+            >
               <PanelLeftClose size={20} strokeWidth={1.5} />
-            ) : (
-              <PanelLeftOpen size={20} strokeWidth={1.5} />
-            )}
-          </button>
+            </button>
+          )}
         </div>
 
         {/* Navigation Links */}
