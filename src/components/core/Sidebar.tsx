@@ -13,7 +13,8 @@ import {
   Receipt,
   Package,
   Link,
-  Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
@@ -42,25 +43,25 @@ export const Sidebar: React.FC = () => {
     disabled?: boolean;
     sectionLabel?: string;
   }[] = [
-    { key: "home",          icon: <Grid size={16} />,              label: tTab("home") },
+    { key: "home",          icon: <Grid size={18} strokeWidth={1.5} />,              label: tTab("home") },
     
     // Applications Section
-    { key: "reconciliation",icon: <ArrowLeftRight size={16} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Applications" },
-    { key: "monthlyClose",  icon: <CalendarCheck size={16} />,     label: tTab("monthlyClose") },
-    { key: "taxAlerts",     icon: <Receipt size={16} />,           label: tTab("taxAlerts") },
-    { key: "templates",     icon: <Package size={16} />,           label: tTab("templates") },
+    { key: "reconciliation",icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Applications" },
+    { key: "monthlyClose",  icon: <CalendarCheck size={18} strokeWidth={1.5} />,     label: tTab("monthlyClose") },
+    { key: "taxAlerts",     icon: <Receipt size={18} strokeWidth={1.5} />,           label: tTab("taxAlerts") },
+    { key: "templates",     icon: <Package size={18} strokeWidth={1.5} />,           label: tTab("templates") },
     
     // Agentic Layer Section
-    { key: "connections",   icon: <Database size={16} />,          label: tTab("connections"),   sectionLabel: language === "es" ? "Capa Agéntica" : "Agentic Layer" },
-    { key: "skills",        icon: <SlidersHorizontal size={16} />, label: tTab("skills") },
-    { key: "agents",        icon: <Sparkles size={16} />,          label: tTab("agents") },
-    { key: "visualGraph",   icon: <Cpu size={16} />,               label: tTab("visualGraph") },
-    { key: "playground",    icon: <Play size={16} />,              label: tTab("playground"),    disabled: !parsedData },
-    ...(advancedMode ? [{ key: "recipe", icon: <FileCode size={16} />, label: tTab("recipe"), disabled: !parsedData }] : []),
+    { key: "connections",   icon: <Database size={18} strokeWidth={1.5} />,          label: tTab("connections"),   sectionLabel: language === "es" ? "Capa Agéntica" : "Agentic Layer" },
+    { key: "skills",        icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("skills") },
+    { key: "agents",        icon: <Sparkles size={18} strokeWidth={1.5} />,          label: tTab("agents") },
+    { key: "visualGraph",   icon: <Cpu size={18} strokeWidth={1.5} />,               label: tTab("visualGraph") },
+    { key: "playground",    icon: <Play size={18} strokeWidth={1.5} />,              label: tTab("playground"),    disabled: !parsedData },
+    ...(advancedMode ? [{ key: "recipe", icon: <FileCode size={18} strokeWidth={1.5} />, label: tTab("recipe"), disabled: !parsedData }] : []),
     
     // System Section
-    { key: "integrations",  icon: <Link size={16} />,              label: tTab("integrations"),  sectionLabel: language === "es" ? "Sistema" : "System" },
-    { key: "settings",      icon: <SlidersHorizontal size={16} />, label: tTab("settings") },
+    { key: "integrations",  icon: <Link size={18} strokeWidth={1.5} />,              label: tTab("integrations"),  sectionLabel: language === "es" ? "Sistema" : "System" },
+    { key: "settings",      icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("settings") },
   ];
 
   return (
@@ -69,49 +70,93 @@ export const Sidebar: React.FC = () => {
       onMouseLeave={() => setSidebarHovered(false)}
     >
       <div>
-        {/* Sidebar Header: Brand acts as toggle */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1.5rem" }}>
-
-          {/* Brand Logo & Name (Toggles sidebarOpen / Pinned State) */}
+        {/* Sidebar Header: Brand and Toggle Button */}
+        <div 
+          style={{ 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: isExpanded ? "space-between" : "center",
+            marginBottom: "1.5rem",
+            position: "relative",
+            minHeight: "44px"
+          }}
+          onMouseEnter={() => !isExpanded && setSidebarHovered(true)}
+        >
+          {/* Brand (Visible when expanded) */}
           <div 
             className={`sidebar-brand ${!isExpanded ? "collapsed" : ""}`} 
-            style={{ marginBottom: 0, cursor: "pointer", position: "relative" }}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            onMouseEnter={() => setSidebarHovered(true)}
-            title={sidebarOpen ? (language === "es" ? "Contraer barra lateral" : "Collapse sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
+            style={{ 
+              marginBottom: 0,
+              opacity: isExpanded ? 1 : 0,
+              maxWidth: isExpanded ? "180px" : "0px",
+              overflow: "hidden",
+              transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+              pointerEvents: isExpanded ? "auto" : "none",
+              padding: 0,
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem"
+            }}
           >
             <div className="flex-center" style={{
               background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
-              width: "34px",
-              height: "34px",
+              width: "28px",
+              height: "28px",
               borderRadius: "6px",
               color: "#000000",
               fontWeight: 800,
-              fontSize: "1.1rem",
+              fontSize: "0.95rem",
               boxShadow: "0 2px 6px var(--color-primary-glow)",
               flexShrink: 0
             }}>
               A
             </div>
-            <div style={{
-              minWidth: 0,
-              opacity: isExpanded ? 1 : 0,
-              maxWidth: isExpanded ? "180px" : "0px",
-              overflow: "hidden",
-              transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-              whiteSpace: "nowrap",
-              paddingLeft: "0.4rem"
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                <span style={{ fontSize: "1.05rem", fontWeight: 800, letterSpacing: "-0.4px", whiteSpace: "nowrap" }}>
-                  Agenttis
-                </span>
-              </div>
-              <p style={{ margin: 0, fontSize: "0.65rem", color: "var(--text-muted)", fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {language === "es" ? "Capa Agéntica Empresarial" : "Enterprise Agentic Layer"}
-              </p>
+            <div style={{ whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "-0.2px" }}>
+                Agenttis
+              </span>
             </div>
           </div>
+
+          {/* Toggle Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setSidebarOpen(!sidebarOpen);
+              if (sidebarOpen) setSidebarHovered(false);
+            }}
+            className="sidebar-toggle-btn"
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "var(--text-secondary)",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "42px",
+              height: "42px",
+              borderRadius: "50%",
+              transition: "background 0.2s, color 0.2s",
+              outline: "none",
+              flexShrink: 0
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.background = "var(--bg-surface-hover)";
+              e.currentTarget.style.color = "var(--text-primary)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "var(--text-secondary)";
+            }}
+            title={sidebarOpen ? (language === "es" ? "Cerrar barra lateral" : "Close sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
+          >
+            {isExpanded ? (
+              <PanelLeftClose size={20} strokeWidth={1.5} />
+            ) : (
+              <PanelLeftOpen size={20} strokeWidth={1.5} />
+            )}
+          </button>
         </div>
 
         {/* Navigation Links */}
