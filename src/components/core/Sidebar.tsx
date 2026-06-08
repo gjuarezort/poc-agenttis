@@ -31,6 +31,7 @@ export const Sidebar: React.FC = () => {
 
   // Local state for hover expansion (when collapsed/unpinned)
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  const [logoHovered, setLogoHovered] = useState(false);
 
   // Sidebar is visually expanded if it is pinned (sidebarOpen) OR hovered (sidebarHovered)
   const isExpanded = sidebarOpen || sidebarHovered;
@@ -65,7 +66,11 @@ export const Sidebar: React.FC = () => {
   return (
     <aside
       className={`sidebar ${!isExpanded ? "collapsed" : ""} ${isExpanded && !sidebarOpen ? "overlay-shadow" : ""}`}
-      onMouseLeave={() => setSidebarHovered(false)}
+      onMouseEnter={() => !sidebarOpen && setSidebarHovered(true)}
+      onMouseLeave={() => {
+        setSidebarHovered(false);
+        setLogoHovered(false);
+      }}
     >
       <div>
         {/* Sidebar Header: Brand and Toggle Button */}
@@ -73,13 +78,13 @@ export const Sidebar: React.FC = () => {
           style={{ 
             display: "flex", 
             alignItems: "center", 
-            justifyContent: isExpanded ? "space-between" : "center",
+            justifyContent: "space-between",
             marginBottom: "1.5rem",
             position: "relative",
             minHeight: "44px"
           }}
         >
-          {/* Brand (Logo always visible, text only when expanded) */}
+          {/* Brand area (Logo / Open Button + Text) */}
           <div 
             className={`sidebar-brand ${!isExpanded ? "collapsed" : ""}`} 
             style={{ 
@@ -90,34 +95,46 @@ export const Sidebar: React.FC = () => {
               cursor: "pointer",
               transition: "all 0.25s"
             }}
-            onMouseEnter={() => !isExpanded && setSidebarHovered(true)}
+            onMouseEnter={() => !sidebarOpen && setLogoHovered(true)}
+            onMouseLeave={() => setLogoHovered(false)}
             onClick={() => {
-              if (isExpanded) {
+              if (!sidebarOpen && logoHovered) {
+                setSidebarOpen(true);
+                setLogoHovered(false);
+              } else if (sidebarOpen) {
                 setActiveTab("home" as any);
               }
             }}
-            title={language === "es" ? "Ir al Inicio" : "Go to Home"}
+            title={!sidebarOpen ? (language === "es" ? "Abrir barra lateral" : "Open sidebar") : (language === "es" ? "Ir al Inicio" : "Go to Home")}
           >
-            <div className="flex-center" style={{
-              background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
-              width: "28px",
-              height: "28px",
-              borderRadius: "6px",
-              color: "#000000",
-              fontWeight: 800,
-              fontSize: "0.95rem",
-              boxShadow: "0 2px 6px var(--color-primary-glow)",
-              flexShrink: 0
-            }}>
-              A
+            <div style={{ width: "42px", display: "flex", justifyContent: "center", alignItems: "center", flexShrink: 0 }}>
+              {(!sidebarOpen && logoHovered) ? (
+                <div className="flex-center animate-fade-in" style={{
+                  width: "42px", height: "42px", borderRadius: "50%",
+                  background: "var(--bg-surface-hover)", color: "var(--text-primary)"
+                }}>
+                  <PanelLeftOpen size={20} strokeWidth={1.5} />
+                </div>
+              ) : (
+                <div className="flex-center animate-fade-in" style={{
+                  background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
+                  width: "28px", height: "28px", borderRadius: "6px",
+                  color: "#000000", fontWeight: 800, fontSize: "0.95rem",
+                  boxShadow: "0 2px 6px var(--color-primary-glow)"
+                }}>
+                  A
+                </div>
+              )}
             </div>
+            
             <div style={{ 
               whiteSpace: "nowrap",
               opacity: isExpanded ? 1 : 0,
               maxWidth: isExpanded ? "180px" : "0px",
               overflow: "hidden",
               transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-              pointerEvents: isExpanded ? "auto" : "none"
+              pointerEvents: isExpanded ? "auto" : "none",
+              paddingLeft: "0.2rem"
             }}>
               <span style={{ fontSize: "1rem", fontWeight: 700, letterSpacing: "-0.2px" }}>
                 Agenttis
@@ -125,12 +142,12 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* Toggle Button (Visible when expanded) */}
-          {isExpanded && (
+          {/* Toggle Button (ONLY visible when pinned!) */}
+          {sidebarOpen && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                setSidebarOpen(!sidebarOpen);
+                setSidebarOpen(false);
               }}
               className="sidebar-toggle-btn animate-fade-in"
               style={{
@@ -156,13 +173,9 @@ export const Sidebar: React.FC = () => {
                 e.currentTarget.style.background = "transparent";
                 e.currentTarget.style.color = "var(--text-secondary)";
               }}
-              title={sidebarOpen ? (language === "es" ? "Cerrar barra lateral" : "Close sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
+              title={language === "es" ? "Cerrar barra lateral" : "Close sidebar"}
             >
-              {sidebarOpen ? (
-                <PanelLeftClose size={20} strokeWidth={1.5} />
-              ) : (
-                <PanelLeftOpen size={20} strokeWidth={1.5} />
-              )}
+              <PanelLeftClose size={20} strokeWidth={1.5} />
             </button>
           )}
         </div>
