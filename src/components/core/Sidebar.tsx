@@ -29,11 +29,11 @@ export const Sidebar: React.FC = () => {
     setSidebarOpen,
   } = useDashboard();
 
-  // Local state for toggling the app icon to the open icon when collapsed
-  const [logoHovered, setLogoHovered] = useState(false);
+  // Local state for hover expansion (when collapsed/unpinned)
+  const [sidebarHovered, setSidebarHovered] = useState(false);
 
-  // Sidebar is visually expanded only if it is pinned (sidebarOpen)
-  const isExpanded = sidebarOpen;
+  // Sidebar is visually expanded if it is pinned (sidebarOpen) OR hovered (sidebarHovered)
+  const isExpanded = sidebarOpen || sidebarHovered;
 
   // Reorganized categories: Applications -> Agentic Layer -> System
   const navItems: {
@@ -64,7 +64,8 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sidebar ${!isExpanded ? "collapsed" : ""}`}
+      className={`sidebar ${!isExpanded ? "collapsed" : ""} ${isExpanded && !sidebarOpen ? "overlay-shadow" : ""}`}
+      onMouseLeave={() => setSidebarHovered(false)}
     >
       <div>
         {/* Sidebar Header: Brand and Toggle Button */}
@@ -84,17 +85,15 @@ export const Sidebar: React.FC = () => {
             style={{ 
               marginBottom: 0,
               padding: 0,
-              display: (!isExpanded && logoHovered) ? "none" : "flex",
+              display: "flex",
               alignItems: "center",
               cursor: "pointer",
               transition: "all 0.25s"
             }}
-            onMouseEnter={() => !isExpanded && setLogoHovered(true)}
+            onMouseEnter={() => !isExpanded && setSidebarHovered(true)}
             onClick={() => {
               if (isExpanded) {
                 setActiveTab("home" as any);
-              } else {
-                setSidebarOpen(true);
               }
             }}
             title={language === "es" ? "Ir al Inicio" : "Go to Home"}
@@ -126,15 +125,13 @@ export const Sidebar: React.FC = () => {
             </div>
           </div>
 
-          {/* Toggle Button (Visible when expanded to close it, OR when collapsed AND hovered to open it) */}
-          {(isExpanded || (!isExpanded && logoHovered)) && (
+          {/* Toggle Button (Visible when expanded) */}
+          {isExpanded && (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setSidebarOpen(!sidebarOpen);
-                setLogoHovered(false);
               }}
-              onMouseLeave={() => !isExpanded && setLogoHovered(false)}
               className="sidebar-toggle-btn animate-fade-in"
               style={{
                 background: "transparent",
@@ -161,7 +158,7 @@ export const Sidebar: React.FC = () => {
               }}
               title={sidebarOpen ? (language === "es" ? "Cerrar barra lateral" : "Close sidebar") : (language === "es" ? "Abrir barra lateral" : "Open sidebar")}
             >
-              {isExpanded ? (
+              {sidebarOpen ? (
                 <PanelLeftClose size={20} strokeWidth={1.5} />
               ) : (
                 <PanelLeftOpen size={20} strokeWidth={1.5} />
