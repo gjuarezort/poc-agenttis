@@ -66,22 +66,37 @@ export const Sidebar: React.FC = () => {
   return (
     <aside
       className={`sidebar ${!isExpanded ? "collapsed" : ""} ${isExpanded && !sidebarOpen ? "overlay-shadow" : ""}`}
-      onMouseEnter={() => !sidebarOpen && setSidebarHovered(true)}
       onMouseLeave={() => {
         setSidebarHovered(false);
         setLogoHovered(false);
       }}
     >
       <div>
-        {/* Sidebar Header: Brand and Toggle Button */}
+        {/* Sidebar Header: acts as the trigger for the hover overlay */}
         <div 
           style={{ 
             display: "flex", 
             alignItems: "center", 
-            justifyContent: "space-between",
+            justifyContent: isExpanded ? "space-between" : "center",
             marginBottom: "1.5rem",
             position: "relative",
-            minHeight: "44px"
+            minHeight: "44px",
+            cursor: !sidebarOpen ? "pointer" : "default"
+          }}
+          onMouseEnter={() => {
+            if (!sidebarOpen) {
+              setSidebarHovered(true);
+              setLogoHovered(true);
+            }
+          }}
+          onMouseLeave={() => {
+            setLogoHovered(false);
+          }}
+          onClick={() => {
+            if (!sidebarOpen) {
+              setSidebarOpen(true);
+              setLogoHovered(false);
+            }
           }}
         >
           {/* Brand area (Logo / Open Button + Text) */}
@@ -95,13 +110,9 @@ export const Sidebar: React.FC = () => {
               cursor: "pointer",
               transition: "all 0.25s"
             }}
-            onMouseEnter={() => !sidebarOpen && setLogoHovered(true)}
-            onMouseLeave={() => setLogoHovered(false)}
-            onClick={() => {
-              if (!sidebarOpen && logoHovered) {
-                setSidebarOpen(true);
-                setLogoHovered(false);
-              } else if (sidebarOpen) {
+            onClick={(e) => {
+              if (sidebarOpen) {
+                e.stopPropagation();
                 setActiveTab("home" as any);
               }
             }}
