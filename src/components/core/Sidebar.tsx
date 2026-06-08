@@ -43,8 +43,6 @@ export const Sidebar: React.FC = () => {
     disabled?: boolean;
     sectionLabel?: string;
   }[] = [
-    { key: "home",          icon: <Grid size={18} strokeWidth={1.5} />,              label: tTab("home") },
-    
     // Applications Section
     { key: "reconciliation",icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Applications" },
     { key: "monthlyClose",  icon: <CalendarCheck size={18} strokeWidth={1.5} />,     label: tTab("monthlyClose") },
@@ -95,8 +93,15 @@ export const Sidebar: React.FC = () => {
               padding: 0,
               display: "flex",
               alignItems: "center",
-              gap: "0.5rem"
+              gap: "0.5rem",
+              cursor: "pointer"
             }}
+            onClick={() => {
+              if (isExpanded) {
+                setActiveTab("home" as any);
+              }
+            }}
+            title={language === "es" ? "Ir al Inicio" : "Go to Home"}
           >
             <div className="flex-center" style={{
               background: "linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%)",
