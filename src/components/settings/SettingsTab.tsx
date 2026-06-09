@@ -8,6 +8,8 @@ import {
   Play,
   LineChart,
   Clock,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 interface SettingsTabProps {
@@ -33,7 +35,9 @@ export const SettingsTab: React.FC = () => {
   stats,
   observabilityLogs,
   handleLanguageChange,
-  t, } = useDashboard();
+  t,
+  theme,
+  toggleTheme, } = useDashboard();
   const lastMetrics = chatHistory.length > 0
     ? chatHistory.filter(m => m.role === "agent" && m.metrics).slice(-1)[0]?.metrics
     : null;
@@ -41,29 +45,55 @@ export const SettingsTab: React.FC = () => {
   return (
     <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem", maxWidth: "860px" }}>
 
-      <div>
-        <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("settingsTitle")}</h2>
-        <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("settingsSubtitle")}</p>
-      </div>
-
-      {/* Language */}
-      <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-        <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", fontSize: "1rem" }}>
-          <Globe size={16} style={{ color: "var(--color-primary)" }} />
-          {language === "es" ? "Idioma" : "Language"}
-        </h3>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {(["en", "es"] as const).map(lang => (
-            <button
-              key={lang}
-              onClick={() => handleLanguageChange(lang)}
-              className={language === lang ? "btn btn-primary" : "btn btn-secondary"}
-              style={{ minWidth: "80px" }}
-            >
-              {lang === "en" ? "English" : "Español"}
-            </button>
-          ))}
+      {/* Language & Theme Configuration */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
+        
+        {/* Language */}
+        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+          <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", fontSize: "1rem" }}>
+            <Globe size={16} style={{ color: "var(--color-primary)" }} />
+            {language === "es" ? "Idioma" : "Language"}
+          </h3>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            {(["en", "es"] as const).map(lang => (
+              <button
+                key={lang}
+                onClick={() => handleLanguageChange(lang)}
+                className={language === lang ? "btn btn-primary" : "btn btn-secondary"}
+                style={{ minWidth: "80px" }}
+              >
+                {lang === "en" ? "English" : "Español"}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Theme Settings */}
+        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
+          <h3 style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem", fontSize: "1rem" }}>
+            {theme === "light" ? <Sun size={16} style={{ color: "var(--color-warning)" }} /> : <Moon size={16} style={{ color: "var(--color-primary)" }} />}
+            {language === "es" ? "Tema de Color" : "Color Theme"}
+          </h3>
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <button
+              onClick={() => theme !== "light" && toggleTheme()}
+              className={theme === "light" ? "btn btn-primary" : "btn btn-secondary"}
+              style={{ minWidth: "80px", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
+            >
+              <Sun size={14} />
+              {language === "es" ? "Claro" : "Light"}
+            </button>
+            <button
+              onClick={() => theme !== "dark" && toggleTheme()}
+              className={theme === "dark" ? "btn btn-primary" : "btn btn-secondary"}
+              style={{ minWidth: "80px", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.4rem" }}
+            >
+              <Moon size={14} />
+              {language === "es" ? "Oscuro" : "Dark"}
+            </button>
+          </div>
+        </div>
+
       </div>
 
       {/* Token Efficiency & Costs */}

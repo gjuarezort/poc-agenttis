@@ -7,6 +7,8 @@ export interface Agent {
   skills: string[];
   users: string[];
   requireConfirmation: boolean;
+  delegates: string[];
+  linkedApps: string[];
 }
 
 export interface Skill {
@@ -54,6 +56,25 @@ export interface TaxItem {
   status: string;
 }
 
+export interface Widget {
+  id: string;
+  type: "kpi" | "list" | "chart" | "chat";
+  title: string;
+  config: Record<string, any>;
+}
+
+export interface Application {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  dataSources: string[];
+  agents: string[];
+  widgets: Widget[];
+  installed: boolean;
+}
+
 export const INITIAL_AGENTS: Agent[] = [
   {
     id: "agent-reconcile",
@@ -63,7 +84,9 @@ export const INITIAL_AGENTS: Agent[] = [
     dataSources: ["demo1", "file-active"],
     skills: ["read_customers", "refund_invoice"],
     users: ["Admin", "Facturación"],
-    requireConfirmation: true
+    requireConfirmation: true,
+    delegates: [],
+    linkedApps: []
   },
   {
     id: "agent-inventory",
@@ -73,7 +96,9 @@ export const INITIAL_AGENTS: Agent[] = [
     dataSources: ["file-active"],
     skills: ["adjust_stock"],
     users: ["Operaciones"],
-    requireConfirmation: false
+    requireConfirmation: false,
+    delegates: [],
+    linkedApps: []
   },
   {
     id: "agent-tax",
@@ -83,7 +108,44 @@ export const INITIAL_AGENTS: Agent[] = [
     dataSources: ["demo1"],
     skills: ["submit_tax_report"],
     users: ["Administración", "Contador"],
-    requireConfirmation: true
+    requireConfirmation: true,
+    delegates: ["agent-reconcile"],
+    linkedApps: []
+  }
+];
+
+export const INITIAL_APPS: Application[] = [
+  {
+    id: "app-reconcile",
+    name: "Portal de Conciliación Bancaria",
+    description: "Tablero ejecutivo para auditar facturas, conciliar cuentas de Stripe y ejecutar reembolsos automáticos.",
+    icon: "ArrowLeftRight",
+    color: "var(--color-primary)",
+    dataSources: ["demo1"],
+    agents: ["agent-reconcile"],
+    installed: true,
+    widgets: [
+      { id: "w-kpi-sales", type: "kpi", title: "Ingresos Totales (USD)", config: { metric: "sum", column: "total_spent", label: "Ventas Registradas" } },
+      { id: "w-kpi-custs", type: "kpi", title: "Clientes Activos", config: { metric: "count", label: "Base de Datos" } },
+      { id: "w-chart-sales", type: "chart", title: "Distribución por País", config: { groupBy: "country", label: "Distribución Geográfica" } },
+      { id: "w-list-trans", type: "list", title: "Transacciones de Clientes", config: { limit: 5 } },
+      { id: "w-chat-copilot", type: "chat", title: "Consola de Asistencia Financiera", config: { agentId: "agent-reconcile" } }
+    ]
+  },
+  {
+    id: "app-inventory",
+    name: "Auditor de Inventario",
+    description: "Monitorea SKUs en stock crítico, realiza ajustes automáticos y actualiza stock en ERP.",
+    icon: "Package",
+    color: "var(--color-success)",
+    dataSources: ["file-active"],
+    agents: ["agent-inventory"],
+    installed: true,
+    widgets: [
+      { id: "w-kpi-stock", type: "kpi", title: "Nivel de Stock Alertas", config: { metric: "average", column: "stock", label: "Promedio" } },
+      { id: "w-list-items", type: "list", title: "SKUs Críticos", config: { limit: 8 } },
+      { id: "w-chat-inv", type: "chat", title: "Operación de Reabastecimiento", config: { agentId: "agent-inventory" } }
+    ]
   }
 ];
 

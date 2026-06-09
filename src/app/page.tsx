@@ -11,20 +11,24 @@ import { HomeTab } from "../components/core/HomeTab";
 import { DataConnectionsTab } from "../components/platform/DataConnectionsTab";
 import { SkillsTab } from "../components/platform/SkillsTab";
 import { AgentsTab } from "../components/platform/AgentsTab";
+import { AppsTab } from "../components/platform/AppsTab";
 import { ArchitectureTab } from "../components/platform/ArchitectureTab";
 import { PlaygroundTab } from "../components/platform/PlaygroundTab";
 import { McpCodeTab } from "../components/platform/McpCodeTab";
+import { McpServersTab } from "../components/platform/McpServersTab";
 
 import { BankReconciliationTab } from "../components/domain/BankReconciliationTab";
 import { MonthlyCloseTab } from "../components/domain/MonthlyCloseTab";
 import { TaxAlertsTab } from "../components/domain/TaxAlertsTab";
 
-import { TemplateGalleryTab } from "../components/settings/TemplateGalleryTab";
+import { MarketplaceTab } from "../components/settings/MarketplaceTab";
 import { SettingsTab } from "../components/settings/SettingsTab";
-import { IntegrationsTab } from "../components/settings/IntegrationsTab";
+import { UsersTab } from "../components/settings/UsersTab";
+import { AccessDeniedView } from "../components/core/AccessDeniedView";
 
 function DashboardContent() {
-  const { activeTab, sidebarOpen } = useDashboard();
+  const { activeTab, sidebarOpen, hasPermission } = useDashboard();
+  const isAuthorized = hasPermission(activeTab);
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", flexDirection: "row", background: "var(--bg-base)", color: "var(--text-primary)", transition: "background-color var(--transition-normal), color var(--transition-normal)" }}>
@@ -41,19 +45,27 @@ function DashboardContent() {
 
         {/* Main content area */}
         <main className="container" style={{ flex: 1, padding: "1.5rem 2rem", maxWidth: "1500px" }}>
-          {activeTab === "home" && <HomeTab />}
-          {activeTab === "connections" && <DataConnectionsTab />}
-          {activeTab === "skills" && <SkillsTab />}
-          {activeTab === "agents" && <AgentsTab />}
-          {activeTab === "visualGraph" && <ArchitectureTab />}
-          {activeTab === "playground" && <PlaygroundTab />}
-          {activeTab === "recipe" && <McpCodeTab />}
-          {activeTab === "integrations" && <IntegrationsTab />}
-          {activeTab === "reconciliation" && <BankReconciliationTab />}
-          {activeTab === "monthlyClose" && <MonthlyCloseTab />}
-          {activeTab === "taxAlerts" && <TaxAlertsTab />}
-          {activeTab === "templates" && <TemplateGalleryTab />}
-          {activeTab === "settings" && <SettingsTab />}
+          {!isAuthorized ? (
+            <AccessDeniedView requestedTab={activeTab} />
+          ) : (
+            <>
+              {activeTab === "home" && <HomeTab />}
+              {activeTab === "connections" && <DataConnectionsTab />}
+              {activeTab === "skills" && <SkillsTab />}
+              {activeTab === "mcpServers" && <McpServersTab />}
+              {activeTab === "agents" && <AgentsTab />}
+              {activeTab === "apps" && <AppsTab />}
+              {activeTab === "visualGraph" && <ArchitectureTab />}
+              {activeTab === "playground" && <PlaygroundTab />}
+              {activeTab === "recipe" && <McpCodeTab />}
+              {activeTab === "marketplace" && <MarketplaceTab />}
+              {activeTab === "reconciliation" && <BankReconciliationTab />}
+              {activeTab === "monthlyClose" && <MonthlyCloseTab />}
+              {activeTab === "taxAlerts" && <TaxAlertsTab />}
+              {activeTab === "settings" && <SettingsTab />}
+              {activeTab === "users" && <UsersTab />}
+            </>
+          )}
         </main>
 
         {/* Footer */}

@@ -36,13 +36,45 @@ export const MonthlyCloseTab: React.FC = () => {
   copilotQuery,
   setCopilotQuery,
   copilotLoading,
-  handleCopilotSubmit, } = useDashboard();
+  handleCopilotSubmit,
+  setHeaderAction, } = useDashboard();
   const t = (key: string) => {
     const dict = TRANSLATIONS[language] as any;
     return dict[key] !== undefined ? dict[key] : key;
   };
 
   const period = "Junio 2025";
+
+  React.useEffect(() => {
+    setHeaderAction(
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <span className="badge badge-info" style={{ fontSize: "0.78rem", padding: "0.25rem 0.75rem" }}>{period}</span>
+        <button 
+          className="btn btn-secondary" 
+          onClick={() => {
+            const wasOpen = copilotOpen;
+            setCopilotOpen(!wasOpen);
+            if (!wasOpen) {
+              setCopilotMessages([
+                { 
+                  role: "agent", 
+                  text: language === "es" 
+                    ? "¡Hola! Soy tu Asistente de **Cierre Mensual**. Puedo ayudarte a verificar conciliaciones bancarias, revisar declaraciones impositivas pendientes e ingresar asientos de ajuste en tu ERP.\n\nEscribe **'completar'** para resolver los pendientes de impuestos y nóminas y registrar los ajustes de fin de mes." 
+                    : "Hello! I am your **Monthly Close** Assistant. I can check bank reconciliations, review pending tax reports, and enter adjustments into your ERP.\n\nType **'complete'** to calculate taxes, payroll, and log the end-of-month adjustments." 
+                }
+              ]);
+            }
+          }}
+          style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.85rem" }}
+        >
+          <span>🤖</span>
+          <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
+        </button>
+      </div>
+    );
+    return () => setHeaderAction(null);
+  }, [language, copilotOpen, setCopilotOpen, setCopilotMessages, setHeaderAction]);
+
   const steps = closeStepsState;
   const done = steps.filter(s => s.status === "done").length;
   const pct = Math.round((done / steps.length) * 100);
@@ -61,38 +93,6 @@ export const MonthlyCloseTab: React.FC = () => {
   return (
     <div className="app-container-with-sidebar">
       <div className="main-app-content animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-        
-        {/* Header with Copilot Button */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("monthlyCloseTitle")}</h2>
-            <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("monthlyCloseSubtitle")}</p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <span className="badge badge-info" style={{ fontSize: "0.78rem", padding: "0.25rem 0.75rem" }}>{period}</span>
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => {
-                const wasOpen = copilotOpen;
-                setCopilotOpen(!wasOpen);
-                if (!wasOpen) {
-                  setCopilotMessages([
-                    { 
-                      role: "agent", 
-                      text: language === "es" 
-                        ? "¡Hola! Soy tu Asistente de **Cierre Mensual**. Puedo ayudarte a verificar conciliaciones bancarias, revisar declaraciones impositivas pendientes e ingresar asientos de ajuste en tu ERP.\n\nEscribe **'completar'** para resolver los pendientes de impuestos y nóminas y registrar los ajustes de fin de mes." 
-                        : "Hello! I am your **Monthly Close** Assistant. I can check bank reconciliations, review pending tax reports, and enter adjustments into your ERP.\n\nType **'complete'** to calculate taxes, payroll, and log the end-of-month adjustments." 
-                    }
-                  ]);
-                }
-              }}
-              style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem" }}
-            >
-              <span>🤖</span>
-              <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
-            </button>
-          </div>
-        </div>
 
         {/* Progress bar */}
         <div className="glass-panel" style={{ padding: "1rem 1.25rem" }}>

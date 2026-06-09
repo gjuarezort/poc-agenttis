@@ -41,11 +41,41 @@ export const BankReconciliationTab: React.FC = () => {
   copilotQuery,
   setCopilotQuery,
   copilotLoading,
-  handleCopilotSubmit, } = useDashboard();
+  handleCopilotSubmit,
+  setHeaderAction,
+  hasPermission,
+  logSecurityAction } = useDashboard();
   const t = (key: string) => {
     const dict = TRANSLATIONS[language] as any;
     return dict[key] !== undefined ? dict[key] : key;
   };
+
+  React.useEffect(() => {
+    setHeaderAction(
+      <button 
+        className="btn btn-secondary" 
+        onClick={() => {
+          const wasOpen = copilotOpen;
+          setCopilotOpen(!wasOpen);
+          if (!wasOpen) {
+            setCopilotMessages([
+              { 
+                role: "agent", 
+                text: language === "es" 
+                  ? "¡Hola! Soy tu Copiloto Agéntico para la **Conciliación Bancaria**. Puedo comparar tu extracto de banco contra tus libros, identificar diferencias o conciliar automáticamente todos tus movimientos pendientes.\n\nEscribe **'conciliar'** para ejecutar las conciliaciones pendientes de inmediato." 
+                  : "Hello! I am your Agentic Copilot for **Bank Reconciliation**. I can match your bank statement against books, locate differences, or auto-reconcile all your pending movements.\n\nType **'reconcile'** to run the pending reconciliations immediately." 
+              }
+            ]);
+          }
+        }}
+        style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.85rem" }}
+      >
+        <span>🤖</span>
+        <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
+      </button>
+    );
+    return () => setHeaderAction(null);
+  }, [language, copilotOpen, setCopilotOpen, setCopilotMessages, setHeaderAction]);
 
   const bankRows = bankRowsState;
   const matched = bankRows.filter(r => r.matched).length;
@@ -57,35 +87,6 @@ export const BankReconciliationTab: React.FC = () => {
   return (
     <div className="app-container-with-sidebar">
       <div className="main-app-content animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-        
-        {/* Header Row with Copilot button */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("reconciliationTitle")}</h2>
-            <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("reconciliationSubtitle")}</p>
-          </div>
-          <button 
-            className="btn btn-secondary" 
-            onClick={() => {
-              const wasOpen = copilotOpen;
-              setCopilotOpen(!wasOpen);
-              if (!wasOpen) {
-                setCopilotMessages([
-                  { 
-                    role: "agent", 
-                    text: language === "es" 
-                      ? "¡Hola! Soy tu Copiloto Agéntico para la **Conciliación Bancaria**. Puedo comparar tu extracto de banco contra tus libros, identificar diferencias o conciliar automáticamente todos tus movimientos pendientes.\n\nEscribe **'conciliar'** para ejecutar las conciliaciones pendientes de inmediato." 
-                      : "Hello! I am your Agentic Copilot for **Bank Reconciliation**. I can match your bank statement against books, locate differences, or auto-reconcile all your pending movements.\n\nType **'reconcile'** to run the pending reconciliations immediately." 
-                  }
-                ]);
-              }
-            }}
-            style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem" }}
-          >
-            <span>🤖</span>
-            <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
-          </button>
-        </div>
 
         {/* Summary cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1rem" }}>
@@ -123,8 +124,26 @@ export const BankReconciliationTab: React.FC = () => {
             <button 
               className="btn btn-primary" 
               onClick={() => {
+                if (!hasPermission("execute_agents")) {
+                  logSecurityAction(
+                    "Reconciliation Blocked",
+                    "Bank Reconciliation Module",
+                    "blocked",
+                    "Attempted to run bank reconciliation without execute_agents clearance."
+                  );
+                  alert(language === "es" 
+                    ? "Acción denegada: Tu rol no cuenta con la autorización 'execute_agents' requerida." 
+                    : "Action denied: Your current role lacks the required 'execute_agents' permission.");
+                  return;
+                }
                 setBankRowsState(prev => prev.map(r => ({ ...r, matched: true })));
                 setCloseStepsState(prev => prev.map(s => s.id === 2 ? { ...s, status: "done", detail: language === "es" ? "Completamente conciliado por el Agente" : "Fully matched by Agent" } : s));
+                logSecurityAction(
+                  "Reconciliation Executed",
+                  "Bank Reconciliation Module",
+                  "success",
+                  "Successfully executed statement reconciliation (all transactions matched)."
+                );
                 alert(language === "es" ? "¡Conciliación bancaria completada!" : "Bank reconciliation completed!");
               }}
               style={{ padding: "0.4rem 0.9rem", fontSize: "0.78rem" }}

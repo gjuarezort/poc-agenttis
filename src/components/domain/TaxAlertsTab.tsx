@@ -39,7 +39,8 @@ export const TaxAlertsTab: React.FC = () => {
   copilotQuery,
   setCopilotQuery,
   copilotLoading,
-  handleCopilotSubmit, } = useDashboard();
+  handleCopilotSubmit,
+  setHeaderAction, } = useDashboard();
   const t = (key: string) => {
     const dict = TRANSLATIONS[language] as any;
     return dict[key] !== undefined ? dict[key] : key;
@@ -51,6 +52,43 @@ export const TaxAlertsTab: React.FC = () => {
   
   const overdueCount = taxes.filter(t => t.status === "overdue").length;
   const pendingCount = taxes.filter(t => t.status === "pending").length;
+
+  React.useEffect(() => {
+    setHeaderAction(
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", gap: "0.4rem" }}>
+          <span className="badge badge-warning" style={{ fontSize: "0.72rem" }}>
+            {overdueCount} {language === "es" ? "vencidos" : "overdue"}
+          </span>
+          <span className="badge badge-info" style={{ fontSize: "0.72rem" }}>
+            {pendingCount} {language === "es" ? "pendientes" : "pending"}
+          </span>
+        </div>
+        <button 
+          className="btn btn-secondary" 
+          onClick={() => {
+            const wasOpen = copilotOpen;
+            setCopilotOpen(!wasOpen);
+            if (!wasOpen) {
+              setCopilotMessages([
+                { 
+                  role: "agent", 
+                  text: language === "es" 
+                    ? "¡Hola! Soy tu Asistente Impositivo para la **Impuestos y Nómina**. Puedo ayudarte a verificar tus vencimientos e incluso presentar declaraciones automáticamente firmadas digitalmente.\n\nEscribe **'presentar reporte'** para enviar el reporte de e-Factura de Junio 2025 de inmediato." 
+                    : "Hello! I am your Tax Assistant. I can check your due dates and even submit declarations signed digitally.\n\nType **'submit report'** to file the June 2025 invoicing report immediately." 
+                }
+              ]);
+            }
+          }}
+          style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem", padding: "0.5rem 1rem", fontSize: "0.85rem" }}
+        >
+          <span>🤖</span>
+          <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
+        </button>
+      </div>
+    );
+    return () => setHeaderAction(null);
+  }, [language, copilotOpen, setCopilotOpen, setCopilotMessages, setHeaderAction, overdueCount, pendingCount]);
 
   const statusStyle = (s: string) =>
     s === "overdue"
@@ -92,45 +130,6 @@ export const TaxAlertsTab: React.FC = () => {
   return (
     <div className="app-container-with-sidebar">
       <div className="main-app-content animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-        
-        {/* Header with Copilot Button */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <h2 style={{ margin: "0 0 0.2rem 0" }}>{t("taxAlertsTitle")}</h2>
-            <p style={{ margin: 0, fontSize: "0.9rem" }}>{t("taxAlertsSubtitle")}</p>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <div style={{ display: "flex", gap: "0.4rem" }}>
-              <span className="badge badge-warning" style={{ fontSize: "0.72rem" }}>
-                {overdueCount} {language === "es" ? "vencidos" : "overdue"}
-              </span>
-              <span className="badge badge-info" style={{ fontSize: "0.72rem" }}>
-                {pendingCount} {language === "es" ? "pendientes" : "pending"}
-              </span>
-            </div>
-            <button 
-              className="btn btn-secondary" 
-              onClick={() => {
-                const wasOpen = copilotOpen;
-                setCopilotOpen(!wasOpen);
-                if (!wasOpen) {
-                  setCopilotMessages([
-                    { 
-                      role: "agent", 
-                      text: language === "es" 
-                        ? "¡Hola! Soy tu Asistente Impositivo para la **Impuestos y Nómina**. Puedo ayudarte a verificar tus vencimientos e incluso presentar declaraciones automáticamente firmadas digitalmente.\n\nEscribe **'presentar reporte'** para enviar el reporte de e-Factura de Junio 2025 de inmediato." 
-                        : "Hello! I am your Tax Assistant. I can check your due dates and even submit declarations signed digitally.\n\nType **'submit report'** to file the June 2025 invoicing report immediately." 
-                    }
-                  ]);
-                }
-              }}
-              style={{ border: "1px solid var(--border-color-glow)", background: "rgba(139, 92, 246, 0.08)", display: "flex", alignItems: "center", gap: "0.4rem" }}
-            >
-              <span>🤖</span>
-              <span>{copilotOpen ? (language === "es" ? "Cerrar Copiloto" : "Close Copilot") : (language === "es" ? "Abrir Copiloto" : "Open Copilot")}</span>
-            </button>
-          </div>
-        </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
           {taxes.map((tax, i) => {

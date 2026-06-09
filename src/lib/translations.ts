@@ -2,23 +2,25 @@
 export const TRANSLATIONS = {
   en: {
     appName: "Agenttis",
-    tagline: "Enterprise Agentic Layer for PyMEs",
+    tagline: "Your business, on autopilot.",
     mvpBuilder: "MVP Builder",
     tabs: {
       home: "Home",
-      connections: "Data Connections",
+      connections: "Data Sources",
       skills: "Skills",
-      agents: "AI Agents",
+      mcpServers: "MCP Servers",
+      agents: "Agents",
+      apps: "Applications",
       visualGraph: "Architecture",
       playground: "Playground",
       recipe: "Generated MCP Code",
       observability: "Metrics & Savings",
-      integrations: "Integration Catalog",
+      marketplace: "Marketplace",
       reconciliation: "Bank Reconciliation",
       monthlyClose: "Monthly Close",
       taxAlerts: "Tax Alerts",
-      templates: "Template Gallery",
-      settings: "Settings"
+      settings: "Settings",
+      users: "Team & Permissions"
     },
     settingsTitle: "Settings",
     settingsSubtitle: "Token efficiency, costs, and system configuration",
@@ -167,27 +169,42 @@ export const TRANSLATIONS = {
     slackReadMsg: "Read Messages",
     slackPostNotif: "Post Notifications",
     configureConn: "Configure Connection",
-    requestAccess: "Request Access"
+    requestAccess: "Request Access",
+    // Skills categories
+    skillCategoryTitle: "Select Skill Category",
+    skillCategoryDesc: "Choose the provider pattern for your new capability.",
+    skillCatCustomApi: "Custom API Call",
+    skillCatCustomApiDesc: "Connect REST endpoints, GraphQL APIs, or webhook web services.",
+    skillCatMcpTool: "Ingested MCP Server Tool",
+    skillCatMcpToolDesc: "Import an exposed tool capability from your connected MCP servers.",
+    skillCatDataSource: "Data Source Operation",
+    skillCatDataSourceDesc: "Directly query or mutate databases/apps (Stripe, Postgres, Salesforce, etc.).",
+    skillCatNative: "Platform Native Utility",
+    skillCatNativeDesc: "Built-in tasks (Slack alerts, human verification checks, agent handoffs).",
+    skillCatCompute: "Compute / Code Execution",
+    skillCatComputeDesc: "Run sandboxed Javascript/Python code blocks for complex data mutations."
   },
   es: {
     appName: "Agenttis",
-    tagline: "Capa Agéntica Empresarial para PyMEs",
+    tagline: "Tu negocio, en piloto automático.",
     mvpBuilder: "Constructor MVP",
     tabs: {
       home: "Inicio",
-      connections: "Conexiones de Datos",
+      connections: "Fuentes de Datos",
       skills: "Habilidades",
-      agents: "Agentes de IA",
+      mcpServers: "Servidores MCP",
+      agents: "Agentes",
+      apps: "Aplicaciones",
       visualGraph: "Arquitectura",
       playground: "Playground",
       recipe: "Código MCP Generado",
       observability: "Métricas y Ahorros",
-      integrations: "Catálogo de Integraciones",
+      marketplace: "Marketplace",
       reconciliation: "Conciliación Bancaria",
       monthlyClose: "Cierre Mensual",
       taxAlerts: "Alertas Fiscales",
-      templates: "Galería de Plantillas",
-      settings: "Configuración"
+      settings: "Configuración",
+      users: "Miembros y Permisos"
     },
     settingsTitle: "Configuración",
     settingsSubtitle: "Eficiencia de tokens, costos y configuración del sistema",
@@ -336,6 +353,19 @@ export const TRANSLATIONS = {
     slackReadMsg: "Leer Mensajes",
     slackPostNotif: "Publicar Notificaciones",
     configureConn: "Configurar Conexión",
-    requestAccess: "Solicitar Acceso"
+    requestAccess: "Solicitar Acceso",
+    // Categorías de Habilidades
+    skillCategoryTitle: "Seleccionar Categoría de Habilidad",
+    skillCategoryDesc: "Elige el patrón de proveedor para tu nueva capacidad.",
+    skillCatCustomApi: "Llamada a API Personalizada",
+    skillCatCustomApiDesc: "Conectá endpoints REST, APIs de GraphQL o servicios web de webhook.",
+    skillCatMcpTool: "Herramienta de Servidor MCP Conectado",
+    skillCatMcpToolDesc: "Importá una herramienta expuesta desde tus servidores MCP conectados.",
+    skillCatDataSource: "Operación de Fuente de Datos",
+    skillCatDataSourceDesc: "Consultá o modificá directamente bases de datos/aplicaciones (Stripe, Postgres, etc.).",
+    skillCatNative: "Utilidad Nativa de la Plataforma",
+    skillCatNativeDesc: "Tareas integradas (alertas de Slack, controles de verificación humana, relevo de agentes).",
+    skillCatCompute: "Ejecución de Código / Cómputo",
+    skillCatComputeDesc: "Corré bloques de código Javascript/Python aislados para transformaciones complejas."
   }
 };

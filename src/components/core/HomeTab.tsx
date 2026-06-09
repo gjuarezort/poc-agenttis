@@ -1,162 +1,275 @@
 import { useDashboard } from "../../context/DashboardContext";
 import React from "react";
 import {
-  Search,
-  LineChart,
-  Database,
-  Link as LinkIcon,
-  BarChart2,
-  FileCode,
+  ArrowLeftRight,
+  CalendarCheck,
+  Receipt,
+  ArrowRight,
+  Sparkles,
 } from "lucide-react";
 import { TRANSLATIONS } from "../../lib/translations";
 
-interface HomeTabProps {
-  language: "en" | "es";
-  parsedData: any;
-  setActiveTab: (tab: any) => void;
-}
-
-
-
 export const HomeTab: React.FC = () => {
-  const { language,
-  parsedData,
-  setActiveTab, } = useDashboard();
-  const ht = (TRANSLATIONS[language] as any).home;
-  const mockData = parsedData
-    ? [{ name: parsedData.fileName ?? "dataset.csv", rows: parsedData.totalRows, cols: parsedData.columns.length, time: "Just now" }]
-    : [];
-  
-  const mockReports = [
-    { name: language === "es" ? "Reporte de Ventas — Jun 2026" : "Sales Report — Jun 2026",       type: language === "es" ? "Ventas" : "Sales",     time: language === "es" ? "Hace 2h" : "2h ago",   status: "success" },
-    { name: language === "es" ? "Análisis de Inventario" : "Inventory Analysis",                  type: language === "es" ? "Inventario" : "Stock",  time: language === "es" ? "Hace 5h" : "5h ago",   status: "success" },
-    { name: language === "es" ? "Resumen de Clientes Activos" : "Active Customers Summary",       type: language === "es" ? "Clientes" : "CRM",      time: language === "es" ? "Ayer" : "Yesterday",   status: "success" },
+  const { language, setActiveTab } = useDashboard();
+  const tagline = TRANSLATIONS[language].tagline;
+
+  const appDetails = [
+    {
+      id: "reconciliation",
+      title: language === "es" ? "Conciliación Bancaria" : "Bank Reconciliation",
+      desc: language === "es" 
+        ? "Automatizá el cruce de tu extracto bancario con las facturas y pagos del sistema usando agentes inteligentes."
+        : "Match bank transactions against invoicing and payment records automatically with guided agent assistance.",
+      statusText: language === "es" ? "3 Movimientos sin conciliar" : "3 Unmatched movements",
+      statusType: "warning",
+      icon: <ArrowLeftRight size={24} />,
+      color: "#f59e0b",
+      glowColor: "rgba(245, 158, 11, 0.12)",
+    },
+    {
+      id: "monthlyClose",
+      title: language === "es" ? "Cierre Mensual" : "Monthly Close",
+      desc: language === "es"
+        ? "Procedimiento guiado paso a paso para el cierre contable, liquidación de nóminas e impuestos del período."
+        : "Guided period close checklist for tax calculations, payroll matching, and ledger adjustments.",
+      statusText: language === "es" ? "En progreso (50%)" : "In progress (50%)",
+      statusType: "info",
+      icon: <CalendarCheck size={24} />,
+      color: "#06b6d4",
+      glowColor: "rgba(6, 182, 212, 0.12)",
+    },
+    {
+      id: "taxAlerts",
+      title: language === "es" ? "Alertas Fiscales y Cumplimiento" : "Tax & Compliance Alerts",
+      desc: language === "es"
+        ? "Monitoreo inteligente de vencimientos impositivos, RUT y presentación automatizada de declaraciones."
+        : "Smart tax calendars, compliance obligation tracking, and automated official filings.",
+      statusText: language === "es" ? "Vencimiento en 5 días" : "Deadline in 5 days",
+      statusType: "success",
+      icon: <Receipt size={24} />,
+      color: "#10b981",
+      glowColor: "rgba(16, 185, 129, 0.12)",
+    }
   ];
-  
-  const mockAlerts = [
-    { level: "critical", msg: language === "es" ? "Conector Stripe sin respuesta desde hace 30 min" : "Stripe connector unresponsive for 30 min",   time: language === "es" ? "Hace 10 min" : "10 min ago" },
-    { level: "warning",  msg: language === "es" ? "Dataset 'clientes_2024.csv' supera el límite recomendado de filas" : "Dataset 'customers_2024.csv' exceeds recommended row limit", time: language === "es" ? "Hace 1h" : "1h ago" },
-    { level: "info",     msg: language === "es" ? "Nueva versión del servidor MCP disponible (v2.1)" : "New MCP server version available (v2.1)",   time: language === "es" ? "Hace 3h" : "3h ago" },
-  ];
-  
-  const levelColor: Record<string, string> = { critical: "var(--color-danger)", warning: "var(--color-warning)", info: "var(--color-accent)" };
-  const levelBadgeClass: Record<string, string> = { critical: "badge-warning", warning: "badge-warning", info: "badge-info" };
-  
-  const blockHeader = (_num: number, accent: string, _bg: string, title: string, desc: string) => (
-    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-      <div style={{ width: "3px", height: "32px", borderRadius: "2px", background: accent, flexShrink: 0 }} />
-      <div>
-        <h3 style={{ margin: 0, fontSize: "1rem" }}>{title}</h3>
-        <p style={{ margin: 0, fontSize: "0.78rem" }}>{desc}</p>
-      </div>
-    </div>
-  );
 
   return (
-    <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-      {/* Page heading */}
-      <div>
-        <h2 style={{ margin: "0 0 0.2rem 0" }}>{ht.title}</h2>
-        <p style={{ margin: 0, fontSize: "0.9rem" }}>{ht.subtitle}</p>
+    <div className="animate-fade-in" style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: "75vh",
+      padding: "2rem 1rem",
+      position: "relative",
+      overflow: "hidden"
+    }}>
+      {/* Decorative blurred background orbs specifically for the landing vibe */}
+      <div style={{
+        position: "absolute",
+        top: "10%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "600px",
+        height: "250px",
+        background: "radial-gradient(ellipse at center, var(--color-primary-glow) 0%, transparent 70%)",
+        zIndex: 0,
+        pointerEvents: "none",
+        opacity: 0.8
+      }} />
+
+      {/* Hero Header */}
+      <div style={{
+        textAlign: "center",
+        zIndex: 1,
+        marginBottom: "4rem",
+        position: "relative"
+      }}>
+        <h1 className="logo-handwritten animate-fade-in" style={{
+          fontSize: "5.5rem",
+          margin: "-0.2em 0",
+          padding: "0.2em 0",
+          background: "linear-gradient(180deg, var(--text-primary) 30%, var(--text-secondary) 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          filter: "drop-shadow(0 2px 10px rgba(255,255,255,0.05))",
+          lineHeight: "1.3",
+          fontFamily: "var(--font-cursive)"
+        }}>
+          Agenttis
+        </h1>
+        <p style={{
+          fontSize: "1rem",
+          fontWeight: 400,
+          letterSpacing: "0.15em",
+          textTransform: "uppercase",
+          color: "var(--text-secondary)",
+          marginTop: "0.75rem",
+          opacity: 0.85
+        }}>
+          {tagline}
+        </p>
+        
+        <div style={{
+          width: "50px",
+          height: "1px",
+          background: "var(--border-color)",
+          margin: "1.5rem auto 0",
+          opacity: 0.5
+        }} />
       </div>
 
-      {/* Shortcut buttons */}
-      <div style={{ display: "flex", gap: "0.75rem" }}>
-        {[
-          { label: ht.shortcutQueries,     icon: <Search size={20} />,   tab: "playground" },
-          { label: ht.shortcutReports,      icon: <LineChart size={20} />, tab: "monthlyClose" },
-          { label: ht.shortcutData,         icon: <Database size={20} />, tab: "connections" },
-          { label: ht.shortcutConnections,  icon: <LinkIcon size={20} />,     tab: "integrations" },
-          { label: ht.shortcutMetrics,      icon: <BarChart2 size={20} />,tab: "settings" },
-        ].map((s, i) => (
-          <button
-            key={i}
-            onClick={() => setActiveTab(s.tab as any)}
-            className="glass-panel glass-panel-interactive"
-            style={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "0.5rem",
-              padding: "1rem 0.5rem",
-              cursor: "pointer",
-              border: "1px solid var(--border-color)",
-              background: "var(--bg-surface)",
-              color: "var(--text-secondary)",
-              fontSize: "0.78rem",
-              fontWeight: 600,
-            }}
-          >
-            <span style={{ color: "var(--color-primary)" }}>{s.icon}</span>
-            <span>{s.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* Grid: 2 columns */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "1.25rem" }}>
-        {/* BLOCK 1 — Last Processed Data */}
-        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-          {blockHeader(1, "var(--color-primary)", "var(--color-primary-glow)", ht.step1Title, ht.step1Desc)}
-          {mockData.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "1.5rem", color: "var(--text-muted)", fontSize: "0.85rem", border: "1px dashed var(--border-color)", borderRadius: "var(--radius-md)" }}>
-              <Database size={22} style={{ marginBottom: "0.5rem", opacity: 0.35, display: "block", margin: "0 auto 0.5rem" }} />
-              <p style={{ margin: 0 }}>{ht.noData}</p>
-            </div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-              {mockData.map((d, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                    <FileCode size={14} style={{ color: "var(--color-primary)", flexShrink: 0 }} />
-                    <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{d.name}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: "0.6rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.rows} {ht.rowsProcessed}</span>
-                    <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>{d.cols} {ht.columnsDetected}</span>
-                    <span className="badge badge-success" style={{ fontSize: "0.65rem" }}>{d.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+      {/* Pinned Applications Section */}
+      <div style={{
+        width: "100%",
+        maxWidth: "1100px",
+        zIndex: 1
+      }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1.5rem",
+          padding: "0 0.5rem"
+        }}>
+          <h2 style={{
+            fontSize: "0.9rem",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+            color: "var(--text-muted)",
+            margin: 0
+          }}>
+            {language === "es" ? "Aplicaciones Destacadas" : "Pinned Applications"}
+          </h2>
+          <span style={{
+            fontSize: "0.75rem",
+            color: "var(--text-muted)",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.25rem"
+          }}>
+            <Sparkles size={12} style={{ color: "var(--color-success)" }} />
+            {language === "es" ? "Automatización con IA activa" : "AI automation active"}
+          </span>
         </div>
 
-        {/* BLOCK 2 — Generated Reports */}
-        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem" }}>
-          {blockHeader(2, "var(--color-accent)", "var(--color-accent-glow)", ht.step2Title, ht.step2Desc)}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {mockReports.map((r, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>{r.name}</span>
-                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-                  <span className="badge badge-info" style={{ fontSize: "0.62rem" }}>{r.type}</span>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{r.time}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* Grid of Applications */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+          gap: "1.5rem"
+        }}>
+          {appDetails.map((app) => (
+            <div
+              key={app.id}
+              onClick={() => setActiveTab(app.id as any)}
+              className="glass-panel glass-panel-interactive"
+              style={{
+                padding: "2rem",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                minHeight: "240px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-surface)",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              {/* Subtle hover glow accent */}
+              <div style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "100px",
+                height: "100px",
+                background: `radial-gradient(circle, ${app.glowColor} 0%, transparent 70%)`,
+                pointerEvents: "none"
+              }} />
 
-        {/* BLOCK 3 — Alerts */}
-        <div className="glass-panel" style={{ padding: "1.25rem 1.5rem", gridColumn: "span 2" }}>
-          {blockHeader(3, "var(--color-warning)", "var(--color-warning-glow)", ht.step3Title, ht.step3Desc)}
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {mockAlerts.map((a, i) => (
-              <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0.6rem 0.75rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: levelColor[a.level], display: "inline-block" }} />
-                  <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>{a.msg}</span>
+              <div>
+                {/* Icon & Status */}
+                <div style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: "1.5rem"
+                }}>
+                  <div style={{
+                    width: "48px",
+                    height: "48px",
+                    borderRadius: "12px",
+                    background: `linear-gradient(135deg, ${app.color}20 0%, ${app.color}05 100%)`,
+                    border: `1px solid ${app.color}40`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: app.color,
+                    boxShadow: `0 4px 12px ${app.glowColor}`
+                  }}>
+                    {app.icon}
+                  </div>
+                  
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                    padding: "0.25rem 0.6rem",
+                    borderRadius: "20px",
+                    background: "var(--bg-surface-solid)",
+                    border: "1px solid var(--border-color)",
+                    fontSize: "0.75rem",
+                    fontWeight: 500,
+                    color: "var(--text-secondary)"
+                  }}>
+                    <span style={{
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: app.statusType === "success" ? "var(--color-success)" : app.statusType === "warning" ? "var(--color-warning)" : "#06b6d4"
+                    }} />
+                    {app.statusText}
+                  </div>
                 </div>
-                <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-                  <span className={`badge ${levelBadgeClass[a.level]}`} style={{ fontSize: "0.62rem" }}>{ht["alert" + a.level.charAt(0).toUpperCase() + a.level.slice(1)]}</span>
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{a.time}</span>
-                </div>
+
+                {/* Info */}
+                <h3 style={{
+                  fontSize: "1.2rem",
+                  fontWeight: 600,
+                  marginBottom: "0.5rem",
+                  color: "var(--text-primary)"
+                }}>
+                  {app.title}
+                </h3>
+                
+                <p style={{
+                  fontSize: "0.85rem",
+                  lineHeight: "1.5",
+                  color: "var(--text-secondary)",
+                  marginBottom: "1.5rem"
+                }}>
+                  {app.desc}
+                </p>
               </div>
-            ))}
-          </div>
+
+              {/* Action Link */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                color: app.color,
+                marginTop: "auto",
+              }}
+              className="launch-link"
+              >
+                <span>{language === "es" ? "Iniciar aplicación" : "Launch application"}</span>
+                <ArrowRight size={14} className="launch-arrow" style={{ transition: "transform 0.2s" }} />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

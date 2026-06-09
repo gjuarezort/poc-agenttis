@@ -45,13 +45,28 @@ export const DataConnectionsTab: React.FC = () => {
     setMockConnections,
     loadSampleCSV,
     handleFileUpload,
-    setActiveTab, 
+    setActiveTab,
+    setHeaderAction,
   } = useDashboard();
   
   const t = (key: string) => {
     const dict = TRANSLATIONS[language] as any;
     return dict[key] !== undefined ? dict[key] : key;
   };
+
+  React.useEffect(() => {
+    setHeaderAction(
+      <button 
+        className="btn btn-primary" 
+        onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); setWizardOpen(true); }}
+        style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}
+      >
+        <Plus size={16} />
+        {language === "es" ? "Nueva Fuente de Datos" : "New Data Source"}
+      </button>
+    );
+    return () => setHeaderAction(null);
+  }, [language, setHeaderAction, setWizardStep, setWizardSourceType, setWizardConfig, setWizardOpen]);
 
   const sourceCategories = [
     { id: "files",      label: language === "es" ? "Archivos" : "Files",                   icon: <HardDrive size={18} />, color: "var(--text-secondary)",
@@ -149,25 +164,10 @@ export const DataConnectionsTab: React.FC = () => {
   };
 
   return (
-    <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "2rem" }}>
-      {/* Tab Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
-        <div style={{ flex: 1, minWidth: "280px" }}>
-          <h2 style={{ margin: "0 0 0.4rem 0", fontSize: "1.6rem" }}>{t("dataTitle")}</h2>
-          <p style={{ margin: 0, fontSize: "0.95rem", color: "var(--text-secondary)" }}>
-            {language === "es" ? "Gestioná las conexiones de datos activas en la plataforma." : "Manage active data connections on the platform."}
-          </p>
-        </div>
-        <button 
-          className="btn btn-primary" 
-          onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); setWizardOpen(true); }}
-        >
-          <Plus size={16} />
-          {language === "es" ? "Nueva Conexión" : "New Connection"}
-        </button>
-      </div>
+    <>
+      <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "2rem" }}>
 
-      {/* Main Grid: Only showing ACTIVE connections */}
+        {/* Main Grid: Only showing ACTIVE data sources */}
       {mockConnections.length > 0 ? (
         <div className="marketplace-grid">
           {mockConnections.map((c, i) => (
@@ -205,10 +205,11 @@ export const DataConnectionsTab: React.FC = () => {
         <div className="glass-panel flex-center" style={{ padding: "4rem", flexDirection: "column", gap: "1rem", textAlign: "center" }}>
           <Database size={48} style={{ color: "var(--text-muted)", opacity: 0.5 }} />
           <p style={{ margin: 0, color: "var(--text-secondary)", maxWidth: "300px" }}>
-            {language === "es" ? "No hay conexiones activas. Añade una para empezar." : "No active connections. Add one to get started."}
+            {language === "es" ? "No hay fuentes de datos activas. Añade una para empezar." : "No active data sources. Add one to get started."}
           </p>
         </div>
       )}
+      </div>
 
       {/* Slide-over Wizard Drawer */}
       {wizardOpen && (
@@ -220,8 +221,8 @@ export const DataConnectionsTab: React.FC = () => {
                 <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
                   {wizardStep === 1 && (language === "es" ? "Seleccionar Fuente" : "Select Source")}
                   {wizardStep === 2 && (language === "es" ? `Configurar ${selectedSource?.label}` : `Configure ${selectedSource?.label}`)}
-                  {wizardStep === 3 && (language === "es" ? "Conexión Exitosa" : "Connection Successful")}
-                  {wizardStep === 4 && (language === "es" ? "Detalles de Conexión" : "Connection Details")}
+                  {wizardStep === 3 && (language === "es" ? "Fuente de Datos Agregada" : "Data Source Added")}
+                  {wizardStep === 4 && (language === "es" ? "Detalles de la Fuente" : "Data Source Details")}
                 </h3>
                 {wizardStep === 2 && (
                   <p style={{ margin: "0.25rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem" }}>
@@ -346,7 +347,7 @@ export const DataConnectionsTab: React.FC = () => {
                   <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.25)", width: "80px", height: "80px", borderRadius: "50%", alignItems: "center", justifyContent: "center", marginBottom: "1.75rem", color: "var(--color-success)", boxShadow: "0 0 30px rgba(16, 185, 129, 0.15)" }}>
                     <CheckCircle2 size={40} />
                   </div>
-                  <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.25rem" }}>{language === "es" ? "¡Conexión Exitosa!" : "Connection Successful!"}</h3>
+                  <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.25rem" }}>{language === "es" ? "¡Fuente de Datos Agregada!" : "Data Source Added!"}</h3>
                   <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", margin: "0 0 0.5rem" }}>
                     <strong style={{ color: "var(--text-primary)" }}>{selectedSource?.label}</strong> {language === "es" ? "está sincronizando datos." : "is syncing data."}
                   </p>
@@ -378,7 +379,7 @@ export const DataConnectionsTab: React.FC = () => {
                       {selectedSource?.label?.charAt(0) || "C"}
                     </div>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-primary)" }}>{selectedSource?.label || "Connection"}</h4>
+                      <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-primary)" }}>{selectedSource?.label || "Data Source"}</h4>
                       <span className="badge badge-success" style={{ fontSize: "0.65rem", marginTop: "0.35rem" }}>Active</span>
                     </div>
                   </div>
@@ -411,7 +412,7 @@ export const DataConnectionsTab: React.FC = () => {
                       {language === "es" ? "Configuración" : "Settings"}
                     </button>
                     <button className="btn" style={{ width: "100%", justifyContent: "center", color: "var(--color-danger)", borderColor: "transparent", background: "rgba(239, 68, 68, 0.1)" }}>
-                      {language === "es" ? "Eliminar Conexión" : "Delete Connection"}
+                      {language === "es" ? "Eliminar Fuente de Datos" : "Delete Data Source"}
                     </button>
                   </div>
                 </div>
@@ -447,6 +448,6 @@ export const DataConnectionsTab: React.FC = () => {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 };

@@ -10,9 +10,48 @@ import {
   INITIAL_CLOSE_STEPS,
   INITIAL_TAXES,
   INITIAL_SKILLS,
+  INITIAL_APPS,
 } from "../lib/initialData";
+import { RoleMetadata, INITIAL_ROLES_METADATA } from "../lib/rolePolicyMetadata";
 
-export type TabType = "home" | "connections" | "skills" | "agents" | "visualGraph" | "playground" | "recipe" | "integrations" | "reconciliation" | "monthlyClose" | "taxAlerts" | "templates" | "settings";
+export type TabType = "home" | "connections" | "skills" | "mcpServers" | "agents" | "apps" | "visualGraph" | "playground" | "recipe" | "marketplace" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings" | "users";
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  username: string;
+  email: string;
+  role: string;
+  status: "active" | "inactive";
+  avatar: string;
+  lastLogin: string;
+}
+
+export interface PermissionPolicy {
+  views: string[];
+  actions: {
+    execute_agents: boolean;
+    edit_agents: boolean;
+    edit_skills: boolean;
+    skills_custom_api: boolean;
+    skills_mcp_tool: boolean;
+    skills_datasource_op: boolean;
+    skills_native_util: boolean;
+    skills_compute_sandbox: boolean;
+    manage_mcp: boolean;
+    bypass_confirmation: boolean;
+  };
+}
+
+export interface SecurityLog {
+  id: string;
+  timestamp: string;
+  user: { name: string; role: string; avatar: string };
+  action: string;
+  resource: string;
+  status: "success" | "warning" | "blocked";
+  details?: string;
+}
 
 interface DashboardContextType {
   activeTab: TabType;
@@ -131,7 +170,133 @@ interface DashboardContextType {
   handleQuerySubmit: (e: React.FormEvent) => Promise<void>;
   copyToClipboard: (text: string) => void;
   downloadFile: (content: string, filename: string) => void;
+
+  // MCP Servers Integration states
+  mcpServers: any[];
+  setMcpServers: React.Dispatch<React.SetStateAction<any[]>>;
+  mcpHostActive: boolean;
+  setMcpHostActive: React.Dispatch<React.SetStateAction<boolean>>;
+  mcpHostApiKey: string;
+  setMcpHostApiKey: React.Dispatch<React.SetStateAction<string>>;
+  exposedDataSources: string[];
+  setExposedDataSources: React.Dispatch<React.SetStateAction<string[]>>;
+  exposedSkills: string[];
+  setExposedSkills: React.Dispatch<React.SetStateAction<string[]>>;
+  exposedAgents: any[];
+  setExposedAgents: React.Dispatch<React.SetStateAction<any[]>>;
+  mcpExposedServers: any[];
+  setMcpExposedServers: React.Dispatch<React.SetStateAction<any[]>>;
+  apps: any[];
+  setApps: React.Dispatch<React.SetStateAction<any[]>>;
+  headerAction: React.ReactNode;
+  setHeaderAction: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+
+  // Users & Permissions properties
+  currentUser: UserProfile;
+  changeUserSession: (user: UserProfile) => void;
+  users: UserProfile[];
+  setUsers: React.Dispatch<React.SetStateAction<UserProfile[]>>;
+  permissionPolicy: Record<string, PermissionPolicy>;
+  setPermissionPolicy: (updater: Record<string, PermissionPolicy> | ((prev: Record<string, PermissionPolicy>) => Record<string, PermissionPolicy>)) => void;
+  rolesMetadata: RoleMetadata[];
+  setRolesMetadata: React.Dispatch<React.SetStateAction<RoleMetadata[]>>;
+  securityLogs: SecurityLog[];
+  setSecurityLogs: React.Dispatch<React.SetStateAction<SecurityLog[]>>;
+  logSecurityAction: (action: string, resource: string, status: "success" | "warning" | "blocked", details?: string) => void;
+  hasPermission: (tabOrAction: string) => boolean;
 }
+
+export const INITIAL_USERS: UserProfile[] = [
+  { id: "u-1", name: "Gabriel Juarez", username: "gjuarezort", email: "gabriel@agenttis.com", role: "Admin", status: "active", avatar: "GJ", lastLogin: "Just now" },
+  { id: "u-2", name: "Carlos Pérez", username: "carlos_p", email: "carlos.perez@agenttis.com", role: "Accountant", status: "active", avatar: "CP", lastLogin: "10 mins ago" },
+  { id: "u-3", name: "Sofía Martínez", username: "sofia_m", email: "sofia.m@agenttis.com", role: "Billing Operator", status: "active", avatar: "SM", lastLogin: "1 hour ago" },
+  { id: "u-4", name: "Auditor Externo", username: "auditor_ext", email: "auditor@external.com", role: "Auditor", status: "active", avatar: "AE", lastLogin: "Yesterday" },
+  { id: "u-5", name: "Invitado Temporal", username: "guest_temp", email: "guest@agenttis.com", role: "Guest", status: "inactive", avatar: "IT", lastLogin: "3 days ago" }
+];
+
+export const INITIAL_PERMISSION_POLICY: Record<string, PermissionPolicy> = {
+  "Admin": {
+    views: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users"],
+    actions: {
+      execute_agents: true,
+      edit_agents: true,
+      edit_skills: true,
+      skills_custom_api: true,
+      skills_mcp_tool: true,
+      skills_datasource_op: true,
+      skills_native_util: true,
+      skills_compute_sandbox: true,
+      manage_mcp: true,
+      bypass_confirmation: true
+    }
+  },
+  "Accountant": {
+    views: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings"],
+    actions: {
+      execute_agents: true,
+      edit_agents: false,
+      edit_skills: true,
+      skills_custom_api: true,
+      skills_mcp_tool: false,
+      skills_datasource_op: false,
+      skills_native_util: true,
+      skills_compute_sandbox: false,
+      manage_mcp: false,
+      bypass_confirmation: false
+    }
+  },
+  "Billing Operator": {
+    views: ["home", "reconciliation", "playground", "apps", "settings"],
+    actions: {
+      execute_agents: true,
+      edit_agents: false,
+      edit_skills: true,
+      skills_custom_api: false,
+      skills_mcp_tool: false,
+      skills_datasource_op: false,
+      skills_native_util: true,
+      skills_compute_sandbox: false,
+      manage_mcp: false,
+      bypass_confirmation: true
+    }
+  },
+  "Auditor": {
+    views: ["home", "reconciliation", "monthlyClose", "taxAlerts", "visualGraph", "playground", "settings"],
+    actions: {
+      execute_agents: false,
+      edit_agents: false,
+      edit_skills: false,
+      skills_custom_api: false,
+      skills_mcp_tool: false,
+      skills_datasource_op: false,
+      skills_native_util: false,
+      skills_compute_sandbox: false,
+      manage_mcp: false,
+      bypass_confirmation: false
+    }
+  },
+  "Guest": {
+    views: ["home", "playground"],
+    actions: {
+      execute_agents: false,
+      edit_agents: false,
+      edit_skills: false,
+      skills_custom_api: false,
+      skills_mcp_tool: false,
+      skills_datasource_op: false,
+      skills_native_util: false,
+      skills_compute_sandbox: false,
+      manage_mcp: false,
+      bypass_confirmation: false
+    }
+  }
+};
+
+export const INITIAL_SECURITY_LOGS: SecurityLog[] = [
+  { id: "sec-1", timestamp: "10:02:45", user: { name: "System", role: "Admin", avatar: "SYS" }, action: "Policy initialization", resource: "RBAC Module", status: "success", details: "Loaded default permissions policy mapping." },
+  { id: "sec-2", timestamp: "10:02:46", user: { name: "Gabriel Juarez", role: "Admin", avatar: "GJ" }, action: "Administrator login", resource: "Session", status: "success", details: "OAuth session validated successfully." },
+  { id: "sec-3", timestamp: "10:15:30", user: { name: "Carlos Pérez", role: "Accountant", avatar: "CP" }, action: "Role login", resource: "Session", status: "success", details: "Accountant portal initialized." }
+];
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined);
 
@@ -199,6 +364,9 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   // Configured Skills (Read / Write Actions) list
   const [skills, setSkills] = useState(INITIAL_SKILLS);
 
+  // Applications list state
+  const [apps, setApps] = useState(INITIAL_APPS);
+
   // Skill Builder Form State
   const [skillFormOpen, setSkillFormOpen] = useState(false);
   const [skillFormName, setSkillFormName] = useState("");
@@ -207,6 +375,101 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const [skillFormMethod, setSkillFormMethod] = useState<"GET" | "POST">("POST");
   const [skillFormUrl, setSkillFormUrl] = useState("");
   const [skillFormJson, setSkillFormJson] = useState(`{\n  "invoice_id": "string",\n  "amount": "number"\n}`);
+
+  // MCP Servers Integration states
+  const [mcpServers, setMcpServers] = useState<any[]>([
+    {
+      id: "srv-sqlite",
+      name: "SQLite Local DB Server",
+      type: "stdio",
+      status: "connected",
+      command: "npx",
+      args: "-y @modelcontextprotocol/server-sqlite --db /path/to/local.db",
+      env: "DB_PATH=/path/to/local.db",
+      toolsCount: 4,
+      lastSync: "5 min ago",
+      tools: [
+        { name: "read_query", desc: "Execute a read-only query on the database." },
+        { name: "write_query", desc: "Execute a write query on the database." },
+        { name: "describe_table", desc: "Get structural information of a table." },
+        { name: "list_tables", desc: "List all tables in the database." }
+      ]
+    },
+    {
+      id: "srv-brave",
+      name: "Brave Search Gateway",
+      type: "sse",
+      status: "connected",
+      url: "https://api.brave.com/mcp/sse",
+      headers: "Authorization: Bearer bs_xxxx",
+      toolsCount: 2,
+      lastSync: "1h ago",
+      tools: [
+        { name: "web_search", desc: "Search the web for a query." },
+        { name: "local_search", desc: "Search for local entities like restaurants or shops." }
+      ]
+    },
+    {
+      id: "srv-github",
+      name: "GitHub Developer Server",
+      type: "stdio",
+      status: "error",
+      command: "npx",
+      args: "-y @modelcontextprotocol/server-github",
+      env: "GITHUB_TOKEN=ghp_xxxxx",
+      toolsCount: 6,
+      lastSync: "1 day ago",
+      tools: [
+        { name: "list_repos", desc: "List all repositories." },
+        { name: "get_issue", desc: "Get issue details." },
+        { name: "create_issue", desc: "Create a new issue." },
+        { name: "list_pull_requests", desc: "List pull requests." },
+        { name: "get_file", desc: "Get file contents from repository." },
+        { name: "search_code", desc: "Search code in repositories." }
+      ]
+    }
+  ]);
+  const [mcpHostActive, setMcpHostActive] = useState<boolean>(true);
+  const [mcpHostApiKey, setMcpHostApiKey] = useState<string>("agt_live_9f2a7d4c8e1b306a");
+  const [exposedDataSources, setExposedDataSources] = useState<string[]>(["demo1"]);
+  const [exposedSkills, setExposedSkills] = useState<string[]>(["read_customers", "refund_invoice"]);
+  const [exposedAgents, setExposedAgents] = useState<any[]>(["agent-reconcile"]);
+  const [mcpExposedServers, setMcpExposedServers] = useState<any[]>([
+    {
+      id: "exp-gateway",
+      name: "Agenttis Gateway Server",
+      description: "Exposes active billing tools and transaction datasets to external LLMs.",
+      status: "connected",
+      url: "https://api.agenttis.com/v1/mcp/sse",
+      apiKey: "agt_live_9f2a7d4c8e1b306a",
+      exposedDataSources: ["demo1"],
+      exposedSkills: ["read_customers", "refund_invoice"],
+      exposedAgents: ["agent-reconcile"],
+      logs: [
+        { time: "18:54:12", request: "tools/list", client: "Claude Desktop", status: 200, latency: 15 },
+        { time: "18:54:16", request: "tools/call (read_customers)", client: "Claude Desktop", status: 200, latency: 42 },
+        { time: "18:55:01", request: "tools/call (refund_invoice)", client: "Cursor AI", status: 200, latency: 112 },
+        { time: "18:56:45", request: "resources/list", client: "Claude Desktop", status: 200, latency: 8 },
+        { time: "18:57:30", request: "tools/list", client: "Custom Agent Pipeline", status: 200, latency: 22 }
+      ]
+    },
+    {
+      id: "exp-stock",
+      name: "ERP Inventory Sync Hub",
+      description: "Exposes real-time stock levels and ERP inventory adjustments.",
+      status: "inactive",
+      url: "https://api.agenttis.com/v1/mcp/inventory/sse",
+      apiKey: "agt_live_8e1b3a6c2f9d4b0a",
+      exposedDataSources: ["file-active"],
+      exposedSkills: ["adjust_stock"],
+      exposedAgents: ["agent-inventory"],
+      logs: [
+        { time: "18:50:01", request: "tools/list", client: "Cursor AI", status: 200, latency: 25 },
+        { time: "18:51:24", request: "tools/call (adjust_stock)", client: "Cursor AI", status: 200, latency: 98 }
+      ]
+    }
+  ]);
+  const [headerAction, setHeaderAction] = useState<React.ReactNode>(null);
 
   // Chat/Playground state
   const [query, setQuery] = useState<string>("");
@@ -228,6 +491,143 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
 
   const chatEndRef = useRef<HTMLDivElement>(null);
 
+  // Users & Permissions States
+  const [users, setUsers] = useState<UserProfile[]>(INITIAL_USERS);
+  const [currentUser, setCurrentUser] = useState<UserProfile>(INITIAL_USERS[0]); // Gabriel Juarez is Admin
+  const [rolesMetadata, setRolesMetadata] = useState<RoleMetadata[]>(INITIAL_ROLES_METADATA);
+  const [securityLogs, setSecurityLogs] = useState<SecurityLog[]>(INITIAL_SECURITY_LOGS);
+
+  // Derive permissionPolicy from rolesMetadata
+  const permissionPolicy = React.useMemo(() => {
+    const policy: Record<string, PermissionPolicy> = {};
+    rolesMetadata.forEach(role => {
+      policy[role.key] = {
+        views: role.permissions.modules,
+        actions: {
+          execute_agents: role.permissions.agents.includes("execute"),
+          edit_agents: role.permissions.agents.includes("edit"),
+          edit_skills: role.permissions.skills.length > 0,
+          skills_custom_api: role.permissions.skills.includes("custom_api"),
+          skills_mcp_tool: role.permissions.skills.includes("mcp_tool"),
+          skills_datasource_op: role.permissions.skills.includes("datasource_op"),
+          skills_native_util: role.permissions.skills.includes("native_util"),
+          skills_compute_sandbox: role.permissions.skills.includes("compute_sandbox"),
+          manage_mcp: role.permissions.mcp.includes("manage"),
+          bypass_confirmation: role.permissions.agents.includes("bypass")
+        }
+      };
+    });
+    return policy;
+  }, [rolesMetadata]);
+
+  // Backwards compatible wrapper for setPermissionPolicy
+  const setPermissionPolicy = React.useCallback((
+    updater:
+      | Record<string, PermissionPolicy>
+      | ((prev: Record<string, PermissionPolicy>) => Record<string, PermissionPolicy>)
+  ) => {
+    setRolesMetadata(prevRoles => {
+      const currentPolicy: Record<string, PermissionPolicy> = {};
+      prevRoles.forEach(r => {
+        currentPolicy[r.key] = {
+          views: r.permissions.modules,
+          actions: {
+            execute_agents: r.permissions.agents.includes("execute"),
+            edit_agents: r.permissions.agents.includes("edit"),
+            edit_skills: r.permissions.skills.length > 0,
+            skills_custom_api: r.permissions.skills.includes("custom_api"),
+            skills_mcp_tool: r.permissions.skills.includes("mcp_tool"),
+            skills_datasource_op: r.permissions.skills.includes("datasource_op"),
+            skills_native_util: r.permissions.skills.includes("native_util"),
+            skills_compute_sandbox: r.permissions.skills.includes("compute_sandbox"),
+            manage_mcp: r.permissions.mcp.includes("manage"),
+            bypass_confirmation: r.permissions.agents.includes("bypass")
+          }
+        };
+      });
+
+      const nextPolicy = typeof updater === "function" ? updater(currentPolicy) : updater;
+
+      return prevRoles.map(r => {
+        const p = nextPolicy[r.key];
+        if (!p) return r;
+        return {
+          ...r,
+          permissions: {
+            modules: p.views,
+            agents: [
+              ...(p.actions.execute_agents ? ["execute"] : []),
+              ...(p.actions.edit_agents ? ["edit"] : []),
+              ...(p.actions.bypass_confirmation ? ["bypass"] : [])
+            ],
+            skills: [
+              ...(p.actions.skills_custom_api ? ["custom_api"] : []),
+              ...(p.actions.skills_mcp_tool ? ["mcp_tool"] : []),
+              ...(p.actions.skills_datasource_op ? ["datasource_op"] : []),
+              ...(p.actions.skills_native_util ? ["native_util"] : []),
+              ...(p.actions.skills_compute_sandbox ? ["compute_sandbox"] : [])
+            ],
+            mcp: p.actions.manage_mcp ? ["manage"] : [],
+            data_sources: r.permissions.data_sources
+          }
+        };
+      });
+    });
+  }, []);
+
+  const logSecurityAction = React.useCallback((action: string, resource: string, status: "success" | "warning" | "blocked", details?: string) => {
+    const newLog: SecurityLog = {
+      id: "sec-" + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toLocaleTimeString(),
+      user: {
+        name: currentUser.name,
+        role: currentUser.role,
+        avatar: currentUser.avatar
+      },
+      action,
+      resource,
+      status,
+      details
+    };
+    setSecurityLogs(prev => [newLog, ...prev]);
+  }, [currentUser]);
+
+  const changeUserSession = React.useCallback((user: UserProfile) => {
+    const prevUser = currentUser;
+    setCurrentUser(user);
+    
+    const timeStr = new Date().toLocaleTimeString();
+    const newLog: SecurityLog = {
+      id: "sec-" + Math.random().toString(36).substr(2, 9),
+      timestamp: timeStr,
+      user: {
+        name: user.name,
+        role: user.role,
+        avatar: user.avatar
+      },
+      action: "Session Switched",
+      resource: "Authentication",
+      status: "success",
+      details: `User switched session from ${prevUser.name} (${prevUser.role}) to ${user.name} (${user.role}).`
+    };
+    setSecurityLogs(prev => [newLog, ...prev]);
+  }, [currentUser]);
+
+  const hasPermission = React.useCallback((tabOrAction: string): boolean => {
+    if (currentUser.role === "Admin") return true;
+
+    const policy = permissionPolicy[currentUser.role];
+    if (!policy) return false;
+
+    if (policy.views.includes(tabOrAction)) return true;
+
+    if (tabOrAction in policy.actions) {
+      return policy.actions[tabOrAction as keyof typeof policy.actions];
+    }
+
+    return false;
+  }, [currentUser, permissionPolicy]);
+
   const handleCopilotSubmit = async (context: "reconciliation" | "monthlyClose" | "taxAlerts", customText: string) => {
     const text = customText.trim();
     if (!text) return;
@@ -238,6 +638,27 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     setCopilotMessages(prev => [...prev, { role: "user", text }]);
 
     setTimeout(() => {
+      if (!hasPermission("execute_agents")) {
+        setCopilotMessages(prev => [
+          ...prev,
+          {
+            role: "agent",
+            text: language === "es"
+              ? "⚠️ **Acceso Denegado**: Tu rol actual no tiene autorización para ejecutar tareas operativas (`execute_agents` denegado)."
+              : "⚠️ **Access Denied**: Your current role does not have authorization to trigger agent executions (`execute_agents` denied).",
+            steps: [language === "es" ? "Comprobando credenciales..." : "Checking credentials...", "Fallo: execute_agents denegado."]
+          }
+        ]);
+        logSecurityAction(
+          "Agent Invocation Blocked",
+          `Copilot Chat (${context})`,
+          "blocked",
+          `Attempted to execute agent action with query: "${text}"`
+        );
+        setCopilotLoading(false);
+        return;
+      }
+
       let responseText = "";
       let steps: string[] = [];
 
@@ -434,8 +855,50 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     
     setChatHistory(prev => [...prev, { role: "user", text: userQuery }]);
 
+    const activeAgent = agents.find(a => a.id === selectedPlaygroundAgent);
+    const userRole = currentUser.role;
+
+    const isAgentAllowed = () => {
+      if (userRole === "Admin") return true;
+      if (!activeAgent) return true;
+      
+      const allowedRoles = activeAgent.users.map((r: string) => r.toLowerCase());
+      let normalizedRole = userRole.toLowerCase();
+      if (normalizedRole === "billing operator") normalizedRole = "facturación";
+      if (normalizedRole === "accountant") normalizedRole = "contador";
+      if (normalizedRole === "auditor") normalizedRole = "auditor";
+      
+      return allowedRoles.some((r: string) => 
+        r.includes(normalizedRole) || 
+        normalizedRole.includes(r) ||
+        (normalizedRole === "contador" && r === "administración")
+      );
+    };
+
+    if (!isAgentAllowed()) {
+      setTimeout(() => {
+        setChatHistory(prev => [
+          ...prev,
+          {
+            role: "agent",
+            text: language === "es"
+              ? `⚠️ **Error de Seguridad**: Tu rol (${userRole}) no tiene clearance para instruir al ${activeAgent?.name || "agente seleccionado"}.`
+              : `⚠️ **Security Error**: Your role (${userRole}) lacks clearance to instruct the selected agent (${activeAgent?.name || "agent"}).`,
+            isError: true
+          }
+        ]);
+        logSecurityAction(
+          "Agent Query Blocked",
+          `Agent: ${selectedPlaygroundAgent}`,
+          "blocked",
+          `Blocked query to agent "${activeAgent?.name || selectedPlaygroundAgent}": "${userQuery}" due to clearance requirements.`
+        );
+        setChatLoading(false);
+      }, 1000);
+      return;
+    }
+
     try {
-      const activeAgent = agents.find(a => a.id === selectedPlaygroundAgent);
 
       const response = await fetch("/api/agent-chat", {
         method: "POST",
@@ -585,7 +1048,30 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     handleCopilotSubmit,
     t, tTab,
     loadSampleCSV, handleFileUpload, processCSVData,
-    handleQuerySubmit, copyToClipboard, downloadFile
+    handleQuerySubmit, copyToClipboard, downloadFile,
+
+    mcpServers, setMcpServers,
+    mcpHostActive, setMcpHostActive,
+    mcpHostApiKey, setMcpHostApiKey,
+    exposedDataSources, setExposedDataSources,
+    exposedSkills, setExposedSkills,
+    exposedAgents, setExposedAgents,
+    mcpExposedServers, setMcpExposedServers,
+    apps, setApps,
+    headerAction, setHeaderAction,
+
+    currentUser,
+    changeUserSession,
+    users,
+    setUsers,
+    permissionPolicy,
+    setPermissionPolicy,
+    rolesMetadata,
+    setRolesMetadata,
+    securityLogs,
+    setSecurityLogs,
+    logSecurityAction,
+    hasPermission
   };
 
   return (

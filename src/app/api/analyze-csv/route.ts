@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       let hasDate = false;
       let hasBoolean = false;
       let hasString = false;
-      let sampleValues: any[] = [];
+      const sampleValues: any[] = [];
 
       for (let i = 0; i < Math.min(rows.length, 50); i++) {
         const val = rows[i][header];

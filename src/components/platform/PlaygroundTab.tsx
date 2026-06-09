@@ -1,6 +1,6 @@
 import { useDashboard } from "../../context/DashboardContext";
 import React from "react";
-import { Cpu, Info, Zap, Clock, ArrowRight, TrendingDown, SlidersHorizontal } from "lucide-react";
+import { Cpu, Zap, Clock, ArrowRight, TrendingDown, ChevronDown } from "lucide-react";
 import { TRANSLATIONS } from "../../lib/translations";
 
 interface Agent {
@@ -22,30 +22,6 @@ interface Skill {
   status: "active";
 }
 
-interface PlaygroundTabProps {
-  language: "en" | "es";
-  parsedData: any;
-  fileName: string;
-  query: string;
-  setQuery: (q: string) => void;
-  chatLoading: boolean;
-  chatHistory: any[];
-  setChatHistory: React.Dispatch<React.SetStateAction<any[]>>;
-  selectedPlaygroundAgent: string;
-  setSelectedPlaygroundAgent: (agent: string) => void;
-  selectedTraceStep: number | null;
-  setSelectedTraceStep: (step: number | null) => void;
-  stats: any;
-  agents: Agent[];
-  skills: Skill[];
-  mockConnections: any[];
-  handleQuerySubmit: (e: React.FormEvent) => void;
-  setActiveTab: (tab: any) => void;
-  chatEndRef: React.RefObject<HTMLDivElement | null>;
-}
-
-
-
 export const PlaygroundTab: React.FC = () => {
   const { language,
   parsedData,
@@ -59,17 +35,78 @@ export const PlaygroundTab: React.FC = () => {
   setSelectedPlaygroundAgent,
   selectedTraceStep,
   setSelectedTraceStep,
-  stats,
   agents,
   skills,
   mockConnections,
   handleQuerySubmit,
   setActiveTab,
-  chatEndRef, } = useDashboard();
-  const t = (key: string) => {
+  chatEndRef,
+  setHeaderAction, } = useDashboard();
+
+  const t = React.useCallback((key: string) => {
     const dict = TRANSLATIONS[language] as any;
     return dict[key] !== undefined ? dict[key] : key;
-  };
+  }, [language]);
+
+  React.useEffect(() => {
+    setHeaderAction(
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-secondary)" }}>
+          {language === "es" ? "Agente:" : "Agent:"}
+        </span>
+        <div style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+          <select
+            value={selectedPlaygroundAgent}
+            onChange={e => {
+              setSelectedPlaygroundAgent(e.target.value);
+              setChatHistory([]); // Clear chat history when switching agent
+            }}
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              padding: "0 2.2rem 0 0.85rem",
+              background: "var(--bg-surface-solid)",
+              border: "1px solid var(--border-color)",
+              borderRadius: "var(--radius-md)",
+              color: "var(--text-primary)",
+              cursor: "pointer",
+              width: "auto",
+              height: "38px",
+              appearance: "none",
+              WebkitAppearance: "none",
+              margin: 0,
+              boxSizing: "border-box"
+            }}
+          >
+            {agents.map(a => (
+              <option key={a.id} value={a.id} style={{ background: "var(--bg-surface-solid)", color: "var(--text-primary)" }}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            size={14}
+            style={{
+              position: "absolute",
+              right: "0.75rem",
+              top: "50%",
+              transform: "translateY(-50%)",
+              pointerEvents: "none",
+              color: "var(--text-muted)"
+            }}
+          />
+        </div>
+        <button 
+          onClick={() => setChatHistory([])} 
+          className="btn btn-secondary" 
+          style={{ padding: "0 1rem", fontSize: "0.85rem", height: "38px", margin: 0, boxSizing: "border-box" }}
+        >
+          {t("clearChat")}
+        </button>
+      </div>
+    );
+    return () => setHeaderAction(null);
+  }, [language, agents, selectedPlaygroundAgent, setSelectedPlaygroundAgent, setChatHistory, setHeaderAction, t]);
 
   const renderInlineBold = (text: string): React.ReactNode => {
     const parts = text.split(/(\*\*[^*]+\*\*)/g);
@@ -150,45 +187,11 @@ export const PlaygroundTab: React.FC = () => {
         ];
 
   return (
-    <div className="animate-fade-in" style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: "1.25rem", height: "calc(100vh - 170px)" }}>
+    <div className="animate-fade-in" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.2fr) minmax(0, 0.8fr)", gap: "1.25rem", height: "calc(100vh - 170px)" }}>
       {/* Left Column Chat frame */}
       <div className="glass-panel" style={{ display: "flex", flexDirection: "column", height: "100%", padding: "1.25rem" }}>
-        <div style={{ borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem", marginBottom: "0.75rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <h3 style={{ margin: 0 }}>{t("playTitle")}</h3>
-              <span className="info-tooltip">
-                <Info size={14} />
-                <span className="tooltip-text">{t("playSubtitle").replace("{fileName}", fileName)}</span>
-              </span>
-            </div>
-
-            {/* Playground Agent Selector */}
-            <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", background: "var(--bg-surface-solid)", padding: "0.25rem 0.5rem", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-              <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--text-muted)" }}>
-                {language === "es" ? "Agente:" : "Agent:"}
-              </span>
-              <select
-                value={selectedPlaygroundAgent}
-                onChange={e => {
-                  setSelectedPlaygroundAgent(e.target.value);
-                  setChatHistory([]); // Clear chat history when switching agent
-                }}
-                style={{ fontSize: "0.75rem", width: "170px", padding: "0.15rem 0.35rem", background: "transparent", border: "none", outline: "none" }}
-              >
-                {agents.map(a => (
-                  <option key={a.id} value={a.id} style={{ background: "var(--bg-surface-solid)" }}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <button onClick={() => setChatHistory([])} className="btn btn-secondary" style={{ padding: "0.35rem 0.75rem", fontSize: "0.75rem" }}>
-            {t("clearChat")}
-          </button>
-        </div>
+        {/* Clear spacer in place of header */}
+        <div style={{ height: "0.25rem" }} />
 
         {/* Message loop */}
         <div style={{ flex: 1, overflowY: "auto", paddingRight: "0.4rem", display: "flex", flexDirection: "column", gap: "1.25rem", marginBottom: "0.75rem" }}>
@@ -325,7 +328,7 @@ export const PlaygroundTab: React.FC = () => {
 
           return (
             <div className="glass-panel" style={{ padding: "1.25rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
                 <div>
                   <span style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", fontWeight: 700 }}>
                     {language === "es" ? "Gobernanza del Agente" : "Agent Governance"}
