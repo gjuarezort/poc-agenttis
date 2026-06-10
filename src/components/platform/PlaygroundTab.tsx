@@ -368,14 +368,14 @@ export const PlaygroundTab: React.FC = () => {
           );
         })()}
 
-        {/* Link to Settings */}
-        <div className="glass-panel glass-panel-interactive" onClick={() => setActiveTab("settings")} style={{ padding: "0.75rem 1rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        {/* Link to Observability */}
+        <div className="glass-panel glass-panel-interactive" onClick={() => setActiveTab("observability")} style={{ padding: "0.75rem 1rem", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <TrendingDown size={14} style={{ color: "var(--color-primary)" }} />
             <span style={{ fontSize: "0.82rem", fontWeight: 600 }}>{t("efficiencyTitle")}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{language === "es" ? "Ver en Configuración" : "See in Settings"}</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{language === "es" ? "Ver Métricas y Ahorros" : "See Metrics & Savings"}</span>
             <ArrowRight size={13} style={{ color: "var(--text-muted)" }} />
           </div>
         </div>

@@ -20,6 +20,7 @@ import {
   Lock,
   ChevronUp,
   Store,
+  Activity,
 } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
@@ -32,6 +33,8 @@ export const Sidebar: React.FC = () => {
     tTab,
     sidebarOpen,
     setSidebarOpen,
+    mobileMenuOpen,
+    setMobileMenuOpen,
     theme,
     currentUser,
     changeUserSession,
@@ -69,6 +72,7 @@ export const Sidebar: React.FC = () => {
     { key: "visualGraph",   icon: <Cpu size={18} strokeWidth={1.5} />,               label: tTab("visualGraph") },
     { key: "playground",    icon: <Play size={18} strokeWidth={1.5} />,              label: tTab("playground"),    disabled: !parsedData },
     ...(advancedMode ? [{ key: "recipe", icon: <FileCode size={18} strokeWidth={1.5} />, label: tTab("recipe"), disabled: !parsedData }] : []),
+    { key: "observability", icon: <Activity size={18} strokeWidth={1.5} />,          label: tTab("observability") },
     
     { key: "users",         icon: <Shield size={18} strokeWidth={1.5} />,            label: tTab("users"), sectionLabel: language === "es" ? "Sistema" : "System" },
     { key: "marketplace",   icon: <Store size={18} strokeWidth={1.5} />,             label: tTab("marketplace") },
@@ -77,7 +81,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside
-      className={`sidebar ${!isExpanded ? "collapsed" : ""} ${isExpanded && !sidebarOpen ? "overlay-shadow" : ""}`}
+      className={`sidebar ${!isExpanded ? "collapsed" : ""} ${isExpanded && !sidebarOpen ? "overlay-shadow" : ""} ${mobileMenuOpen ? "mobile-open" : ""}`}
       onMouseLeave={() => {
         setSidebarHovered(false);
         setLogoHovered(false);
@@ -127,10 +131,9 @@ export const Sidebar: React.FC = () => {
               transition: "all 0.25s"
             }}
             onClick={(e) => {
-              if (sidebarOpen) {
-                e.stopPropagation();
-                setActiveTab("home" as any);
-              }
+              e.stopPropagation();
+              setActiveTab("home" as any);
+              setMobileMenuOpen(false);
             }}
             title={!sidebarOpen ? (language === "es" ? "Abrir barra lateral" : "Open sidebar") : (language === "es" ? "Ir al Inicio" : "Go to Home")}
           >
@@ -242,7 +245,12 @@ export const Sidebar: React.FC = () => {
                   <button 
                     className={`sidebar-nav-item ${activeTab === item.key ? "active" : ""} ${!isExpanded ? "collapsed" : ""}`}
                     disabled={item.disabled}
-                    onClick={() => !item.disabled && setActiveTab(item.key as any)}
+                    onClick={() => {
+                      if (!item.disabled) {
+                        setActiveTab(item.key as any);
+                        setMobileMenuOpen(false);
+                      }
+                    }}
                     style={{ 
                       opacity: item.disabled ? 0.5 : (isLocked ? 0.65 : 1), 
                       cursor: item.disabled ? "not-allowed" : "pointer" 

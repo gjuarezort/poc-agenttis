@@ -21,6 +21,13 @@ import {
   ArrowRight,
   UserCheck
 } from "lucide-react";
+import { TRANSLATIONS } from "../../lib/translations";
+import { Card } from "../ui/Card";
+import { SlideOver } from "../ui/SlideOver";
+import { Badge } from "../ui/Badge";
+import { Button } from "../ui/Button";
+import { Heading } from "../ui/Heading";
+import { Input, Select, Textarea } from "../ui/Input";
 
 interface Skill {
   id: string;
@@ -52,11 +59,6 @@ export const SkillsTab: React.FC = () => {
     logSecurityAction
   } = useDashboard();
 
-  // Wizard Steps:
-  // 1 = Select Provider Category
-  // 2 = Configure Specific Fields
-  // 3 = Success Screen
-  // 4 = Detail Drawer
   const [wizardStep, setWizardStep] = useState(1);
   const [wizardSaving, setWizardSaving] = useState(false);
   const [skillFormOpen, setSkillFormOpen] = useState(false);
@@ -227,10 +229,10 @@ export const SkillsTab: React.FC = () => {
 
   React.useEffect(() => {
     setHeaderAction(
-      <button className="btn btn-primary" onClick={openNewSkillWizard} style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}>
+      <Button variant="primary" onClick={openNewSkillWizard} className="!py-2 !px-4 !text-xs flex items-center gap-1.5">
         <Plus size={16} />
         {t("newSkillBtn")}
-      </button>
+      </Button>
     );
     return () => setHeaderAction(null);
   }, [language, setHeaderAction, openNewSkillWizard]);
@@ -392,7 +394,7 @@ export const SkillsTab: React.FC = () => {
 
   return (
     <>
-      <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "2rem" }}>
+      <div className="animate-fade-in flex flex-col gap-8 pb-8">
         {/* Active Skills Grid */}
         {skills.length > 0 ? (
           <div className="marketplace-grid">
@@ -412,118 +414,127 @@ export const SkillsTab: React.FC = () => {
               }
 
               return (
-                <div
+                <Card
                   key={skill.id}
-                  className="glass-panel glass-panel-interactive"
+                  interactive
                   onClick={() => openSkillDetails(skill)}
-                  style={{ display: "flex", flexDirection: "column", padding: "1.35rem", minWidth: "280px", cursor: "pointer" }}
+                  className="flex flex-col p-6 min-w-[280px] cursor-pointer"
                 >
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                    <div style={{ width: "38px", height: "38px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="w-[38px] h-[38px] rounded-md bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)]">
                       {skill.provider === "mcp_tool" && <Server size={18} style={{ color: iconColor }} />}
                       {skill.provider === "datasource_op" && <Database size={18} style={{ color: iconColor }} />}
                       {skill.provider === "compute_sandbox" && <FileCode size={18} style={{ color: iconColor }} />}
                       {skill.provider === "native_util" && <Zap size={18} style={{ color: iconColor }} />}
                       {(!skill.provider || skill.provider === "custom_api") && <Globe size={18} style={{ color: iconColor }} />}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
-                      <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "var(--color-success)", boxShadow: "0 0 8px var(--color-success-glow)" }} />
-                      <span style={{ fontSize: "0.7rem", color: "var(--text-muted)", textTransform: "capitalize" }}>Active</span>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-2 h-2 rounded-full bg-[var(--color-success)]" style={{ boxShadow: "0 0 8px var(--color-success-glow)" }} />
+                      <span className="text-[10px] text-[var(--text-muted)] capitalize">Active</span>
                     </div>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontSize: "0.98rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>{skill.name}</div>
-                    <div style={{ fontSize: "0.78rem", color: "var(--text-muted)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden", lineHeight: 1.4 }}>
+                  <div className="flex-1">
+                    <Heading level="h4" className="text-sm font-bold text-[var(--text-primary)] mb-1">{skill.name}</Heading>
+                    <p className="text-xs text-[var(--text-muted)] line-clamp-2 leading-relaxed m-0">
                       {skill.description}
-                    </div>
+                    </p>
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", paddingTop: "0.85rem", borderTop: "1px solid var(--border-color)" }}>
-                    <span className="badge badge-success" style={{ fontSize: "0.62rem", textTransform: "uppercase" }}>
+                  <div className="flex justify-between items-center mt-4 pt-3.5 border-t border-[var(--border-color)]">
+                    <Badge variant="success" className="text-[9px] uppercase">
                       {categoryLabel}
-                    </span>
-                    <span style={{ fontSize: "0.68rem", color: "var(--text-secondary)" }}>
+                    </Badge>
+                    <span className="text-xs text-[var(--text-secondary)]">
                       {skill.parameters?.length || 0} params
                     </span>
                   </div>
-                </div>
+                </Card>
               );
             })}
           </div>
         ) : (
-          <div className="glass-panel flex-center" style={{ padding: "4rem", flexDirection: "column", gap: "1rem", textAlign: "center" }}>
-            <Zap size={44} style={{ color: "var(--text-muted)", opacity: 0.5 }} />
-            <p style={{ margin: 0, color: "var(--text-secondary)", maxWidth: "340px", fontSize: "0.9rem" }}>
+          <Card className="flex-center p-16 flex-col gap-4 text-center">
+            <Zap size={44} className="text-[var(--text-muted)] opacity-50" />
+            <p className="m-0 text-[var(--text-secondary)] max-w-[340px] text-sm leading-normal">
               {t("noSkills")}
             </p>
-          </div>
+          </Card>
         )}
       </div>
 
       {/* Slide-over Wizard Drawer */}
-      {skillFormOpen && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => !wizardSaving && setSkillFormOpen(false)} />
-          <div className="slide-over-panel" style={{ maxWidth: "520px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {wizardStep === 1 && t("categoryTitle")}
-                  {wizardStep === 2 && t("configTitle")}
-                  {wizardStep === 3 && t("successTitle")}
-                  {wizardStep === 4 && t("detailsTitle")}
-                </h3>
-                {wizardStep === 2 && (
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                    <Lock size={12} />
-                    Auto-validation pipeline active
-                  </p>
-                )}
+      <SlideOver
+        isOpen={skillFormOpen}
+        onClose={() => !wizardSaving && setSkillFormOpen(false)}
+        title={
+          wizardStep === 1 ? t("categoryTitle") :
+          wizardStep === 2 ? t("configTitle") :
+          wizardStep === 3 ? t("successTitle") :
+          t("detailsTitle")
+        }
+        description={wizardStep === 2 ? (language === "es" ? "Canal de auto-validación activo" : "Auto-validation pipeline active") : undefined}
+        maxWidth="520px"
+        footer={
+          wizardStep === 2 ? (
+            <div className="flex justify-between items-center w-full">
+              <Button variant="secondary" disabled={wizardSaving} onClick={() => setWizardStep(1)} className="!py-2.5 !px-5">
+                Back
+              </Button>
+              <div className="flex gap-3">
+                <Button variant="secondary" disabled={wizardSaving} onClick={() => setSkillFormOpen(false)} className="!py-2.5 !px-5">
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  form="skill-wizard-form" 
+                  variant="primary" 
+                  disabled={wizardSaving} 
+                  className="min-w-[120px] flex items-center gap-1.5 justify-center !py-2.5 !px-5"
+                >
+                  {wizardSaving ? (
+                    <>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon size={14} />
+                      <span>Save Skill</span>
+                    </>
+                  )}
+                </Button>
               </div>
-              <button onClick={() => setSkillFormOpen(false)} disabled={wizardSaving} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
             </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+          ) : undefined
+        }
+      >
               
               {/* STEP 1: Select Skill Provider Category */}
               {wizardStep === 1 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                  <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--text-secondary)", lineHeight: 1.4 }}>
+                <div className="flex flex-col gap-5">
+                  <p className="m-0 text-sm text-[var(--text-secondary)] leading-relaxed">
                     {t("categoryDesc")}
                   </p>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                  <div className="flex flex-col gap-2.5">
                     {/* Custom API */}
                     {(() => {
                       const isAllowed = hasPermission("skills_custom_api");
                       return (
                         <button
                           onClick={() => isAllowed && handleSelectCategory("custom_api")}
-                          className={`glass-panel ${isAllowed ? "glass-panel-interactive" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            textAlign: "left",
-                            padding: "1rem",
-                            cursor: isAllowed ? "pointer" : "not-allowed",
-                            background: "var(--bg-surface)",
-                            width: "100%",
-                            gap: "0.85rem",
-                            opacity: isAllowed ? 1 : 0.5
-                          }}
+                          className={`glass-panel flex items-center justify-between text-left p-4 cursor-pointer bg-[var(--bg-surface)] w-full gap-3.5 ${isAllowed ? "glass-panel-interactive" : "opacity-50 cursor-not-allowed"}`}
                         >
-                          <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: isAllowed ? "var(--color-primary)" : "var(--text-muted)" }}>
-                            {isAllowed ? <Globe size={16} /> : <Lock size={14} style={{ color: "var(--color-danger)" }} />}
+                          <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] shrink-0">
+                            {isAllowed ? <Globe size={16} /> : <Lock size={14} className="text-[var(--color-danger)]" />}
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <h4 style={{ margin: "0 0 0.1rem", fontSize: "0.88rem", color: isAllowed ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <div className="flex-1">
+                            <Heading level="h4" className="m-0 text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                               {t("customApi")}
-                              {!isAllowed && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Restricted Profile Access]</span>}
-                            </h4>
-                            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: 0 }}>{t("customApiDesc")}</p>
+                              {!isAllowed && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Restricted Profile Access]</span>}
+                            </Heading>
+                            <p className="text-[10px] text-[var(--text-muted)] m-0">{t("customApiDesc")}</p>
                           </div>
-                          {isAllowed && <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />}
+                          {isAllowed && <ArrowRight size={14} className="text-[var(--text-muted)]" />}
                         </button>
                       );
                     })()}
@@ -536,31 +547,20 @@ export const SkillsTab: React.FC = () => {
                       return (
                         <button
                           onClick={() => active && handleSelectCategory("mcp_tool")}
-                          className={`glass-panel ${active ? "glass-panel-interactive" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            textAlign: "left",
-                            padding: "1rem",
-                            cursor: active ? "pointer" : "not-allowed",
-                            background: "var(--bg-surface)",
-                            width: "100%",
-                            gap: "0.85rem",
-                            opacity: active ? 1 : 0.5
-                          }}
+                          className={`glass-panel flex items-center justify-between text-left p-4 cursor-pointer bg-[var(--bg-surface)] w-full gap-3.5 ${active ? "glass-panel-interactive" : "opacity-50 cursor-not-allowed"}`}
                         >
-                          <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: active ? "var(--color-primary)" : "var(--text-muted)" }}>
-                            {isAllowed ? <Server size={16} /> : <Lock size={14} style={{ color: "var(--color-danger)" }} />}
+                          <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] shrink-0">
+                            {isAllowed ? <Server size={16} /> : <Lock size={14} className="text-[var(--color-danger)]" />}
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <h4 style={{ margin: "0 0 0.1rem", fontSize: "0.88rem", color: active ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <div className="flex-1">
+                            <Heading level="h4" className="m-0 text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                               {t("mcpTool")}
-                              {!isAllowed && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Restricted Profile Access]</span>}
-                              {isAllowed && !hasMcp && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Requires MCP Connection]</span>}
-                            </h4>
-                            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: 0 }}>{t("mcpToolDesc")}</p>
+                              {!isAllowed && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Restricted Profile Access]</span>}
+                              {isAllowed && !hasMcp && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Requires MCP Connection]</span>}
+                            </Heading>
+                            <p className="text-[10px] text-[var(--text-muted)] m-0">{t("mcpToolDesc")}</p>
                           </div>
-                          {active && <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />}
+                          {active && <ArrowRight size={14} className="text-[var(--text-muted)]" />}
                         </button>
                       );
                     })()}
@@ -573,31 +573,20 @@ export const SkillsTab: React.FC = () => {
                       return (
                         <button
                           onClick={() => active && handleSelectCategory("datasource_op")}
-                          className={`glass-panel ${active ? "glass-panel-interactive" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            textAlign: "left",
-                            padding: "1rem",
-                            cursor: active ? "pointer" : "not-allowed",
-                            background: "var(--bg-surface)",
-                            width: "100%",
-                            gap: "0.85rem",
-                            opacity: active ? 1 : 0.5
-                          }}
+                          className={`glass-panel flex items-center justify-between text-left p-4 cursor-pointer bg-[var(--bg-surface)] w-full gap-3.5 ${active ? "glass-panel-interactive" : "opacity-50 cursor-not-allowed"}`}
                         >
-                          <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: active ? "var(--color-success)" : "var(--text-muted)" }}>
-                            {isAllowed ? <Database size={16} /> : <Lock size={14} style={{ color: "var(--color-danger)" }} />}
+                          <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] shrink-0">
+                            {isAllowed ? <Database size={16} /> : <Lock size={14} className="text-[var(--color-danger)]" />}
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <h4 style={{ margin: "0 0 0.1rem", fontSize: "0.88rem", color: active ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <div className="flex-1">
+                            <Heading level="h4" className="m-0 text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                               {t("dataSource")}
-                              {!isAllowed && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Restricted Profile Access]</span>}
-                              {isAllowed && !hasConn && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Requires Data Source]</span>}
-                            </h4>
-                            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: 0 }}>{t("dataSourceDesc")}</p>
+                              {!isAllowed && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Restricted Profile Access]</span>}
+                              {isAllowed && !hasConn && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Requires Data Source]</span>}
+                            </Heading>
+                            <p className="text-[10px] text-[var(--text-muted)] m-0">{t("dataSourceDesc")}</p>
                           </div>
-                          {active && <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />}
+                          {active && <ArrowRight size={14} className="text-[var(--text-muted)]" />}
                         </button>
                       );
                     })()}
@@ -608,30 +597,19 @@ export const SkillsTab: React.FC = () => {
                       return (
                         <button
                           onClick={() => isAllowed && handleSelectCategory("native_util")}
-                          className={`glass-panel ${isAllowed ? "glass-panel-interactive" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            textAlign: "left",
-                            padding: "1rem",
-                            cursor: isAllowed ? "pointer" : "not-allowed",
-                            background: "var(--bg-surface)",
-                            width: "100%",
-                            gap: "0.85rem",
-                            opacity: isAllowed ? 1 : 0.5
-                          }}
+                          className={`glass-panel flex items-center justify-between text-left p-4 cursor-pointer bg-[var(--bg-surface)] w-full gap-3.5 ${isAllowed ? "glass-panel-interactive" : "opacity-50 cursor-not-allowed"}`}
                         >
-                          <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: isAllowed ? "var(--color-warning)" : "var(--text-muted)" }}>
-                            {isAllowed ? <Zap size={16} /> : <Lock size={14} style={{ color: "var(--color-danger)" }} />}
+                          <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] shrink-0">
+                            {isAllowed ? <Zap size={16} /> : <Lock size={14} className="text-[var(--color-danger)]" />}
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <h4 style={{ margin: "0 0 0.1rem", fontSize: "0.88rem", color: isAllowed ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <div className="flex-1">
+                            <Heading level="h4" className="m-0 text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                               {t("native")}
-                              {!isAllowed && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Restricted Profile Access]</span>}
-                            </h4>
-                            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: 0 }}>{t("nativeDesc")}</p>
+                              {!isAllowed && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Restricted Profile Access]</span>}
+                            </Heading>
+                            <p className="text-[10px] text-[var(--text-muted)] m-0">{t("nativeDesc")}</p>
                           </div>
-                          {isAllowed && <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />}
+                          {isAllowed && <ArrowRight size={14} className="text-[var(--text-muted)]" />}
                         </button>
                       );
                     })()}
@@ -642,30 +620,19 @@ export const SkillsTab: React.FC = () => {
                       return (
                         <button
                           onClick={() => isAllowed && handleSelectCategory("compute_sandbox")}
-                          className={`glass-panel ${isAllowed ? "glass-panel-interactive" : ""}`}
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            textAlign: "left",
-                            padding: "1rem",
-                            cursor: isAllowed ? "pointer" : "not-allowed",
-                            background: "var(--bg-surface)",
-                            width: "100%",
-                            gap: "0.85rem",
-                            opacity: isAllowed ? 1 : 0.5
-                          }}
+                          className={`glass-panel flex items-center justify-between text-left p-4 cursor-pointer bg-[var(--bg-surface)] w-full gap-3.5 ${isAllowed ? "glass-panel-interactive" : "opacity-50 cursor-not-allowed"}`}
                         >
-                          <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: isAllowed ? "var(--color-info)" : "var(--text-muted)" }}>
-                            {isAllowed ? <FileCode size={16} /> : <Lock size={14} style={{ color: "var(--color-danger)" }} />}
+                          <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] shrink-0">
+                            {isAllowed ? <FileCode size={16} /> : <Lock size={14} className="text-[var(--color-danger)]" />}
                           </div>
-                          <div style={{ flex: 1 }}>
-                            <h4 style={{ margin: "0 0 0.1rem", fontSize: "0.88rem", color: isAllowed ? "var(--text-primary)" : "var(--text-muted)", fontWeight: 700, display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                          <div className="flex-1">
+                            <Heading level="h4" className="m-0 text-xs font-bold text-[var(--text-primary)] flex items-center gap-2">
                               {t("compute")}
-                              {!isAllowed && <span style={{ fontSize: "0.65rem", fontWeight: 400, color: "var(--color-danger)" }}>[Restricted Profile Access]</span>}
-                            </h4>
-                            <p style={{ fontSize: "0.72rem", color: "var(--text-muted)", margin: 0 }}>{t("computeDesc")}</p>
+                              {!isAllowed && <span className="text-[10px] font-normal text-[var(--color-danger)]">[Restricted Profile Access]</span>}
+                            </Heading>
+                            <p className="text-[10px] text-[var(--text-muted)] m-0">{t("computeDesc")}</p>
                           </div>
-                          {isAllowed && <ArrowRight size={14} style={{ color: "var(--text-muted)" }} />}
+                          {isAllowed && <ArrowRight size={14} className="text-[var(--text-muted)]" />}
                         </button>
                       );
                     })()}
@@ -675,75 +642,75 @@ export const SkillsTab: React.FC = () => {
 
               {/* STEP 2: Configure Category-Specific Fields */}
               {wizardStep === 2 && (
-                <form id="skill-wizard-form" onSubmit={handleSaveSkill} style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
-                  <p style={{ margin: 0, fontSize: "0.82rem", color: "var(--text-secondary)" }}>
+                <form id="skill-wizard-form" onSubmit={handleSaveSkill} className="flex flex-col gap-5">
+                  <p className="m-0 text-xs text-[var(--text-secondary)]">
                     {t("configDesc")}
                   </p>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                    <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>Skill Name</label>
-                    <input
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">Skill Name</label>
+                    <Input
                       type="text"
                       required
                       placeholder="e.g. Query Inventory"
                       value={skillFormName}
                       onChange={e => setSkillFormName(e.target.value)}
-                      style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                      className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
                     />
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                    <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>Description</label>
-                    <textarea
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">Description</label>
+                    <Textarea
                       required
                       rows={2}
                       placeholder="Explain what capability this exposes to the AI Agent..."
                       value={skillFormDesc}
                       onChange={e => setSkillFormDesc(e.target.value)}
-                      style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)", resize: "vertical" }}
+                      className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
                     />
                   </div>
 
                   {/* 1. CUSTOM API FORM */}
                   {selectedCategory === "custom_api" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "0.75rem" }}>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("apiMethodLabel")}</label>
-                          <select
+                    <div className="flex flex-col gap-5">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs text-[var(--text-primary)] font-bold">{t("apiMethodLabel")}</label>
+                          <Select
                             value={apiMethod}
                             onChange={e => setApiMethod(e.target.value as any)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                           >
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
                             <option value="PUT">PUT</option>
                             <option value="DELETE">DELETE</option>
-                          </select>
+                          </Select>
                         </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("apiUrlLabel")}</label>
-                          <input
+                        <div className="flex flex-col gap-1.5 md:col-span-2">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("apiUrlLabel")}</label>
+                          <Input
                             type="url"
                             required
                             placeholder="https://api.domain.com/v1/resource"
                             value={apiUrl}
                             onChange={e => setApiUrl(e.target.value)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
                           />
                         </div>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.82rem", color: "var(--color-primary)", fontWeight: 700 }}>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="flex items-center gap-1.5 text-xs font-semibold text-[var(--text-secondary)]">
                           <Code size={14} />
                           {t("parameters")}
                         </label>
-                        <textarea
+                        <Textarea
                           rows={4}
                           value={apiParamsJson}
                           onChange={e => setApiParamsJson(e.target.value)}
-                          style={{ padding: "0.65rem 0.8rem", fontFamily: "var(--font-mono)", fontSize: "0.78rem", background: "#080808", color: "#10b981", borderColor: "var(--border-color)", resize: "vertical" }}
+                          className="!py-2.5 !px-3.5 font-mono bg-[#080808] text-emerald-500 border-[var(--border-color)]"
                         />
                       </div>
                     </div>
@@ -751,43 +718,43 @@ export const SkillsTab: React.FC = () => {
 
                   {/* 2. INGESTED MCP TOOL FORM */}
                   {selectedCategory === "mcp_tool" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("mcpServerSelect")}</label>
-                        <select
+                    <div className="flex flex-col gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("mcpServerSelect")}</label>
+                        <Select
                           value={selectedMcpServerId}
                           onChange={e => handleMcpServerChange(e.target.value)}
-                          style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                          className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                         >
                           {mcpServers.map((srv: any) => (
                             <option key={srv.id} value={srv.id}>{srv.name} ({srv.type.toUpperCase()})</option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
 
                       {selectedMcpServerId && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("mcpToolSelect")}</label>
-                          <select
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("mcpToolSelect")}</label>
+                          <Select
                             value={selectedMcpToolName}
                             onChange={e => handleMcpToolChange(e.target.value)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                           >
                             {mcpServers
                               .find(s => s.id === selectedMcpServerId)
                               ?.tools.map((tool: any, tIdx: number) => (
                                 <option key={tIdx} value={tool.name}>{tool.name}</option>
                               ))}
-                          </select>
+                          </Select>
                         </div>
                       )}
 
                       {/* Displaying static mapping parameters preview */}
-                      <div style={{ padding: "0.85rem 1rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-sm)" }}>
-                        <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em", marginBottom: "0.5rem" }}>
+                      <div className="p-4 bg-[var(--bg-surface-solid)] border border-[var(--border-color)] rounded-md">
+                        <div className="text-[10px] text-[var(--text-muted)] font-bold uppercase tracking-wide mb-2">
                           Auto-Detected Parameters
                         </div>
-                        <ul style={{ margin: 0, paddingLeft: "1.1rem", fontSize: "0.78rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                        <ul className="m-0 pl-4 text-xs text-[var(--text-secondary)] flex flex-col gap-1 list-disc">
                           <li><strong>query</strong> (string) - Search text pattern</li>
                           <li><strong>limit</strong> (number) - Max results to fetch</li>
                         </ul>
@@ -797,10 +764,10 @@ export const SkillsTab: React.FC = () => {
 
                   {/* 3. DATA SOURCE OPERATIONS FORM */}
                   {selectedCategory === "datasource_op" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("dsSelect")}</label>
-                        <select
+                    <div className="flex flex-col gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("dsSelect")}</label>
+                        <Select
                           value={selectedConnectionId}
                           onChange={e => {
                             setSelectedConnectionId(e.target.value);
@@ -810,33 +777,33 @@ export const SkillsTab: React.FC = () => {
                               setSkillFormDesc(`Executes custom query on ${conn.name} data source.`);
                             }
                           }}
-                          style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                          className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                         >
                           {mockConnections.map((conn: any) => (
                             <option key={conn.id} value={conn.id}>{conn.name} ({conn.category})</option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("dsOpTypeLabel")}</label>
-                        <select
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("dsOpTypeLabel")}</label>
+                        <Select
                           value={dsOpType}
                           onChange={e => setDsOpType(e.target.value as any)}
-                          style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                          className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                         >
                           <option value="sql_query">SQL Parameterized Query (Read)</option>
                           <option value="record_mutation">Record Mutation/Insert (Action)</option>
-                        </select>
+                        </Select>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("dsSqlQueryLabel")}</label>
-                        <textarea
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("dsSqlQueryLabel")}</label>
+                        <Textarea
                           rows={3}
                           value={dsSqlQuery}
                           onChange={e => setDsSqlQuery(e.target.value)}
-                          style={{ padding: "0.65rem 0.8rem", fontFamily: "var(--font-mono)", fontSize: "0.8rem", background: "#080808", color: "var(--text-primary)", borderColor: "var(--border-color)", resize: "vertical" }}
+                          className="!py-2.5 !px-3.5 font-mono bg-[#080808] text-[var(--text-primary)] border-[var(--border-color)]"
                         />
                       </div>
                     </div>
@@ -844,60 +811,60 @@ export const SkillsTab: React.FC = () => {
 
                   {/* 4. PLATFORM NATIVE UTILITIES FORM */}
                   {selectedCategory === "native_util" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("nativeTypeLabel")}</label>
-                        <select
+                    <div className="flex flex-col gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("nativeTypeLabel")}</label>
+                        <Select
                           value={nativeType}
                           onChange={e => handleNativeTypeChange(e.target.value as any)}
-                          style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                          className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                         >
                           <option value="slack">Slack Notification Trigger</option>
                           <option value="approval">Human-in-the-Loop approval check</option>
                           <option value="handoff">Handoff delegation to another Agent</option>
-                        </select>
+                        </Select>
                       </div>
 
                       {nativeType === "slack" && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("slackChanLabel")}</label>
-                          <input
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("slackChanLabel")}</label>
+                          <Input
                             type="text"
                             required
                             placeholder="e.g. #sales-alerts"
                             value={slackChannel}
                             onChange={e => setSlackChannel(e.target.value)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
                           />
                         </div>
                       )}
 
                       {nativeType === "approval" && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("approvalMsgLabel")}</label>
-                          <input
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("approvalMsgLabel")}</label>
+                          <Input
                             type="text"
                             required
                             value={approvalMessage}
                             onChange={e => setApprovalMessage(e.target.value)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
                           />
                         </div>
                       )}
 
                       {nativeType === "handoff" && (
-                        <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                          <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("handoffAgentLabel")}</label>
-                          <select
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("handoffAgentLabel")}</label>
+                          <Select
                             value={handoffAgentId}
                             onChange={e => setHandoffAgentId(e.target.value)}
-                            style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                            className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                           >
                             <option value="">-- Select Target Agent --</option>
                             {agents.map((ag: any) => (
                               <option key={ag.id} value={ag.id}>{ag.name} ({ag.role})</option>
                             ))}
-                          </select>
+                          </Select>
                         </div>
                       )}
                     </div>
@@ -905,10 +872,10 @@ export const SkillsTab: React.FC = () => {
 
                   {/* 5. COMPUTE / CODE SANDBOX FORM */}
                   {selectedCategory === "compute_sandbox" && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("computeLangLabel")}</label>
-                        <select
+                    <div className="flex flex-col gap-5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("computeLangLabel")}</label>
+                        <Select
                           value={computeLang}
                           onChange={e => {
                             setComputeLang(e.target.value as any);
@@ -918,20 +885,20 @@ export const SkillsTab: React.FC = () => {
                               setComputeCode(`// Transform input data\nexport function run(input) {\n  return {\n    result: input.value * 1.1\n  };\n}`);
                             }
                           }}
-                          style={{ padding: "0.65rem 0.8rem", fontSize: "0.88rem", background: "var(--bg-surface-hover)" }}
+                          className="!py-2.5 !px-3 bg-[var(--bg-surface-hover)]"
                         >
                           <option value="js">Node.js (Javascript V8 Sandbox)</option>
                           <option value="python">Python 3.10 Sandbox</option>
-                        </select>
+                        </Select>
                       </div>
 
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.45rem" }}>
-                        <label style={{ fontSize: "0.82rem", color: "var(--text-primary)", fontWeight: 700 }}>{t("computeCodeLabel")}</label>
-                        <textarea
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">{t("computeCodeLabel")}</label>
+                        <Textarea
                           rows={6}
                           value={computeCode}
                           onChange={e => setComputeCode(e.target.value)}
-                          style={{ padding: "0.65rem 0.8rem", fontFamily: "var(--font-mono)", fontSize: "0.78rem", background: "#080808", color: "#10b981", borderColor: "var(--border-color)", resize: "vertical" }}
+                          className="!py-2.5 !px-3.5 font-mono bg-[#080808] text-emerald-500 border-[var(--border-color)]"
                         />
                       </div>
                     </div>
@@ -941,43 +908,43 @@ export const SkillsTab: React.FC = () => {
 
               {/* STEP 3: Complete screen */}
               {wizardStep === 3 && (
-                <div className="animate-fade-in" style={{ textAlign: "center", padding: "2rem 0" }}>
-                  <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.25)", width: "75px", height: "75px", borderRadius: "50%", alignItems: "center", justifyContent: "center", marginBottom: "1.5rem", color: "var(--color-success)", boxShadow: "0 0 24px rgba(16, 185, 129, 0.15)" }}>
+                <div className="animate-fade-in text-center py-8">
+                  <div className="inline-flex bg-emerald-500/10 border border-emerald-500/25 w-20 h-20 rounded-full items-center justify-center mb-6 text-[var(--color-success)] shadow-[0_0_24px_rgba(16,185,129,0.15)]">
                     <CheckCircle2 size={36} />
                   </div>
-                  <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.2rem" }}>{t("successTitle")}</h3>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", margin: "0 0 1.75rem", maxWidth: "340px", marginInline: "auto", lineHeight: 1.45 }}>
+                  <Heading level="h3" className="m-0 mb-2 text-xl">{t("successTitle")}</Heading>
+                  <p className="text-xs text-[var(--text-secondary)] m-0 mb-6 max-w-[340px] mx-auto leading-relaxed">
                     {t("successDesc")}
                   </p>
 
-                  <div style={{ padding: "1.1rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", textAlign: "left", marginBottom: "2rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Name</span>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-primary)", fontWeight: 600 }}>{skillFormName}</span>
+                  <div className="p-4 bg-[var(--bg-surface-hover)] rounded-md border border-[var(--border-color)] text-left mb-8">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-xs text-[var(--text-secondary)]">Name</span>
+                      <span className="text-xs text-[var(--text-primary)] font-bold">{skillFormName}</span>
                     </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.8rem", color: "var(--text-secondary)" }}>Category</span>
-                      <span className="badge badge-success" style={{ textTransform: "uppercase" }}>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-[var(--text-secondary)]">Category</span>
+                      <Badge variant="success" className="text-[9px] uppercase">
                         {selectedCategory === "custom_api" && "REST API"}
                         {selectedCategory === "mcp_tool" && "MCP TOOL"}
                         {selectedCategory === "datasource_op" && "DATA SOURCE"}
                         {selectedCategory === "native_util" && "NATIVE ACTIVITY"}
                         {selectedCategory === "compute_sandbox" && "COMPUTE"}
-                      </span>
+                      </Badge>
                     </div>
                   </div>
 
-                  <button className="btn btn-primary" onClick={() => setSkillFormOpen(false)} style={{ width: "100%", padding: "0.8rem" }}>
+                  <Button variant="primary" onClick={() => setSkillFormOpen(false)} className="w-full !py-3">
                     Done
-                  </button>
+                  </Button>
                 </div>
               )}
 
               {/* STEP 4: View Active Skill Details */}
               {wizardStep === 4 && selectedSkill && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.4rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                    <div style={{ width: "38px", height: "38px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-center gap-4 p-5 bg-[var(--bg-surface-hover)] border border-[var(--border-color)] rounded-md">
+                    <div className="w-[38px] h-[38px] rounded-md bg-[var(--bg-surface-solid)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)]">
                       {selectedSkill.provider === "mcp_tool" && <Server size={18} style={{ color: "var(--color-primary)" }} />}
                       {selectedSkill.provider === "datasource_op" && <Database size={18} style={{ color: "var(--color-success)" }} />}
                       {selectedSkill.provider === "compute_sandbox" && <FileCode size={18} style={{ color: "var(--color-info)" }} />}
@@ -985,26 +952,26 @@ export const SkillsTab: React.FC = () => {
                       {(!selectedSkill.provider || selectedSkill.provider === "custom_api") && <Globe size={18} style={{ color: "var(--color-primary)" }} />}
                     </div>
                     <div>
-                      <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-primary)" }}>{selectedSkill.name}</h4>
-                      <div style={{ display: "flex", gap: "0.4rem", marginTop: "0.35rem" }}>
-                        <span className="badge badge-success" style={{ fontSize: "0.62rem" }}>Active</span>
-                        <span className="badge badge-info" style={{ fontSize: "0.62rem", textTransform: "uppercase" }}>
+                      <Heading level="h4" className="m-0 text-sm font-bold text-[var(--text-primary)]">{selectedSkill.name}</Heading>
+                      <div className="flex gap-1.5 mt-1.5">
+                        <Badge variant="success" className="text-[9px]">Active</Badge>
+                        <Badge variant="info" className="text-[9px] uppercase">
                           {selectedSkill.providerLabel || "REST API"}
-                        </span>
+                        </Badge>
                       </div>
                     </div>
                   </div>
 
-                  <div style={{ padding: "1.25rem", background: "var(--bg-surface-solid)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div className="p-5 bg-[var(--bg-surface-solid)] rounded-md border border-[var(--border-color)] flex flex-col gap-4">
                     <div>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>Description</span>
-                      <span style={{ fontSize: "0.85rem", color: "var(--text-primary)", lineHeight: 1.45 }}>{selectedSkill.description}</span>
+                      <span className="text-[10px] text-[var(--text-secondary)] block mb-1 font-semibold">Description</span>
+                      <span className="text-xs text-[var(--text-primary)] leading-relaxed">{selectedSkill.description}</span>
                     </div>
 
                     {selectedSkill.providerLabel && (
                       <div>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>{t("linkedProvider")}</span>
-                        <div style={{ fontSize: "0.8rem", color: "var(--text-primary)", fontFamily: "var(--font-mono)", background: "var(--bg-surface-hover)", padding: "0.5rem", borderRadius: "var(--radius-sm)" }}>
+                        <span className="text-[10px] text-[var(--text-secondary)] block mb-1 font-semibold">{t("linkedProvider")}</span>
+                        <div className="text-xs text-[var(--text-primary)] font-mono bg-[var(--bg-surface-hover)] p-2.5 rounded border border-[var(--border-color)]">
                           {selectedSkill.providerLabel}
                         </div>
                       </div>
@@ -1012,18 +979,18 @@ export const SkillsTab: React.FC = () => {
 
                     {selectedSkill.endpoint && (
                       <div>
-                        <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.25rem" }}>Endpoint URL</span>
-                        <div style={{ fontSize: "0.8rem", color: "var(--text-primary)", background: "var(--bg-surface-hover)", padding: "0.5rem", borderRadius: "var(--radius-sm)", fontFamily: "var(--font-mono)", wordBreak: "break-all" }}>
-                          <span style={{ color: "var(--color-primary)", fontWeight: 700, marginRight: "0.5rem" }}>{selectedSkill.method || "POST"}</span>
+                        <span className="text-[10px] text-[var(--text-secondary)] block mb-1 font-semibold">Endpoint URL</span>
+                        <div className="text-xs text-[var(--text-primary)] bg-[var(--bg-surface-hover)] p-2.5 rounded border border-[var(--border-color)] font-mono break-all">
+                          <span className="text-[var(--color-primary)] font-bold mr-2">{selectedSkill.method || "POST"}</span>
                           {selectedSkill.endpoint}
                         </div>
                       </div>
                     )}
 
                     <div>
-                      <span style={{ fontSize: "0.72rem", color: "var(--text-secondary)", display: "block", marginBottom: "0.4rem" }}>{t("parameters")}</span>
-                      <div style={{ padding: "0.65rem 0.85rem", background: "#060606", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
-                        <pre style={{ margin: 0, fontSize: "0.75rem", fontFamily: "var(--font-mono)", color: "#10b981", overflowX: "auto" }}>
+                      <span className="text-[10px] text-[var(--text-secondary)] block mb-1.5 font-semibold">{t("parameters")}</span>
+                      <div className="p-3 bg-[#060606] rounded border border-[var(--border-color)]">
+                        <pre className="m-0 text-[11px] font-mono text-emerald-500 overflow-x-auto">
                           {JSON.stringify(
                             selectedSkill.parameters ? selectedSkill.parameters.reduce((acc: any, curr: any) => ({ ...acc, [curr.name]: curr.type }), {}) : {},
                             null,
@@ -1034,13 +1001,13 @@ export const SkillsTab: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "0.5rem" }}>
-                    <button className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
-                      <Settings size={14} />
+                  <div className="flex flex-col gap-2.5 mt-2">
+                    <Button variant="secondary" className="w-full justify-center !py-2.5">
+                      <Settings size={14} className="mr-1.5" />
                       {t("editSkill")}
-                    </button>
-                    <button
-                      className="btn"
+                    </Button>
+                    <Button
+                      variant="danger"
                       onClick={() => {
                         const requiredPerm = "skills_" + (selectedSkill.provider || "custom_api");
                         if (!hasPermission(requiredPerm)) {
@@ -1064,45 +1031,15 @@ export const SkillsTab: React.FC = () => {
                         setSkills(prev => prev.filter(s => s.id !== selectedSkill.id));
                         setSkillFormOpen(false);
                       }}
-                      style={{ width: "100%", justifyContent: "center", color: "var(--color-danger)", borderColor: "transparent", background: "rgba(239, 68, 68, 0.1)" }}
+                      className="w-full justify-center !py-2.5 bg-red-500/10 !text-red-500 hover:bg-red-500/25 border border-red-500/20 shadow-none"
                     >
-                      <Trash2 size={14} />
+                      <Trash2 size={14} className="mr-1.5" />
                       {t("deleteSkill")}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Footer actions for Step 2 Configuration */}
-            {wizardStep === 2 && (
-              <div style={{ padding: "1.25rem 1.5rem", borderTop: "1px solid var(--border-color)", background: "var(--bg-surface-solid)", display: "flex", justifyContent: "space-between", gap: "0.85rem" }}>
-                <button type="button" className="btn btn-secondary" disabled={wizardSaving} onClick={() => setWizardStep(1)} style={{ padding: "0.55rem 1rem" }}>
-                  Back
-                </button>
-                <div style={{ display: "flex", gap: "0.85rem" }}>
-                  <button type="button" className="btn btn-secondary" disabled={wizardSaving} onClick={() => setSkillFormOpen(false)} style={{ padding: "0.55rem 1rem" }}>
-                    Cancel
-                  </button>
-                  <button type="submit" form="skill-wizard-form" className="btn btn-primary" disabled={wizardSaving} style={{ minWidth: "120px", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center", padding: "0.55rem 1.15rem" }}>
-                    {wizardSaving ? (
-                      <>
-                        <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <LinkIcon size={14} />
-                        <span>Save Skill</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </>
-      )}
+      </SlideOver>
     </>
   );
 };

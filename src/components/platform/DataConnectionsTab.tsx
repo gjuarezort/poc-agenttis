@@ -21,6 +21,12 @@ import {
   MoreVertical
 } from "lucide-react";
 import { TRANSLATIONS } from "../../lib/translations";
+import { Card } from "../ui/Card";
+import { Badge } from "../ui/Badge";
+import { SlideOver } from "../ui/SlideOver";
+import { Button } from "../ui/Button";
+import { Heading } from "../ui/Heading";
+import { Input } from "../ui/Input";
 
 export const DataConnectionsTab: React.FC = () => {
   const { 
@@ -56,14 +62,14 @@ export const DataConnectionsTab: React.FC = () => {
 
   React.useEffect(() => {
     setHeaderAction(
-      <button 
-        className="btn btn-primary" 
+      <Button 
+        variant="primary"
         onClick={() => { setWizardStep(1); setWizardSourceType(""); setWizardConfig({}); setWizardOpen(true); }}
-        style={{ padding: "0.5rem 1rem", fontSize: "0.85rem" }}
+        className="!py-2 !px-4 !text-xs flex items-center gap-1.5"
       >
         <Plus size={16} />
         {language === "es" ? "Nueva Fuente de Datos" : "New Data Source"}
-      </button>
+      </Button>
     );
     return () => setHeaderAction(null);
   }, [language, setHeaderAction, setWizardStep, setWizardSourceType, setWizardConfig, setWizardOpen]);
@@ -165,289 +171,277 @@ export const DataConnectionsTab: React.FC = () => {
 
   return (
     <>
-      <div className="animate-fade-in" style={{ display: "flex", flexDirection: "column", gap: "2rem", paddingBottom: "2rem" }}>
+      <div className="animate-fade-in flex flex-col gap-8 pb-8">
 
         {/* Main Grid: Only showing ACTIVE data sources */}
       {mockConnections.length > 0 ? (
         <div className="marketplace-grid">
           {mockConnections.map((c, i) => (
-            <div 
+            <Card 
               key={i} 
-              className="glass-panel glass-panel-interactive" 
+              interactive 
               onClick={() => {
                 setWizardSourceType(c.sourceId || "postgres"); // Fallback if no source ID
                 setWizardStep(4); // Step 4 = View active connection details
                 setWizardOpen(true);
               }}
-              style={{ display: "flex", flexDirection: "column", padding: "1.5rem", minWidth: "280px", cursor: "pointer" }}
+              className="flex flex-col p-6 min-w-[280px] cursor-pointer"
             >
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)", fontSize: "1.2rem", fontWeight: 700 }}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-[42px] h-[42px] rounded-md bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] text-lg font-bold">
                   {c.name.charAt(0)}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: c.status === "connected" ? "var(--color-success)" : "var(--color-danger)", boxShadow: c.status === "connected" ? "0 0 8px var(--color-success-glow)" : "none" }} />
-                  <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "capitalize" }}>{c.status}</span>
+                <div className="flex items-center gap-2">
+                  <div 
+                    className="w-2 h-2 rounded-full" 
+                    style={{ 
+                      background: c.status === "connected" ? "var(--color-success)" : "var(--color-danger)", 
+                      boxShadow: c.status === "connected" ? "0 0 8px var(--color-success-glow)" : "none" 
+                    }} 
+                  />
+                  <span className="text-xs text-[var(--text-muted)] capitalize">{c.status}</span>
                 </div>
               </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "1.05rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.2rem" }}>{c.name}</div>
-                <div style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{c.category}</div>
+              <div className="flex-1">
+                <Heading level="h4" className="text-base font-bold text-[var(--text-primary)] mb-1">{c.name}</Heading>
+                <p className="text-xs text-[var(--text-muted)]">{c.category}</p>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid var(--border-color)" }}>
-                <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>{c.lastSync}</span>
-                <span className="badge badge-success" style={{ fontSize: "0.7rem" }}>{c.records}</span>
+              <div className="flex justify-between items-center mt-4 pt-4 border-t border-[var(--border-color)]">
+                <span className="text-xs text-[var(--text-muted)]">{c.lastSync}</span>
+                <Badge variant="success" className="text-[10px]">{c.records}</Badge>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       ) : (
-        <div className="glass-panel flex-center" style={{ padding: "4rem", flexDirection: "column", gap: "1rem", textAlign: "center" }}>
-          <Database size={48} style={{ color: "var(--text-muted)", opacity: 0.5 }} />
-          <p style={{ margin: 0, color: "var(--text-secondary)", maxWidth: "300px" }}>
+        <Card className="flex-center p-16 flex-col gap-4 text-center">
+          <Database size={48} className="text-[var(--text-muted)] opacity-50" />
+          <p className="m-0 text-[var(--text-secondary)] max-w-[300px]">
             {language === "es" ? "No hay fuentes de datos activas. Añade una para empezar." : "No active data sources. Add one to get started."}
           </p>
-        </div>
+        </Card>
       )}
       </div>
 
       {/* Slide-over Wizard Drawer */}
-      {wizardOpen && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => !wizardConnecting && setWizardOpen(false)} />
-          <div className="slide-over-panel" style={{ maxWidth: "480px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {wizardStep === 1 && (language === "es" ? "Seleccionar Fuente" : "Select Source")}
-                  {wizardStep === 2 && (language === "es" ? `Configurar ${selectedSource?.label}` : `Configure ${selectedSource?.label}`)}
-                  {wizardStep === 3 && (language === "es" ? "Fuente de Datos Agregada" : "Data Source Added")}
-                  {wizardStep === 4 && (language === "es" ? "Detalles de la Fuente" : "Data Source Details")}
-                </h3>
-                {wizardStep === 2 && (
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                    <Lock size={12} />
-                    {language === "es" ? "Cifrado de extremo a extremo" : "End-to-end encrypted"}
-                  </p>
-                )}
+      <SlideOver
+        isOpen={wizardOpen}
+        onClose={() => !wizardConnecting && setWizardOpen(false)}
+        maxWidth="480px"
+        title={
+          wizardStep === 1 ? (language === "es" ? "Seleccionar Fuente" : "Select Source") :
+          wizardStep === 2 ? (language === "es" ? `Configurar ${selectedSource?.label}` : `Configure ${selectedSource?.label}`) :
+          wizardStep === 3 ? (language === "es" ? "Fuente de Datos Agregada" : "Data Source Added") :
+          wizardStep === 4 ? (language === "es" ? "Detalles de la Fuente" : "Data Source Details") : ""
+        }
+        description={
+          wizardStep === 2 ? (language === "es" ? "Cifrado de extremo a extremo" : "End-to-end encrypted") : undefined
+        }
+        footer={
+          wizardStep === 2 ? (
+            <div className="flex justify-between w-full gap-4">
+              <Button variant="secondary" disabled={wizardConnecting} onClick={() => setWizardStep(1)} className="!py-2.5 !px-5">
+                {language === "es" ? "Atrás" : "Back"}
+              </Button>
+              <div className="flex gap-3">
+                <Button variant="secondary" disabled={wizardConnecting} onClick={() => setWizardOpen(false)} className="!py-2.5 !px-5">
+                  {language === "es" ? "Cancelar" : "Cancel"}
+                </Button>
+                <Button 
+                  type="submit" 
+                  form="wizard-form" 
+                  variant="primary" 
+                  disabled={wizardConnecting} 
+                  className="min-w-[130px] flex items-center gap-1.5 justify-center !py-2.5 !px-5"
+                >
+                  {wizardConnecting ? (
+                    <>
+                      <RefreshCw size={16} className="animate-spin" />
+                      <span>{language === "es" ? "Conectando..." : "Connecting..."}</span>
+                    </>
+                  ) : (
+                    <>
+                      <LinkIcon size={16} />
+                      <span>{language === "es" ? "Conectar" : "Connect"}</span>
+                    </>
+                  )}
+                </Button>
               </div>
-              <button onClick={() => setWizardOpen(false)} disabled={wizardConnecting} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
             </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
-              
-              {/* STEP 1: Select Category/Source */}
-              {wizardStep === 1 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                  <p style={{ margin: "0 0 0.5rem 0", fontSize: "0.9rem", color: "var(--text-secondary)" }}>
-                    {language === "es" ? "Elige un origen de datos para conectar a tu espacio de trabajo." : "Choose a data source to connect to your workspace."}
-                  </p>
-                  {sourceCategories.map((cat, idx) => (
-                    <div key={idx}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-muted)", marginBottom: "0.85rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.4rem" }}>
-                        {cat.icon}
-                        {cat.label}
+          ) : undefined
+        }
+      >
+        {/* STEP 1: Select Category/Source */}
+        {wizardStep === 1 && (
+          <div className="flex flex-col gap-6">
+            <p className="m-0 text-sm text-[var(--text-secondary)]">
+              {language === "es" ? "Elige un origen de datos para conectar a tu espacio de trabajo." : "Choose a data source to connect to your workspace."}
+            </p>
+            {sourceCategories.map((cat, idx) => (
+              <div key={idx} className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border-color)] pb-1.5">
+                  {cat.icon}
+                  {cat.label}
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {cat.sources.map((src, sIdx) => (
+                    <button
+                      key={sIdx}
+                      onClick={() => {
+                        setWizardSourceType(src.id);
+                        setWizardStep(2);
+                      }}
+                      className="glass-panel glass-panel-interactive flex items-center justify-between text-left p-3.5 cursor-pointer bg-[var(--bg-surface)]"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded bg-[var(--bg-surface-hover)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] text-sm font-bold">
+                          {src.label.charAt(0)}
+                        </div>
+                        <div>
+                          <Heading level="h4" className="m-0 text-xs font-semibold text-[var(--text-primary)]">{src.label}</Heading>
+                          <p className="text-[10px] text-[var(--text-muted)] m-0">{src.desc}</p>
+                        </div>
                       </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.5rem" }}>
-                        {cat.sources.map((src, sIdx) => (
-                          <button
-                            key={sIdx}
-                            onClick={() => {
-                              setWizardSourceType(src.id);
-                              setWizardStep(2);
-                            }}
-                            className="glass-panel glass-panel-interactive"
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              textAlign: "left",
-                              padding: "0.85rem 1rem",
-                              cursor: "pointer",
-                              background: "var(--bg-surface)"
-                            }}
-                          >
-                            <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-                              <div style={{ width: "32px", height: "32px", borderRadius: "var(--radius-sm)", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)", fontSize: "1rem", fontWeight: 700 }}>
-                                {src.label.charAt(0)}
-                              </div>
-                              <div>
-                                <h4 style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-primary)" }}>{src.label}</h4>
-                                <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", margin: 0 }}>{src.desc}</p>
-                              </div>
-                            </div>
-                            <Plus size={16} style={{ color: "var(--text-muted)" }} />
-                          </button>
-                        ))}
-                      </div>
-                    </div>
+                      <Plus size={16} className="text-[var(--text-muted)]" />
+                    </button>
                   ))}
                 </div>
-              )}
+              </div>
+            ))}
+          </div>
+        )}
 
-              {/* STEP 2: Configure Fields */}
-              {wizardStep === 2 && (
-                <form id="wizard-form" onSubmit={handleWizardSubmit} style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                    <div style={{ width: "42px", height: "42px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)", fontSize: "1.2rem", fontWeight: 700 }}>
-                      {selectedSource?.label.charAt(0)}
-                    </div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-primary)" }}>{selectedSource?.label}</h4>
-                      <span className="badge badge-info" style={{ fontSize: "0.65rem", marginTop: "0.35rem" }}>{selectedSource?.catLabel}</span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-                    {wizardFormFields.map((field, fIdx) => (
-                      <div key={fIdx} style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                        <label style={{ fontSize: "0.85rem", color: "var(--text-primary)", fontWeight: 600 }}>{field.label}</label>
-                        {field.type === "file" ? (
-                          <div style={{ border: "2px dashed var(--border-color)", borderRadius: "var(--radius-md)", padding: "2.5rem 1.5rem", textAlign: "center", cursor: "pointer", position: "relative", background: "var(--bg-surface-hover)", transition: "all var(--transition-fast)" }}>
-                            <input
-                              type="file"
-                              onChange={e => {
-                                const name = e.target.files?.[0]?.name || "dataset.csv";
-                                setWizardConfig((prev: Record<string, string>) => ({ ...prev, [field.key]: name }));
-                                if ((wizardSourceType === "excel" || wizardSourceType === "json_txt") && handleFileUpload) {
-                                  handleFileUpload(e);
-                                }
-                              }}
-                              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer" }}
-                            />
-                            <Upload size={28} style={{ margin: "0 auto 0.75rem", display: "block", color: "var(--text-primary)", opacity: 0.8 }} />
-                            <span style={{ fontSize: "0.9rem", color: "var(--text-primary)", fontWeight: 600, display: "block", marginBottom: "0.25rem" }}>
-                              {wizardConfig[field.key] || (language === "es" ? "Haz clic para subir archivo" : "Click to upload file")}
-                            </span>
-                            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-                              {selectedSource?.desc || "CSV, Excel, JSON"}
-                            </span>
-                          </div>
-                        ) : (
-                          <input
-                            type={field.type || "text"}
-                            placeholder={field.placeholder || ""}
-                            value={wizardConfig[field.key] || ""}
-                            required
-                            onChange={e => setWizardConfig((prev: Record<string, string>) => ({ ...prev, [field.key]: e.target.value }))}
-                            style={{ padding: "0.75rem 0.85rem", fontSize: "0.9rem", background: "var(--bg-surface-hover)" }}
-                          />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </form>
-              )}
-
-              {/* STEP 3: Complete screen */}
-              {wizardStep === 3 && (
-                <div className="animate-fade-in" style={{ textAlign: "center", padding: "2rem 0" }}>
-                  <div style={{ display: "inline-flex", background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.25)", width: "80px", height: "80px", borderRadius: "50%", alignItems: "center", justifyContent: "center", marginBottom: "1.75rem", color: "var(--color-success)", boxShadow: "0 0 30px rgba(16, 185, 129, 0.15)" }}>
-                    <CheckCircle2 size={40} />
-                  </div>
-                  <h3 style={{ margin: "0 0 0.5rem", fontSize: "1.25rem" }}>{language === "es" ? "¡Fuente de Datos Agregada!" : "Data Source Added!"}</h3>
-                  <p style={{ fontSize: "0.95rem", color: "var(--text-secondary)", margin: "0 0 0.5rem" }}>
-                    <strong style={{ color: "var(--text-primary)" }}>{selectedSource?.label}</strong> {language === "es" ? "está sincronizando datos." : "is syncing data."}
-                  </p>
-                  <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", margin: "0 0 2rem", maxWidth: "300px", marginInline: "auto", lineHeight: 1.5 }}>
-                    {language === "es" ? "El servidor MCP autogenerado ya está disponible." : "The auto-generated MCP server is now available."}
-                  </p>
-                  
-                  <div style={{ padding: "1.25rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)", textAlign: "left", marginBottom: "2rem" }}>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.75rem", fontWeight: 700 }}>{language === "es" ? "Detalles" : "Details"}</div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
-                      <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Status</span>
-                      <span className="badge badge-success">Active</span>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                    <button className="btn btn-primary" onClick={() => setWizardOpen(false)} style={{ width: "100%", padding: "0.85rem" }}>
-                      {language === "es" ? "Hecho" : "Done"}
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 4: View Active Connection Details */}
-              {wizardStep === 4 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
-                    <div style={{ width: "42px", height: "42px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)", fontSize: "1.2rem", fontWeight: 700 }}>
-                      {selectedSource?.label?.charAt(0) || "C"}
-                    </div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: "1.05rem", color: "var(--text-primary)" }}>{selectedSource?.label || "Data Source"}</h4>
-                      <span className="badge badge-success" style={{ fontSize: "0.65rem", marginTop: "0.35rem" }}>Active</span>
-                    </div>
-                  </div>
-                  
-                  <div style={{ padding: "1.25rem", background: "var(--bg-surface-solid)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                    <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "1rem", fontWeight: 700 }}>{language === "es" ? "Información de Sync" : "Sync Info"}</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
-                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Last Sync</span>
-                        <span style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>1 min ago</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.5rem" }}>
-                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Records</span>
-                        <span style={{ fontSize: "0.85rem", color: "var(--text-primary)" }}>Active sync</span>
-                      </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ fontSize: "0.85rem", color: "var(--text-secondary)" }}>Health</span>
-                        <span style={{ fontSize: "0.85rem", color: "var(--color-success)" }}>100% OK</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                    <button className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
-                      <RefreshCw size={14} />
-                      {language === "es" ? "Sincronizar Ahora" : "Sync Now"}
-                    </button>
-                    <button className="btn btn-secondary" style={{ width: "100%", justifyContent: "center" }}>
-                      <Settings size={14} />
-                      {language === "es" ? "Configuración" : "Settings"}
-                    </button>
-                    <button className="btn" style={{ width: "100%", justifyContent: "center", color: "var(--color-danger)", borderColor: "transparent", background: "rgba(239, 68, 68, 0.1)" }}>
-                      {language === "es" ? "Eliminar Fuente de Datos" : "Delete Data Source"}
-                    </button>
-                  </div>
-                </div>
-              )}
+        {/* STEP 2: Configure Fields */}
+        {wizardStep === 2 && (
+          <form id="wizard-form" onSubmit={handleWizardSubmit} className="flex flex-col gap-6">
+            <div className="flex items-center gap-4 p-5 bg-[var(--bg-surface-hover)] border border-[var(--border-color)] rounded-md">
+              <div className="w-[42px] h-[42px] rounded-md bg-[var(--bg-surface-solid)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] text-lg font-bold">
+                {selectedSource?.label.charAt(0)}
+              </div>
+              <div>
+                <Heading level="h4" className="m-0 text-sm font-bold text-[var(--text-primary)]">{selectedSource?.label}</Heading>
+                <Badge variant="info" className="text-[9px] mt-1.5">{selectedSource?.catLabel}</Badge>
+              </div>
             </div>
 
-            {/* Footer actions for STEP 2 (Configuration) */}
-            {wizardStep === 2 && (
-              <div style={{ padding: "1.25rem 1.5rem", borderTop: "1px solid var(--border-color)", background: "var(--bg-surface-solid)", display: "flex", justifyContent: "space-between", gap: "0.85rem" }}>
-                <button type="button" className="btn btn-secondary" disabled={wizardConnecting} onClick={() => setWizardStep(1)} style={{ padding: "0.6rem 1rem" }}>
-                  {language === "es" ? "Atrás" : "Back"}
-                </button>
-                <div style={{ display: "flex", gap: "0.85rem" }}>
-                  <button type="button" className="btn btn-secondary" disabled={wizardConnecting} onClick={() => setWizardOpen(false)} style={{ padding: "0.6rem 1rem" }}>
-                    {language === "es" ? "Cancelar" : "Cancel"}
-                  </button>
-                  <button type="submit" form="wizard-form" className="btn btn-primary" disabled={wizardConnecting} style={{ minWidth: "130px", display: "flex", alignItems: "center", gap: "0.5rem", justifyContent: "center", padding: "0.6rem 1.25rem" }}>
-                    {wizardConnecting ? (
-                      <>
-                        <RefreshCw size={16} style={{ animation: "spin 1s linear infinite" }} />
-                        <span>{language === "es" ? "Conectando..." : "Connecting..."}</span>
-                      </>
-                    ) : (
-                      <>
-                        <LinkIcon size={16} />
-                        <span>{language === "es" ? "Conectar" : "Connect"}</span>
-                      </>
-                    )}
-                  </button>
+            <div className="flex flex-col gap-5">
+              {wizardFormFields.map((field, fIdx) => (
+                <div key={fIdx} className="flex flex-col gap-2">
+                  <label className="text-xs text-[var(--text-primary)] font-semibold">{field.label}</label>
+                  {field.type === "file" ? (
+                    <div className="border-2 border-dashed border-[var(--border-color)] rounded-md p-8 text-center cursor-pointer relative bg-[var(--bg-surface-hover)] hover:border-[var(--color-primary)] transition-all">
+                      <input
+                        type="file"
+                        onChange={e => {
+                          const name = e.target.files?.[0]?.name || "dataset.csv";
+                          setWizardConfig((prev: Record<string, string>) => ({ ...prev, [field.key]: name }));
+                          if ((wizardSourceType === "excel" || wizardSourceType === "json_txt") && handleFileUpload) {
+                            handleFileUpload(e);
+                          }
+                        }}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      />
+                      <Upload size={28} className="m-auto mb-3 block text-[var(--text-primary)] opacity-80" />
+                      <span className="text-sm text-[var(--text-primary)] font-semibold block mb-1">
+                        {wizardConfig[field.key] || (language === "es" ? "Haz clic para subir archivo" : "Click to upload file")}
+                      </span>
+                      <span className="text-[11px] text-[var(--text-muted)]">
+                        {selectedSource?.desc || "CSV, Excel, JSON"}
+                      </span>
+                    </div>
+                  ) : (
+                    <Input
+                      type={field.type || "text"}
+                      placeholder={field.placeholder || ""}
+                      value={wizardConfig[field.key] || ""}
+                      required
+                      onChange={e => setWizardConfig((prev: Record<string, string>) => ({ ...prev, [field.key]: e.target.value }))}
+                      className="!py-2.5 !px-3.5 bg-[var(--bg-surface-hover)]"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </form>
+        )}
+
+        {/* STEP 3: Complete screen */}
+        {wizardStep === 3 && (
+          <div className="animate-fade-in text-center py-8">
+            <div className="inline-flex bg-emerald-500/10 border border-emerald-500/25 w-20 h-20 rounded-full items-center justify-center mb-6 text-[var(--color-success)] shadow-[0_0_30px_rgba(16,185,129,0.15)]">
+              <CheckCircle2 size={40} />
+            </div>
+            <Heading level="h3" className="m-0 mb-2 text-xl">{language === "es" ? "¡Fuente de Datos Agregada!" : "Data Source Added!"}</Heading>
+            <p className="text-sm text-[var(--text-secondary)] m-0 mb-2">
+              <strong className="text-[var(--text-primary)]">{selectedSource?.label}</strong> {language === "es" ? "está sincronizando datos." : "is syncing data."}
+            </p>
+            <p className="text-xs text-[var(--text-muted)] m-0 mb-8 max-w-[300px] mx-auto leading-relaxed">
+              {language === "es" ? "El servidor MCP autogenerado ya está disponible." : "The auto-generated MCP server is now available."}
+            </p>
+            
+            <div className="p-5 bg-[var(--bg-surface-hover)] rounded-md border border-[var(--border-color)] text-left mb-8">
+              <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-3 font-bold">{language === "es" ? "Detalles" : "Details"}</div>
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-[var(--text-secondary)]">Status</span>
+                <Badge variant="success" className="text-[9px]">Active</Badge>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button variant="primary" onClick={() => setWizardOpen(false)} className="w-full !py-3">
+                {language === "es" ? "Hecho" : "Done"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: View Active Connection Details */}
+        {wizardStep === 4 && (
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-4 p-5 bg-[var(--bg-surface-hover)] border border-[var(--border-color)] rounded-md">
+              <div className="w-[42px] h-[42px] rounded-md bg-[var(--bg-surface-solid)] border border-[var(--border-color)] flex items-center justify-center text-[var(--text-primary)] text-lg font-bold">
+                {selectedSource?.label?.charAt(0) || "C"}
+              </div>
+              <div>
+                <Heading level="h4" className="m-0 text-sm font-bold text-[var(--text-primary)]">{selectedSource?.label || "Data Source"}</Heading>
+                <Badge variant="success" className="text-[9px] mt-1.5">Active</Badge>
+              </div>
+            </div>
+            
+            <div className="p-5 bg-[var(--bg-surface-solid)] rounded-md border border-[var(--border-color)]">
+              <div className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider mb-4 font-bold">{language === "es" ? "Información de Sync" : "Sync Info"}</div>
+              <div className="flex flex-col gap-3.5">
+                <div className="flex justify-between items-center border-b border-[var(--border-color)] pb-2">
+                  <span className="text-xs text-[var(--text-secondary)]">Last Sync</span>
+                  <span className="text-xs text-[var(--text-primary)]">1 min ago</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-[var(--border-color)] pb-2">
+                  <span className="text-xs text-[var(--text-secondary)]">Records</span>
+                  <span className="text-xs text-[var(--text-primary)]">Active sync</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-[var(--text-secondary)]">Health</span>
+                  <span className="text-xs text-[var(--color-success)] font-semibold">100% OK</span>
                 </div>
               </div>
-            )}
+            </div>
+
+            <div className="flex flex-col gap-2.5 mt-4">
+              <Button variant="secondary" className="w-full justify-center !py-2.5">
+                <RefreshCw size={14} className="mr-1.5" />
+                {language === "es" ? "Sincronizar Ahora" : "Sync Now"}
+              </Button>
+              <Button variant="secondary" className="w-full justify-center !py-2.5">
+                <Settings size={14} className="mr-1.5" />
+                {language === "es" ? "Configuración" : "Settings"}
+              </Button>
+              <Button variant="danger" className="w-full justify-center !py-2.5 bg-red-500/10 !text-red-500 hover:bg-red-500/25 border border-red-500/20 shadow-none">
+                {language === "es" ? "Eliminar Fuente de Datos" : "Delete Data Source"}
+              </Button>
+            </div>
           </div>
-        </>
-      )}
+        )}
+      </SlideOver>
     </>
   );
 };

@@ -45,7 +45,8 @@ export const PERMISSION_CATEGORIES: PermissionCategory[] = [
       { key: "monthlyClose", labelEn: "Monthly Financial Close", labelEs: "Cierre Financiero Mensual" },
       { key: "taxAlerts", labelEn: "Tax Alert Monitor", labelEs: "Control de Alertas Fiscales" },
       { key: "settings", labelEn: "Global Preferences Settings", labelEs: "Configuración Global" },
-      { key: "users", labelEn: "Team & Permissions", labelEs: "Miembros y Permisos" }
+      { key: "users", labelEn: "Team & Permissions", labelEs: "Miembros y Permisos" },
+      { key: "observability", labelEn: "Observability & Metrics Dashboard", labelEs: "Métricas y Observabilidad" }
     ]
   },
   {
@@ -98,7 +99,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(255,255,255,0.08)",
     borderColor: "rgba(255,255,255,0.15)",
     permissions: {
-      modules: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users"],
+      modules: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users", "observability"],
       agents: ["execute", "edit", "bypass"],
       skills: ["custom_api", "mcp_tool", "datasource_op", "native_util", "compute_sandbox"],
       mcp: ["manage"],
@@ -113,7 +114,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(16,185,129,0.12)",
     borderColor: "rgba(16,185,129,0.2)",
     permissions: {
-      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings"],
+      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings", "observability"],
       agents: ["execute"],
       skills: ["custom_api", "native_util"],
       mcp: [],
@@ -128,7 +129,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(6,182,212,0.12)",
     borderColor: "rgba(6,182,212,0.2)",
     permissions: {
-      modules: ["home", "reconciliation", "playground", "apps", "settings"],
+      modules: ["home", "reconciliation", "playground", "apps", "settings", "observability"],
       agents: ["execute", "bypass"],
       skills: ["native_util"],
       mcp: [],
@@ -143,7 +144,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(245,158,11,0.12)",
     borderColor: "rgba(245,158,11,0.2)",
     permissions: {
-      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "visualGraph", "playground", "settings"],
+      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "visualGraph", "playground", "settings", "observability"],
       agents: [],
       skills: [],
       mcp: [],

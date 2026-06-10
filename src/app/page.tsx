@@ -24,14 +24,20 @@ import { TaxAlertsTab } from "../components/domain/TaxAlertsTab";
 import { MarketplaceTab } from "../components/settings/MarketplaceTab";
 import { SettingsTab } from "../components/settings/SettingsTab";
 import { UsersTab } from "../components/settings/UsersTab";
+import { ObservabilityTab } from "../components/platform/ObservabilityTab";
 import { AccessDeniedView } from "../components/core/AccessDeniedView";
 
 function DashboardContent() {
-  const { activeTab, sidebarOpen, hasPermission } = useDashboard();
+  const { activeTab, sidebarOpen, mobileMenuOpen, setMobileMenuOpen, hasPermission } = useDashboard();
   const isAuthorized = hasPermission(activeTab);
 
   return (
     <div style={{ display: "flex", minHeight: "100vh", flexDirection: "row", background: "var(--bg-base)", color: "var(--text-primary)", transition: "background-color var(--transition-normal), color var(--transition-normal)" }}>
+      {/* Mobile Sidebar backdrop */}
+      {mobileMenuOpen && (
+        <div className="mobile-backdrop" onClick={() => setMobileMenuOpen(false)} />
+      )}
+
       {/* Left Sticky Sidebar Wrapper */}
       <div className={`sidebar-container ${!sidebarOpen ? "collapsed" : ""}`}>
         <Sidebar />
@@ -64,6 +70,7 @@ function DashboardContent() {
               {activeTab === "taxAlerts" && <TaxAlertsTab />}
               {activeTab === "settings" && <SettingsTab />}
               {activeTab === "users" && <UsersTab />}
+              {activeTab === "observability" && <ObservabilityTab />}
             </>
           )}
         </main>

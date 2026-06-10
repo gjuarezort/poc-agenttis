@@ -23,6 +23,11 @@ import {
   FileCode,
   ArrowRight
 } from "lucide-react";
+import { Button } from "../ui/Button";
+import { SlideOver } from "../ui/SlideOver";
+import { Input, Select } from "../ui/Input";
+import { Heading } from "../ui/Heading";
+import { Badge } from "../ui/Badge";
 
 interface McpTool {
   name: string;
@@ -677,22 +682,14 @@ export const McpServersTab: React.FC = () => {
       </div>
 
       {/* DETAILED VIEW DRAWER (EXTERNAL CLIENT SERVER DETAILS) */}
-      {detailOpen && selectedServer && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => setDetailOpen(false)} />
-          <div className="slide-over-panel animate-slide-in" style={{ maxWidth: "480px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {t("detailsTitle")}
-                </h3>
-              </div>
-              <button onClick={() => setDetailOpen(false)} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
-            </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <SlideOver
+        isOpen={detailOpen && !!selectedServer}
+        onClose={() => setDetailOpen(false)}
+        title={t("detailsTitle")}
+        maxWidth="480px"
+      >
+        {selectedServer && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1.25rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
                 <div style={{ width: "42px", height: "42px", borderRadius: "var(--radius-md)", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--text-primary)" }}>
                   {selectedServer.type === "stdio" ? <Terminal size={20} style={{ color: "var(--color-primary)" }} /> : <Globe size={20} style={{ color: "var(--color-success)" }} />}
@@ -786,40 +783,29 @@ export const McpServersTab: React.FC = () => {
 
               {/* Actions */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                <button
-                  className="btn"
+                <Button
+                  variant="secondary"
                   onClick={() => handleDeleteServer(selectedServer.id)}
-                  style={{ width: "100%", justifyContent: "center", color: "var(--color-danger)", borderColor: "transparent", background: "rgba(239, 68, 68, 0.1)" }}
+                  className="w-full justify-center !text-red-500 hover:!bg-red-500/10 hover:!text-red-500 border border-red-500/20"
                 >
                   <Trash2 size={14} />
                   {t("deleteBtn")}
-                </button>
+                </Button>
               </div>
             </div>
-          </div>
-        </>
-      )}
+          )}
+      </SlideOver>
 
       {/* DETAILED VIEW DRAWER (EXPOSED SERVER DETAILS) */}
-      {exposedDetailOpen && selectedExposedServer && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => setExposedDetailOpen(false)} />
-          <div className="slide-over-panel animate-slide-in" style={{ maxWidth: "520px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {language === "es" ? "Detalles del Servidor Expuesto" : "Exposed Server Details"}
-                </h3>
-                <p style={{ margin: "0.15rem 0 0", fontSize: "0.80rem", color: "var(--text-muted)" }}>
-                  {selectedExposedServer.name}
-                </p>
-              </div>
-              <button onClick={() => setExposedDetailOpen(false)} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
-            </div>
-
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+      <SlideOver
+        isOpen={exposedDetailOpen && !!selectedExposedServer}
+        onClose={() => setExposedDetailOpen(false)}
+        title={language === "es" ? "Detalles del Servidor Expuesto" : "Exposed Server Details"}
+        description={selectedExposedServer?.name}
+        maxWidth="520px"
+      >
+        {selectedExposedServer && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
               {/* Status Switcher */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem", background: "var(--bg-surface-hover)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)" }}>
                 <div>
@@ -1130,47 +1116,90 @@ export const McpServersTab: React.FC = () => {
 
               {/* Actions */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                <button
-                  className="btn"
+                <Button
+                  variant="secondary"
                   onClick={() => handleDeleteExposedServer(selectedExposedServer.id)}
-                  style={{ width: "100%", justifyContent: "center", color: "var(--color-danger)", borderColor: "transparent", background: "rgba(239, 68, 68, 0.1)" }}
+                  className="w-full justify-center !text-red-500 hover:!bg-red-500/10 hover:!text-red-500 border border-red-500/20"
                 >
                   <Trash2 size={14} />
                   {language === "es" ? "Desactivar y Eliminar Servidor" : "Deactivate & Remove Server"}
-                </button>
+                </Button>
               </div>
-
             </div>
-          </div>
-        </>
-      )}
+          )}
+      </SlideOver>
 
       {/* WIZARD DRAWER (INGEST MCP SERVER CLIENT) */}
-      {wizardOpen && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => !wizardConnecting && setWizardOpen(false)} />
-          <div className="slide-over-panel animate-slide-in" style={{ maxWidth: "480px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {wizardStep === 1 && t("wizardTransport")}
-                  {wizardStep === 2 && t("wizardConfigTitle")}
-                  {wizardStep === 3 && t("wizardDiscoveryTitle")}
-                  {wizardStep === 4 && t("successTitle")}
-                </h3>
-                {wizardStep === 2 && (
-                  <p style={{ margin: "0.25rem 0 0", fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.35rem" }}>
-                    <Lock size={12} />
-                    Secured connection pipeline
-                  </p>
-                )}
-              </div>
-              <button onClick={() => setWizardOpen(false)} disabled={wizardConnecting} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
-            </div>
+      <SlideOver
+        isOpen={wizardOpen}
+        onClose={() => !wizardConnecting && setWizardOpen(false)}
+        title={
+          wizardStep === 1 ? t("wizardTransport") :
+          wizardStep === 2 ? t("wizardConfigTitle") :
+          wizardStep === 3 ? t("wizardDiscoveryTitle") :
+          t("successTitle")
+        }
+        description={
+          wizardStep === 1 ? t("wizardTransportDesc") :
+          wizardStep === 2 ? t("wizardConfigDesc") :
+          wizardStep === 3 ? t("wizardDiscoveryDesc") :
+          t("successDesc")
+        }
+        maxWidth="480px"
+        footer={
+          wizardStep < 4 ? (
+            <div className="flex justify-between items-center w-full">
+              {wizardStep > 1 ? (
+                <Button
+                  variant="secondary"
+                  disabled={wizardConnecting}
+                  onClick={() => setWizardStep(prev => prev - 1)}
+                  className="!py-2 !px-4 !text-xs"
+                >
+                  Back
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={() => setWizardOpen(false)}
+                  className="!py-2 !px-4 !text-xs"
+                >
+                  Cancel
+                </Button>
+              )}
 
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+              {wizardStep === 2 && (
+                <Button
+                  type="submit"
+                  form="mcp-wizard-form"
+                  variant="primary"
+                  disabled={wizardConnecting}
+                  className="min-w-[120px] flex items-center gap-1.5 justify-center !py-2 !px-4 !text-xs"
+                >
+                  {wizardConnecting ? (
+                    <>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>Connecting...</span>
+                    </>
+                  ) : (
+                    <span>Verify & Query</span>
+                  )}
+                </Button>
+              )}
+
+              {wizardStep === 3 && (
+                <Button
+                  onClick={handleIngestSubmit}
+                  variant="primary"
+                  className="min-w-[120px] flex items-center gap-1.5 justify-center !py-2 !px-4 !text-xs"
+                >
+                  <span>Ingest Tools</span>
+                </Button>
+              )}
+            </div>
+          ) : undefined
+        }
+      >
               
               {/* STEP 1: Select connection transport mode */}
               {wizardStep === 1 && (
@@ -1388,87 +1417,77 @@ export const McpServersTab: React.FC = () => {
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Footer controls for Wizard Steps */}
-            {wizardStep < 4 && (
-              <div style={{ padding: "1.25rem 1.5rem", borderTop: "1px solid var(--border-color)", background: "var(--bg-surface-solid)", display: "flex", justifyContent: "space-between", gap: "0.85rem" }}>
-                {wizardStep > 1 ? (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    disabled={wizardConnecting}
-                    onClick={() => setWizardStep(prev => prev - 1)}
-                    style={{ padding: "0.55rem 1rem" }}
-                  >
-                    Back
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setWizardOpen(false)}
-                    style={{ padding: "0.55rem 1rem" }}
-                  >
-                    Cancel
-                  </button>
-                )}
-
-                {wizardStep === 2 && (
-                  <button
-                    type="submit"
-                    form="mcp-wizard-form"
-                    className="btn btn-primary"
-                    disabled={wizardConnecting}
-                    style={{ minWidth: "120px", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center", padding: "0.55rem 1.15rem" }}
-                  >
-                    {wizardConnecting ? (
-                      <>
-                        <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
-                        <span>Connecting...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Verify & Query</span>
-                      </>
-                    )}
-                  </button>
-                )}
-
-                {wizardStep === 3 && (
-                  <button
-                    onClick={handleIngestSubmit}
-                    className="btn btn-primary"
-                    style={{ minWidth: "120px", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center", padding: "0.55rem 1.15rem" }}
-                  >
-                    <span>Ingest Tools</span>
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      )}
+      </SlideOver>
 
       {/* WIZARD DRAWER (EXPOSE MCP HOST SERVER) */}
-      {exposedWizardOpen && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => !exposedWizardSaving && setExposedWizardOpen(false)} />
-          <div className="slide-over-panel animate-slide-in" style={{ maxWidth: "480px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700 }}>
-                  {exposedWizardStep === 1 && (language === "es" ? "Crear Servidor Expuesto" : "Expose Platform Resources")}
-                  {exposedWizardStep === 2 && (language === "es" ? "Seleccionar Recursos a Exponer" : "Select Exposed Resources")}
-                  {exposedWizardStep === 3 && (language === "es" ? "Servidor Expuesto Exitosamente" : "Host Gateway Live")}
-                </h3>
-              </div>
-              <button onClick={() => setExposedWizardOpen(false)} disabled={exposedWizardSaving} className="btn-secondary" style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <X size={18} />
-              </button>
-            </div>
+      <SlideOver
+        isOpen={exposedWizardOpen}
+        onClose={() => !exposedWizardSaving && setExposedWizardOpen(false)}
+        title={
+          exposedWizardStep === 1 ? (language === "es" ? "Exponer Recursos de Plataforma" : "Expose Platform Resources") :
+          exposedWizardStep === 2 ? (language === "es" ? "Exponer Recursos (Detalle)" : "Expose Resources (Details)") :
+          (language === "es" ? "Configuración Creada con Éxito" : "Host Setup Created Successfully")
+        }
+        description={
+          exposedWizardStep === 1 ? (language === "es" ? "Paso 1 de 2: Nombre y detalles" : "Step 1 of 2: Name and metadata") :
+          exposedWizardStep === 2 ? (language === "es" ? "Paso 2 de 2: Permisos de acceso" : "Step 2 of 2: Access permissions") :
+          (language === "es" ? "El Host MCP está activo y expuesto" : "Exposed MCP Host is live")
+        }
+        maxWidth="480px"
+        footer={
+          exposedWizardStep < 3 ? (
+            <div className="flex justify-between items-center w-full">
+              {exposedWizardStep > 1 ? (
+                <Button
+                  variant="secondary"
+                  disabled={exposedWizardSaving}
+                  onClick={() => setExposedWizardStep(prev => prev - 1)}
+                  className="!py-2 !px-4 !text-xs"
+                >
+                  Back
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  onClick={() => setExposedWizardOpen(false)}
+                  className="!py-2 !px-4 !text-xs"
+                >
+                  Cancel
+                </Button>
+              )}
 
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+              {exposedWizardStep === 1 && (
+                <Button
+                  type="submit"
+                  form="mcp-exposed-wizard-form"
+                  variant="primary"
+                  className="!py-2 !px-4 !text-xs min-w-[100px]"
+                >
+                  Next
+                </Button>
+              )}
+
+              {exposedWizardStep === 2 && (
+                <Button
+                  onClick={handleCreateExposedServerSubmit}
+                  variant="primary"
+                  disabled={exposedWizardSaving}
+                  className="min-w-[120px] flex items-center gap-1.5 justify-center !py-2 !px-4 !text-xs"
+                >
+                  {exposedWizardSaving ? (
+                    <>
+                      <RefreshCw size={14} className="animate-spin" />
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    <span>Expose Server</span>
+                  )}
+                </Button>
+              )}
+            </div>
+          ) : undefined
+        }
+      >
               
               {/* STEP 1: Basic setup */}
               {exposedWizardStep === 1 && (
@@ -1692,65 +1711,7 @@ export const McpServersTab: React.FC = () => {
                   </button>
                 </div>
               )}
-            </div>
-
-            {/* Footer controls for Exposed Wizard Steps */}
-            {exposedWizardStep < 3 && (
-              <div style={{ padding: "1.25rem 1.5rem", borderTop: "1px solid var(--border-color)", background: "var(--bg-surface-solid)", display: "flex", justifyContent: "space-between", gap: "0.85rem" }}>
-                {exposedWizardStep > 1 ? (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    disabled={exposedWizardSaving}
-                    onClick={() => setExposedWizardStep(prev => prev - 1)}
-                    style={{ padding: "0.55rem 1rem" }}
-                  >
-                    Back
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={() => setExposedWizardOpen(false)}
-                    style={{ padding: "0.55rem 1rem" }}
-                  >
-                    Cancel
-                  </button>
-                )}
-
-                {exposedWizardStep === 1 && (
-                  <button
-                    type="submit"
-                    form="mcp-exposed-wizard-form"
-                    className="btn btn-primary"
-                    style={{ padding: "0.55rem 1.15rem" }}
-                  >
-                    Next
-                  </button>
-                )}
-
-                {exposedWizardStep === 2 && (
-                  <button
-                    onClick={handleCreateExposedServerSubmit}
-                    className="btn btn-primary"
-                    disabled={exposedWizardSaving}
-                    style={{ minWidth: "120px", display: "flex", alignItems: "center", gap: "0.4rem", justifyContent: "center", padding: "0.55rem 1.15rem" }}
-                  >
-                    {exposedWizardSaving ? (
-                      <>
-                        <RefreshCw size={14} style={{ animation: "spin 1s linear infinite" }} />
-                        <span>Creating...</span>
-                      </>
-                    ) : (
-                      <span>Expose Server</span>
-                    )}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </>
-      )}
+      </SlideOver>
     </>
   );
 };

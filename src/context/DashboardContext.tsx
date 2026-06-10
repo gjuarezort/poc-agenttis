@@ -14,7 +14,7 @@ import {
 } from "../lib/initialData";
 import { RoleMetadata, INITIAL_ROLES_METADATA } from "../lib/rolePolicyMetadata";
 
-export type TabType = "home" | "connections" | "skills" | "mcpServers" | "agents" | "apps" | "visualGraph" | "playground" | "recipe" | "marketplace" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings" | "users";
+export type TabType = "home" | "connections" | "skills" | "mcpServers" | "agents" | "apps" | "visualGraph" | "playground" | "recipe" | "marketplace" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings" | "users" | "observability";
 
 export interface UserProfile {
   id: string;
@@ -58,6 +58,8 @@ interface DashboardContextType {
   setActiveTab: React.Dispatch<React.SetStateAction<TabType>>;
   sidebarOpen: boolean;
   setSidebarOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  mobileMenuOpen: boolean;
+  setMobileMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
   agents: any[];
   setAgents: React.Dispatch<React.SetStateAction<any[]>>;
   selectedGraphAgent: string;
@@ -303,6 +305,7 @@ const DashboardContext = createContext<DashboardContextType | undefined>(undefin
 export function DashboardProvider({ children }: { children: ReactNode }) {
   const [activeTab, setActiveTab] = useState<TabType>("home");
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // AI Agent configurations
   const [agents, setAgents] = useState(INITIAL_AGENTS);
@@ -994,6 +997,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const value: DashboardContextType = {
     activeTab, setActiveTab,
     sidebarOpen, setSidebarOpen,
+    mobileMenuOpen, setMobileMenuOpen,
     agents, setAgents,
     selectedGraphAgent, setSelectedGraphAgent,
     selectedPlaygroundAgent, setSelectedPlaygroundAgent,

@@ -1,6 +1,10 @@
 import { useDashboard } from "../../context/DashboardContext";
 import React, { useState, useEffect } from "react";
 import { Plus, XCircle, Grid, Play, ArrowLeft, ArrowRight, ArrowLeftRight, Layers, Key, Database, Cpu, Layout, Info, HelpCircle, Check, Sparkles, BarChart2, List, Activity, MessageSquare } from "lucide-react";
+import { Button } from "../ui/Button";
+import { SlideOver } from "../ui/SlideOver";
+import { Input, Select } from "../ui/Input";
+import { Heading } from "../ui/Heading";
 
 interface Widget {
   id: string;
@@ -507,86 +511,111 @@ export const AppsTab: React.FC = () => {
       </div>
 
       {/* SLIDE-OVER WIZARD DRAWER: NEW APP BUILDER */}
-      {wizardOpen && (
-        <>
-          <div className="modal-overlay animate-fade-in" onClick={() => setWizardOpen(false)} />
-          <div className="slide-over-panel" style={{ maxWidth: "520px" }}>
-            <div style={{ padding: "1.5rem", borderBottom: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", alignItems: "center", background: "var(--bg-surface-solid)" }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700 }}>
-                  {language === "es" ? "Constructor de Aplicaciones" : "Low-Code Dashboard Builder"}
-                </h3>
-                <span style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>
-                  Step {wizardStep} of 3
-                </span>
-              </div>
-              <button className="btn-secondary" onClick={() => setWizardOpen(false)} style={{ padding: "0.4rem", borderRadius: "50%" }}>
-                <XCircle size={16} />
-              </button>
-            </div>
+      <SlideOver
+        isOpen={wizardOpen}
+        onClose={() => setWizardOpen(false)}
+        title={language === "es" ? "Constructor de Aplicaciones" : "Low-Code Dashboard Builder"}
+        description={language === "es" ? `Paso ${wizardStep} de 3` : `Step ${wizardStep} of 3`}
+        maxWidth="520px"
+        footer={
+          <div className="flex justify-between items-center w-full">
+            {wizardStep > 1 ? (
+              <Button variant="secondary" onClick={() => setWizardStep(prev => prev - 1)} className="!py-2 !px-4 !text-xs">
+                {language === "es" ? "Atrás" : "Back"}
+              </Button>
+            ) : (
+              <div />
+            )}
 
-            <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {wizardStep < 3 ? (
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (wizardStep === 1 && !appName) return;
+                  setWizardStep(prev => prev + 1);
+                }}
+                disabled={wizardStep === 1 && !appName}
+                className="!py-2 !px-4 !text-xs"
+              >
+                {language === "es" ? "Siguiente" : "Next"}
+              </Button>
+            ) : (
+              <Button 
+                variant="accent" 
+                onClick={saveApplication} 
+                className="!py-2 !px-4 !text-xs"
+              >
+                {language === "es" ? "Guardar y Crear" : "Create Application"}
+              </Button>
+            )}
+          </div>
+        }
+      >
               {/* STEP 1: BASIC DETAILS */}
               {wizardStep === 1 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       {language === "es" ? "Nombre de la Aplicación" : "Application Name"}
                     </label>
-                    <input
+                    <Input
                       type="text"
                       placeholder={language === "es" ? "Ej. Portal de Ventas" : "e.g., Sales Dashboard"}
                       value={appName}
                       onChange={e => setAppName(e.target.value)}
-                      style={{ fontSize: "0.85rem", width: "100%" }}
+                      className="bg-[var(--bg-surface-hover)]"
                     />
                   </div>
 
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       {language === "es" ? "Descripción" : "Description"}
                     </label>
-                    <input
+                    <Input
                       type="text"
                       placeholder={language === "es" ? "Ej. Muestra KPIs comerciales y chat de auditoría..." : "e.g., Executive KPI views for sales audits..."}
                       value={appDesc}
                       onChange={e => setAppDesc(e.target.value)}
-                      style={{ fontSize: "0.85rem", width: "100%" }}
+                      className="bg-[var(--bg-surface-hover)]"
                     />
                   </div>
 
                   {/* Icon select */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       Icon
                     </label>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <div className="flex gap-2">
                       {["Layout", "ArrowLeftRight", "Package"].map(icName => (
                         <button
                           key={icName}
-                          className="glass-panel"
+                          className={`p-2.5 rounded-md border cursor-pointer transition-colors flex items-center justify-center bg-[var(--bg-surface-hover)] hover:bg-[var(--bg-surface-solid)] ${
+                            appIcon === icName ? "border-[var(--color-primary)] text-[var(--color-primary)] ring-1 ring-[var(--color-primary)]" : "border-[var(--border-color)] text-[var(--text-muted)]"
+                          }`}
                           onClick={() => setAppIcon(icName)}
-                          style={{ padding: "0.5rem", border: appIcon === icName ? "2px solid var(--color-primary)" : "1px solid var(--border-color)", cursor: "pointer" }}
                         >
-                          {icName === "ArrowLeftRight" && <ArrowLeftRightIcon size={16} />}
-                          {icName === "Package" && <PackageIcon size={16} />}
-                          {icName === "Layout" && <Layout size={16} />}
+                          {icName === "ArrowLeftRight" && <ArrowLeftRightIcon size={18} />}
+                          {icName === "Package" && <PackageIcon size={18} />}
+                          {icName === "Layout" && <Layout size={18} />}
                         </button>
                       ))}
                     </div>
                   </div>
 
                   {/* Color select */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       Theme Color
                     </label>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <div className="flex gap-3 items-center">
                       {["var(--color-primary)", "var(--color-success)", "var(--color-info)", "var(--color-warning)"].map(c => (
                         <button
                           key={c}
                           onClick={() => setAppColor(c)}
-                          style={{ width: "24px", height: "24px", borderRadius: "50%", background: c, border: appColor === c ? "2px solid #ffffff" : "none", cursor: "pointer" }}
+                          className={`w-6 h-6 rounded-full cursor-pointer transition-transform duration-100 ${
+                            appColor === c ? "scale-110 ring-2 ring-white ring-offset-2 ring-offset-black" : "opacity-80 hover:opacity-100"
+                          }`}
+                          style={{ background: c }}
                         />
                       ))}
                     </div>
@@ -596,56 +625,68 @@ export const AppsTab: React.FC = () => {
 
               {/* STEP 2: DATASOURCES & AGENTS BINDING */}
               {wizardStep === 2 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                <div className="flex flex-col gap-5">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       {language === "es" ? "Conectar Fuentes de Datos" : "Bind Data Sources"}
                     </label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", padding: "0.5rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                      {availableConnections.map(conn => {
-                        const checked = appSources.includes(conn.id);
-                        return (
-                          <label key={conn.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.78rem", cursor: "pointer" }}>
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => {
-                                setAppSources(prev =>
-                                  checked ? prev.filter(id => id !== conn.id) : [...prev, conn.id]
-                                );
-                              }}
-                              style={{ width: "auto" }}
-                            />
-                            <span>{conn.name} ({conn.category})</span>
-                          </label>
-                        );
-                      })}
+                    <div className="flex flex-col gap-1 p-2 bg-[var(--bg-surface-hover)] rounded-md border border-[var(--border-color)] max-h-[160px] overflow-y-auto">
+                      {availableConnections.length === 0 ? (
+                        <span className="text-xs text-[var(--text-muted)] p-2">
+                          {language === "es" ? "No hay fuentes de datos conectadas." : "No data sources connected."}
+                        </span>
+                      ) : (
+                        availableConnections.map(conn => {
+                          const checked = appSources.includes(conn.id);
+                          return (
+                            <label key={conn.id} className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md hover:bg-[var(--bg-surface-solid)] text-xs cursor-pointer transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  setAppSources(prev =>
+                                    checked ? prev.filter(id => id !== conn.id) : [...prev, conn.id]
+                                  );
+                                }}
+                                className="w-auto accent-[var(--color-primary)]"
+                              />
+                              <span>{conn.name} ({conn.category})</span>
+                            </label>
+                          );
+                        })
+                      )}
                     </div>
                   </div>
 
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.25rem" }}>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       {language === "es" ? "Conectar Agentes de IA" : "Bind AI Agents"}
                     </label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", padding: "0.5rem", background: "var(--bg-surface-hover)", borderRadius: "var(--radius-md)", border: "1px solid var(--border-color)" }}>
-                      {agents.map(ag => {
-                        const checked = appAgents.includes(ag.id);
-                        return (
-                          <label key={ag.id} style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.78rem", cursor: "pointer" }}>
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => {
-                                setAppAgents(prev =>
-                                  checked ? prev.filter(id => id !== ag.id) : [...prev, ag.id]
-                                );
-                              }}
-                              style={{ width: "auto" }}
-                            />
-                            <span>{ag.name} ({ag.role})</span>
-                          </label>
-                        );
-                      })}
+                    <div className="flex flex-col gap-1 p-2 bg-[var(--bg-surface-hover)] rounded-md border border-[var(--border-color)] max-h-[160px] overflow-y-auto">
+                      {agents.length === 0 ? (
+                        <span className="text-xs text-[var(--text-muted)] p-2">
+                          {language === "es" ? "No hay agentes de IA creados." : "No AI Agents defined."}
+                        </span>
+                      ) : (
+                        agents.map(ag => {
+                          const checked = appAgents.includes(ag.id);
+                          return (
+                            <label key={ag.id} className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md hover:bg-[var(--bg-surface-solid)] text-xs cursor-pointer transition-colors">
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => {
+                                  setAppAgents(prev =>
+                                    checked ? prev.filter(id => id !== ag.id) : [...prev, ag.id]
+                                  );
+                                }}
+                                className="w-auto accent-[var(--color-primary)]"
+                              />
+                              <span>{ag.name} ({ag.role})</span>
+                            </label>
+                          );
+                        })
+                      )}
                     </div>
                   </div>
                 </div>
@@ -653,108 +694,114 @@ export const AppsTab: React.FC = () => {
 
               {/* STEP 3: WIDGET DESIGNER */}
               {wizardStep === 3 && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div className="glass-panel" style={{ padding: "1rem", background: "var(--bg-surface-hover)" }}>
-                    <h4 style={{ margin: "0 0 0.75rem", fontSize: "0.82rem", fontWeight: 700, color: "var(--color-primary)" }}>
+                <div className="flex flex-col gap-5">
+                  <div className="p-4 bg-[var(--bg-surface-hover)] border border-[var(--border-color)] rounded-lg flex flex-col gap-4">
+                    <Heading level="h4" className="m-0 text-xs font-bold text-[var(--color-primary)] uppercase tracking-wider">
                       {language === "es" ? "+ Agregar Widget al Tablero" : "+ Add Workspace Widget"}
-                    </h4>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                    </Heading>
+                    <div className="flex flex-col gap-3.5">
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">
                           Widget Type
                         </label>
-                        <select
+                        <Select
                           value={widgetType}
                           onChange={e => setWidgetType(e.target.value as any)}
-                          style={{ fontSize: "0.78rem", padding: "0.3rem", width: "100%" }}
+                          className="bg-[var(--bg-surface-solid)]"
                         >
                           <option value="kpi">{language === "es" ? "KPI (Indicador Métrico)" : "KPI Card"}</option>
                           <option value="chart">{language === "es" ? "Gráfico de Barras" : "Bar Chart"}</option>
                           <option value="list">{language === "es" ? "Tabla de Datos CSV" : "CSV Data Table"}</option>
                           <option value="chat">{language === "es" ? "Consola de Chat del Agente" : "Agent Query Console"}</option>
-                        </select>
+                        </Select>
                       </div>
 
-                      <div>
-                        <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>
+                      <div className="flex flex-col gap-1.5">
+                        <label className="text-xs font-semibold text-[var(--text-secondary)]">
                           Widget Title
                         </label>
-                        <input
+                        <Input
                           type="text"
                           placeholder="e.g., Ventas Totales"
                           value={widgetTitle}
                           onChange={e => setWidgetTitle(e.target.value)}
-                          style={{ fontSize: "0.78rem", padding: "0.3rem 0.5rem", width: "100%" }}
+                          className="bg-[var(--bg-surface-solid)]"
                         />
                       </div>
 
                       {/* KPI CONFIG FIELDS */}
                       {widgetType === "kpi" && (
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>Metric</label>
-                            <select value={widgetMetric} onChange={e => setWidgetMetric(e.target.value as any)} style={{ fontSize: "0.78rem", padding: "0.25rem" }}>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-semibold text-[var(--text-secondary)]">Metric</label>
+                            <Select value={widgetMetric} onChange={e => setWidgetMetric(e.target.value as any)} className="bg-[var(--bg-surface-solid)]">
                               <option value="count">Count (Registros)</option>
                               <option value="sum">Sum (Suma)</option>
                               <option value="average">Average (Promedio)</option>
-                            </select>
+                            </Select>
                           </div>
-                          <div>
-                            <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>Column (for Sum/Avg)</label>
-                            <input type="text" placeholder="total_spent" value={widgetColumn} onChange={e => setWidgetColumn(e.target.value)} style={{ fontSize: "0.78rem", padding: "0.25rem" }} />
+                          <div className="flex flex-col gap-1.5">
+                            <label className="text-xs font-semibold text-[var(--text-secondary)]">Column (for Sum/Avg)</label>
+                            <Input type="text" placeholder="total_spent" value={widgetColumn} onChange={e => setWidgetColumn(e.target.value)} className="bg-[var(--bg-surface-solid)]" />
                           </div>
                         </div>
                       )}
 
                       {/* CHART CONFIG FIELDS */}
                       {widgetType === "chart" && (
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>Group By Column</label>
-                          <input type="text" placeholder="e.g. country, category" value={widgetGroupBy} onChange={e => setWidgetGroupBy(e.target.value)} style={{ fontSize: "0.78rem", padding: "0.3rem", width: "100%" }} />
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">Group By Column</label>
+                          <Input type="text" placeholder="e.g. country, category" value={widgetGroupBy} onChange={e => setWidgetGroupBy(e.target.value)} className="bg-[var(--bg-surface-solid)]" />
                         </div>
                       )}
 
                       {/* CHAT CONFIG FIELDS */}
                       {widgetType === "chat" && (
-                        <div>
-                          <label style={{ display: "block", fontSize: "0.72rem", color: "var(--text-secondary)", marginBottom: "0.2rem" }}>Bind Agent</label>
-                          <select value={widgetAgentId} onChange={e => setWidgetAgentId(e.target.value)} style={{ fontSize: "0.78rem", padding: "0.3rem", width: "100%" }}>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="text-xs font-semibold text-[var(--text-secondary)]">Bind Agent</label>
+                          <Select value={widgetAgentId} onChange={e => setWidgetAgentId(e.target.value)} className="bg-[var(--bg-surface-solid)]">
                             <option value="">Default Agent</option>
                             {appAgents.map(aid => {
                               const ag = agents.find(x => x.id === aid);
                               return <option key={aid} value={aid}>{ag ? ag.name : aid}</option>;
                             })}
-                          </select>
+                          </Select>
                         </div>
                       )}
 
-                      <button
-                        className="btn btn-primary"
+                      <Button
+                        variant="primary"
                         onClick={handleAddWidget}
-                        style={{ fontSize: "0.75rem", padding: "0.4rem 0.8rem", width: "fit-content", alignSelf: "flex-end" }}
+                        className="w-fit self-end !text-xs !py-1.5 !px-3"
                       >
                         Add to Dashboard
-                      </button>
+                      </Button>
                     </div>
                   </div>
 
                   {/* Active widgets list */}
-                  <div>
-                    <label style={{ display: "block", fontSize: "0.78rem", fontWeight: 600, marginBottom: "0.5rem" }}>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-xs font-semibold text-[var(--text-secondary)]">
                       {language === "es" ? "Widgets Añadidos" : "Configured Dashboard Widgets"}
                     </label>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", maxHeight: "150px", overflowY: "auto" }}>
+                    <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto">
                       {appWidgets.length === 0 ? (
-                        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                        <span className="text-xs text-[var(--text-muted)] p-1">
                           {language === "es" ? "Aún no has añadido widgets." : "No widgets added yet."}
                         </span>
                       ) : (
                         appWidgets.map(w => (
-                          <div key={w.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.4rem 0.6rem", background: "var(--bg-surface-solid)", border: "1px solid var(--border-color)", borderRadius: "4px" }}>
-                            <span style={{ fontSize: "0.78rem", fontWeight: 600 }}>{w.title} <span style={{ fontSize: "0.65rem", color: "var(--text-muted)", marginLeft: "0.3rem" }}>({w.type.toUpperCase()})</span></span>
-                            <button onClick={() => handleRemoveWidget(w.id)} style={{ background: "none", border: "none", color: "var(--color-danger)", cursor: "pointer", fontSize: "0.75rem" }}>
+                          <div key={w.id} className="flex justify-between items-center px-3 py-2 bg-[var(--bg-surface-hover)] border border-[var(--border-color)] rounded-md">
+                            <span className="text-xs font-semibold text-[var(--text-primary)]">
+                              {w.title} <span className="text-[10px] text-[var(--text-muted)] ml-1.5">({w.type.toUpperCase()})</span>
+                            </span>
+                            <Button
+                              variant="secondary"
+                              onClick={() => handleRemoveWidget(w.id)}
+                              className="!py-0.5 !px-2 !text-[10px] !text-red-500 hover:!bg-red-500/10 border-none"
+                            >
                               Remove
-                            </button>
+                            </Button>
                           </div>
                         ))
                       )}
@@ -762,39 +809,7 @@ export const AppsTab: React.FC = () => {
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* FOOTER WIZARD ACTIONS */}
-            <div style={{ padding: "1rem 1.5rem", borderTop: "1px solid var(--border-color)", display: "flex", justifyContent: "space-between", background: "var(--bg-surface-solid)" }}>
-              {wizardStep > 1 ? (
-                <button className="btn btn-secondary" onClick={() => setWizardStep(prev => prev - 1)} style={{ fontSize: "0.8rem" }}>
-                  Back
-                </button>
-              ) : (
-                <div />
-              )}
-
-              {wizardStep < 3 ? (
-                <button
-                  className="btn btn-primary"
-                  onClick={() => {
-                    if (wizardStep === 1 && !appName) return;
-                    setWizardStep(prev => prev + 1);
-                  }}
-                  disabled={wizardStep === 1 && !appName}
-                  style={{ fontSize: "0.8rem" }}
-                >
-                  Next
-                </button>
-              ) : (
-                <button className="btn btn-success" onClick={saveApplication} style={{ fontSize: "0.8rem" }}>
-                  {language === "es" ? "Guardar y Crear" : "Create Application"}
-                </button>
-              )}
-            </div>
-          </div>
-        </>
-      )}
+      </SlideOver>
     </>
   );
 };
