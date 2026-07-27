@@ -1,6 +1,11 @@
 // ENTERPRISE TRANSLATION DICTIONARY (i18n)
+import { CLOSE_COPY } from "./close/copy";
+
 export const TRANSLATIONS = {
   en: {
+    // Copy for the month-end close flow. Kept in its own module because those
+    // strings interpolate derived numbers and are typed accordingly.
+    close: CLOSE_COPY.en,
     appName: "Agenttis",
     tagline: "Your business, on autopilot.",
     mvpBuilder: "MVP Builder",
@@ -20,7 +25,8 @@ export const TRANSLATIONS = {
       monthlyClose: "Monthly Close",
       taxAlerts: "Tax Alerts",
       settings: "Settings",
-      users: "Team & Permissions"
+      users: "Team & Permissions",
+      decisionSimulator: "Impact Simulator"
     },
     settingsTitle: "Settings",
     settingsSubtitle: "Token efficiency, costs, and system configuration",
@@ -228,6 +234,7 @@ export const TRANSLATIONS = {
     skillCatComputeDesc: "Run sandboxed Javascript/Python code blocks for complex data mutations."
   },
   es: {
+    close: CLOSE_COPY.es,
     appName: "Agenttis",
     tagline: "Tu negocio, en piloto automático.",
     mvpBuilder: "Constructor MVP",
@@ -247,7 +254,8 @@ export const TRANSLATIONS = {
       monthlyClose: "Cierre Mensual",
       taxAlerts: "Alertas Fiscales",
       settings: "Configuración",
-      users: "Miembros y Permisos"
+      users: "Miembros y Permisos",
+      decisionSimulator: "Simulador de Impacto"
     },
     settingsTitle: "Configuración",
     settingsSubtitle: "Eficiencia de tokens, costos y configuración del sistema",

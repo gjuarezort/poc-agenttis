@@ -35,9 +35,6 @@ export const Topbar: React.FC = () => {
           {activeTab === "recipe" && (language === "es" ? "Código MCP Generado" : "Generated MCP Code")}
           {activeTab === "mcpServers" && (language === "es" ? "Model Context Protocol" : "Model Context Protocol")}
           {activeTab === "marketplace" && (language === "es" ? "Marketplace" : "Marketplace")}
-          {activeTab === "reconciliation" && (language === "es" ? "Conciliación Bancaria" : "Bank Reconciliation")}
-          {activeTab === "monthlyClose" && (language === "es" ? "Cierre Mensual" : "Monthly Close")}
-          {activeTab === "taxAlerts" && (language === "es" ? "Alertas Fiscales" : "Tax Alerts")}
           {activeTab === "settings" && (language === "es" ? "Configuración" : "Settings")}
           {activeTab === "users" && (language === "es" ? "Miembros y Permisos" : "Team & Permissions")}
       </h1>

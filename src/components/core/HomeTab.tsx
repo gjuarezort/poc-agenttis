@@ -1,56 +1,30 @@
 import { useDashboard } from "../../context/DashboardContext";
 import React from "react";
-import {
-  ArrowLeftRight,
-  CalendarCheck,
-  Receipt,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { CalendarCheck, ArrowRight, Sparkles } from "lucide-react";
 import { TRANSLATIONS } from "../../lib/translations";
 import { Card } from "../ui/Card";
 import { Heading } from "../ui/Heading";
 
 export const HomeTab: React.FC = () => {
-  const { language, setActiveTab } = useDashboard();
+  const { language } = useDashboard();
+  const router = useRouter();
   const tagline = TRANSLATIONS[language].tagline;
 
+  // The close is the product; the agentic layer below is the machinery behind it.
+  // No status pill here: the close keeps its own state, and a count invented on
+  // this screen would contradict the queue inside the flow.
   const appDetails = [
     {
-      id: "reconciliation",
-      title: language === "es" ? "Conciliación Bancaria" : "Bank Reconciliation",
-      desc: language === "es" 
-        ? "Automatizá el cruce de tu extracto bancario con las facturas y pagos del sistema usando agentes inteligentes."
-        : "Match bank transactions against invoicing and payment records automatically with guided agent assistance.",
-      statusText: language === "es" ? "3 Movimientos sin conciliar" : "3 Unmatched movements",
-      statusType: "warning",
-      icon: <ArrowLeftRight size={24} />,
-      color: "#f59e0b",
-      glowColor: "rgba(245, 158, 11, 0.12)",
-    },
-    {
       id: "monthlyClose",
+      href: "/",
       title: language === "es" ? "Cierre Mensual" : "Monthly Close",
       desc: language === "es"
-        ? "Procedimiento guiado paso a paso para el cierre contable, liquidación de nóminas e impuestos del período."
-        : "Guided period close checklist for tax calculations, payroll matching, and ledger adjustments.",
-      statusText: language === "es" ? "En progreso (50%)" : "In progress (50%)",
-      statusType: "info",
+        ? "Ingesta de los archivos del período, normalización al criterio del estudio, conciliación bancaria, impuestos y entrega del paquete."
+        : "Ingest the period's files, normalise to the practice's criterio, reconcile the bank, compute taxes and deliver the package.",
       icon: <CalendarCheck size={24} />,
-      color: "#06b6d4",
-      glowColor: "rgba(6, 182, 212, 0.12)",
-    },
-    {
-      id: "taxAlerts",
-      title: language === "es" ? "Alertas Fiscales y Cumplimiento" : "Tax & Compliance Alerts",
-      desc: language === "es"
-        ? "Monitoreo inteligente de vencimientos impositivos, RUT y presentación automatizada de declaraciones."
-        : "Smart tax calendars, compliance obligation tracking, and automated official filings.",
-      statusText: language === "es" ? "Vencimiento en 5 días" : "Deadline in 5 days",
-      statusType: "success",
-      icon: <Receipt size={24} />,
-      color: "#10b981",
-      glowColor: "rgba(16, 185, 129, 0.12)",
+      color: "#5980a6",
+      glowColor: "rgba(89, 128, 166, 0.14)",
     }
   ];
 
@@ -95,11 +69,11 @@ export const HomeTab: React.FC = () => {
         </div>
 
         {/* Grid of Applications */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {appDetails.map((app) => (
             <Card
               key={app.id}
-              onClick={() => setActiveTab(app.id as any)}
+              onClick={() => router.push(app.href)}
               interactive
               className="p-8 flex flex-col justify-between min-h-[240px] relative overflow-hidden"
             >
@@ -126,15 +100,6 @@ export const HomeTab: React.FC = () => {
                     {app.icon}
                   </div>
                   
-                  <div className="flex items-center gap-1.5 py-1 px-2.5 rounded-full bg-[var(--bg-surface-solid)] border border-[var(--border-color)] text-xs font-medium text-[var(--text-secondary)]">
-                    <span 
-                      className="w-1.5 h-1.5 rounded-full"
-                      style={{
-                        background: app.statusType === "success" ? "var(--color-success)" : app.statusType === "warning" ? "var(--color-warning)" : "#06b6d4"
-                      }}
-                    />
-                    {app.statusText}
-                  </div>
                 </div>
 
                 {/* Info */}

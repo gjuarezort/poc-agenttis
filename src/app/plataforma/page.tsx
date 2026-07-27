@@ -1,31 +1,28 @@
 "use client";
 
 import React from "react";
-import { DashboardProvider, useDashboard } from "../context/DashboardContext";
+import { DashboardProvider, useDashboard } from "../../context/DashboardContext";
 
 // Import modularized components
-import { Sidebar } from "../components/core/Sidebar";
-import { Topbar } from "../components/core/Topbar";
-import { HomeTab } from "../components/core/HomeTab";
+import { Sidebar } from "../../components/core/Sidebar";
+import { Topbar } from "../../components/core/Topbar";
+import { HomeTab } from "../../components/core/HomeTab";
 
-import { DataConnectionsTab } from "../components/platform/DataConnectionsTab";
-import { SkillsTab } from "../components/platform/SkillsTab";
-import { AgentsTab } from "../components/platform/AgentsTab";
-import { AppsTab } from "../components/platform/AppsTab";
-import { ArchitectureTab } from "../components/platform/ArchitectureTab";
-import { PlaygroundTab } from "../components/platform/PlaygroundTab";
-import { McpCodeTab } from "../components/platform/McpCodeTab";
-import { McpServersTab } from "../components/platform/McpServersTab";
+import { DataConnectionsTab } from "../../components/platform/DataConnectionsTab";
+import { SkillsTab } from "../../components/platform/SkillsTab";
+import { AgentsTab } from "../../components/platform/AgentsTab";
+import { AppsTab } from "../../components/platform/AppsTab";
+import { ArchitectureTab } from "../../components/platform/ArchitectureTab";
+import { PlaygroundTab } from "../../components/platform/PlaygroundTab";
+import { McpCodeTab } from "../../components/platform/McpCodeTab";
+import { McpServersTab } from "../../components/platform/McpServersTab";
 
-import { BankReconciliationTab } from "../components/domain/BankReconciliationTab";
-import { MonthlyCloseTab } from "../components/domain/MonthlyCloseTab";
-import { TaxAlertsTab } from "../components/domain/TaxAlertsTab";
-
-import { MarketplaceTab } from "../components/settings/MarketplaceTab";
-import { SettingsTab } from "../components/settings/SettingsTab";
-import { UsersTab } from "../components/settings/UsersTab";
-import { ObservabilityTab } from "../components/platform/ObservabilityTab";
-import { AccessDeniedView } from "../components/core/AccessDeniedView";
+import { MarketplaceTab } from "../../components/settings/MarketplaceTab";
+import { SettingsTab } from "../../components/settings/SettingsTab";
+import { UsersTab } from "../../components/settings/UsersTab";
+import { ObservabilityTab } from "../../components/platform/ObservabilityTab";
+import { DecisionSimulatorTab } from "../../components/platform/DecisionSimulatorTab";
+import { AccessDeniedView } from "../../components/core/AccessDeniedView";
 
 function DashboardContent() {
   const { activeTab, sidebarOpen, mobileMenuOpen, setMobileMenuOpen, hasPermission } = useDashboard();
@@ -65,12 +62,10 @@ function DashboardContent() {
               {activeTab === "playground" && <PlaygroundTab />}
               {activeTab === "recipe" && <McpCodeTab />}
               {activeTab === "marketplace" && <MarketplaceTab />}
-              {activeTab === "reconciliation" && <BankReconciliationTab />}
-              {activeTab === "monthlyClose" && <MonthlyCloseTab />}
-              {activeTab === "taxAlerts" && <TaxAlertsTab />}
               {activeTab === "settings" && <SettingsTab />}
               {activeTab === "users" && <UsersTab />}
               {activeTab === "observability" && <ObservabilityTab />}
+              {activeTab === "decisionSimulator" && <DecisionSimulatorTab />}
             </>
           )}
         </main>

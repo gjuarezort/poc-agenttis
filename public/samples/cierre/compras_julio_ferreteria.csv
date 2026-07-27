@@ -1,0 +1,7 @@
+F. Emision;Tipo Doc;Nro;RUT Emisor;Nombre;Mon;Neto Grav 22;Neto Grav 10;Exento;IVA 22;Total Doc;Vendedor
+05/06/2025;e-Factura (111);A 0007001;214785920018;Ferretería del Puerto SA;UYU;10.000,00;0,00;0,00;2.200,00;12.200,00;M. Pereira
+06/06/2025;e-Factura (111);A 0007002;214785920011;Ferretería del Puerto SA;UYU;5.000,00;0,00;0,00;1.100,00;6.100,00;M. Pereira
+07/06/2025;e-Factura (111);A 0007003;212003402000;Impresos SA;UYU;8.000,00;0,00;0,00;1.500,00;9.500,00;L. Sosa
+28/05/2025;e-Factura (111);A 0007004;217654303009;Servicios Cloud LatAm SA;UYU;4.000,00;0,00;0,00;880,00;4.880,00;L. Sosa
+12/06/2025;e-Ticket (101);B 0000455;212003402000;Impresos SA;UYU;2.500,00;1.000,00;500,00;650,00;4.650,00;M. Pereira
+14/06/2025;e-Factura (111);A 0007001;214785920018;Ferretería del Puerto SA;UYU;10.000,00;0,00;0,00;2.200,00;12.200,00;M. Pereira

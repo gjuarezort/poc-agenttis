@@ -1,5 +1,6 @@
 import { useDashboard } from "../../context/DashboardContext";
 import React, { useState } from "react";
+import NextLink from "next/link";
 import {
   Grid,
   Database,
@@ -8,9 +9,7 @@ import {
   Cpu,
   Play,
   FileCode,
-  ArrowLeftRight,
   CalendarCheck,
-  Receipt,
   Package,
   Link,
   Server,
@@ -19,8 +18,10 @@ import {
   Shield,
   Lock,
   ChevronUp,
+  ChevronDown,
   Store,
   Activity,
+  Infinity,
 } from "lucide-react";
 
 export const Sidebar: React.FC = () => {
@@ -46,38 +47,119 @@ export const Sidebar: React.FC = () => {
   const [sidebarHovered, setSidebarHovered] = useState(false);
   const [logoHovered, setLogoHovered] = useState(false);
   const [switcherOpen, setSwitcherOpen] = useState(false);
+  
+  // Collapsible sub-menu state for the Agentic Layer
+  const [agenticOpen, setAgenticOpen] = useState(true);
 
   // Sidebar is visually expanded if it is pinned (sidebarOpen) OR hovered (sidebarHovered)
   const isExpanded = sidebarOpen || sidebarHovered;
 
-  // Reorganized categories: Applications -> Agentic Layer -> System
-  const navItems: {
-    key: string;
-    icon: React.ReactNode;
-    label: string;
-    disabled?: boolean;
-    sectionLabel?: string;
-  }[] = [
-    // Applications Section
-    { key: "reconciliation",icon: <ArrowLeftRight size={18} strokeWidth={1.5} />,    label: tTab("reconciliation"), sectionLabel: language === "es" ? "Aplicaciones" : "Applications" },
-    { key: "monthlyClose",  icon: <CalendarCheck size={18} strokeWidth={1.5} />,     label: tTab("monthlyClose") },
-    { key: "taxAlerts",     icon: <Receipt size={18} strokeWidth={1.5} />,           label: tTab("taxAlerts") },
-    
-    // Agentic Layer Section
-    { key: "connections",   icon: <Database size={18} strokeWidth={1.5} />,          label: tTab("connections"),   sectionLabel: language === "es" ? "Capa Agéntica" : "Agentic Layer" },
-    { key: "skills",        icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("skills") },
-    { key: "mcpServers",    icon: <Server size={18} strokeWidth={1.5} />,            label: tTab("mcpServers") },
-    { key: "agents",        icon: <Sparkles size={18} strokeWidth={1.5} />,          label: tTab("agents") },
-    { key: "apps",          icon: <Grid size={18} strokeWidth={1.5} />,              label: tTab("apps") },
-    { key: "visualGraph",   icon: <Cpu size={18} strokeWidth={1.5} />,               label: tTab("visualGraph") },
-    { key: "playground",    icon: <Play size={18} strokeWidth={1.5} />,              label: tTab("playground"),    disabled: !parsedData },
-    ...(advancedMode ? [{ key: "recipe", icon: <FileCode size={18} strokeWidth={1.5} />, label: tTab("recipe"), disabled: !parsedData }] : []),
-    { key: "observability", icon: <Activity size={18} strokeWidth={1.5} />,          label: tTab("observability") },
-    
-    { key: "users",         icon: <Shield size={18} strokeWidth={1.5} />,            label: tTab("users"), sectionLabel: language === "es" ? "Sistema" : "System" },
-    { key: "marketplace",   icon: <Store size={18} strokeWidth={1.5} />,             label: tTab("marketplace") },
-    { key: "settings",      icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("settings") },
+  // The close is its own app at `/`, not a tab in here. Reconciliation and tax
+  // alerts are steps 3 and 4 of that flow, so they no longer appear as peers.
+  const applicationsItems = [
+    { key: "monthlyClose", href: "/", icon: <CalendarCheck size={18} strokeWidth={1.5} />, label: tTab("monthlyClose") },
   ];
+
+  const agenticItems = [
+    { key: "connections",       icon: <Database size={18} strokeWidth={1.5} />,          label: tTab("connections") },
+    { key: "skills",            icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("skills") },
+    { key: "mcpServers",        icon: <Server size={18} strokeWidth={1.5} />,            label: tTab("mcpServers") },
+    { key: "agents",            icon: <Sparkles size={18} strokeWidth={1.5} />,          label: tTab("agents") },
+    { key: "apps",              icon: <Grid size={18} strokeWidth={1.5} />,              label: tTab("apps") },
+    { key: "visualGraph",       icon: <Cpu size={18} strokeWidth={1.5} />,               label: tTab("visualGraph") },
+    { key: "playground",        icon: <Play size={18} strokeWidth={1.5} />,              label: tTab("playground"),    disabled: !parsedData },
+    ...(advancedMode ? [{ key: "recipe", icon: <FileCode size={18} strokeWidth={1.5} />, label: tTab("recipe"), disabled: !parsedData }] : []),
+    { key: "observability",     icon: <Activity size={18} strokeWidth={1.5} />,          label: tTab("observability") },
+    { key: "decisionSimulator", icon: <Infinity size={18} strokeWidth={1.5} />,          label: tTab("decisionSimulator") },
+  ];
+
+  const systemItems = [
+    { key: "users",             icon: <Shield size={18} strokeWidth={1.5} />,            label: tTab("users") },
+    { key: "marketplace",       icon: <Store size={18} strokeWidth={1.5} />,             label: tTab("marketplace") },
+    { key: "settings",          icon: <SlidersHorizontal size={18} strokeWidth={1.5} />, label: tTab("settings") },
+  ];
+
+  const agenticKeys = [
+    "connections",
+    "skills",
+    "mcpServers",
+    "agents",
+    "apps",
+    "visualGraph",
+    "playground",
+    "recipe",
+    "observability",
+    "decisionSimulator"
+  ];
+
+  const renderNavItem = (item: any, isSubItem: boolean = false) => {
+    const isLocked = !hasPermission(item.key);
+    const sharedStyle = {
+      opacity: item.disabled ? 0.5 : (isLocked ? 0.65 : 1),
+      cursor: item.disabled ? "not-allowed" : "pointer",
+      padding: isExpanded && isSubItem ? "0.6rem 0.8rem" : "0.7rem 1rem",
+    } as React.CSSProperties;
+
+    const body = (
+      <>
+        {item.icon}
+        <span style={{
+          opacity: isExpanded ? 1 : 0,
+          maxWidth: isExpanded ? "200px" : "0px",
+          overflow: "hidden",
+          transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          whiteSpace: "nowrap",
+          display: "flex",
+          alignItems: "center",
+          width: "100%"
+        }}>
+          {item.label}
+          {isLocked && isExpanded && (
+            <Lock size={12} style={{ marginLeft: "auto", opacity: 0.6, color: "var(--text-muted)" }} />
+          )}
+        </span>
+      </>
+    );
+
+    const tooltip = isLocked ? `${item.label} (${language === "es" ? "Restringido" : "Restricted"})` : item.label;
+
+    // Items with an href leave the platform shell for a route of their own.
+    if (item.href) {
+      return (
+        <NextLink
+          key={item.key}
+          href={item.href}
+          className={`sidebar-nav-item ${!isExpanded ? "collapsed" : ""}`}
+          style={{ ...sharedStyle, textDecoration: "none" }}
+          data-tooltip={tooltip}
+          onClick={() => setMobileMenuOpen(false)}
+        >
+          {body}
+        </NextLink>
+      );
+    }
+
+    return (
+      <button 
+        key={item.key}
+        className={`sidebar-nav-item ${activeTab === item.key ? "active" : ""} ${!isExpanded ? "collapsed" : ""}`}
+        disabled={item.disabled}
+        onClick={() => {
+          if (!item.disabled) {
+            // Navigating into the agentic layer expands it, so the active item
+            // is never hidden inside a collapsed section.
+            if (agenticKeys.includes(item.key)) setAgenticOpen(true);
+            setActiveTab(item.key as any);
+            setMobileMenuOpen(false);
+          }
+        }}
+        style={sharedStyle}
+        data-tooltip={tooltip}
+      >
+        {body}
+      </button>
+    );
+  };
 
   return (
     <aside
@@ -86,8 +168,15 @@ export const Sidebar: React.FC = () => {
         setSidebarHovered(false);
         setLogoHovered(false);
       }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh",
+        justifyContent: "space-between"
+      }}
     >
-      <div>
+      {/* Sidebar Header Container (Sticky) */}
+      <div style={{ flexShrink: 0 }}>
         {/* Sidebar Header: acts as the trigger for the hover overlay */}
         <div 
           style={{ 
@@ -131,9 +220,14 @@ export const Sidebar: React.FC = () => {
               transition: "all 0.25s"
             }}
             onClick={(e) => {
-              e.stopPropagation();
-              setActiveTab("home" as any);
-              setMobileMenuOpen(false);
+              if (!sidebarOpen) {
+                setSidebarOpen(true);
+                setLogoHovered(false);
+              } else {
+                e.stopPropagation();
+                setActiveTab("home" as any);
+                setMobileMenuOpen(false);
+              }
             }}
             title={!sidebarOpen ? (language === "es" ? "Abrir barra lateral" : "Open sidebar") : (language === "es" ? "Ir al Inicio" : "Go to Home")}
           >
@@ -212,79 +306,151 @@ export const Sidebar: React.FC = () => {
             </button>
           )}
         </div>
+      </div>
 
-        {/* Navigation Links */}
+      {/* Middle Navigation Section (Scrollable) */}
+      <div 
+        style={{ 
+          flex: 1, 
+          overflowY: "auto", 
+          minHeight: 0,
+          marginRight: "-0.5rem",
+          paddingRight: "0.5rem"
+        }} 
+        className="sidebar-nav-scrollable"
+      >
         <nav className="sidebar-nav">
-          {navItems.map((item, index) => (
-            <React.Fragment key={item.key}>
-              {item.sectionLabel && (
-                <div style={{
-                  padding: isExpanded ? "0.6rem 0.5rem 0.2rem" : "0.6rem 0 0.2rem",
-                  borderTop: index === 0 ? "none" : "1px solid var(--border-color)",
-                  marginTop: index === 0 ? "0.2rem" : "0.5rem",
-                  textAlign: isExpanded ? "left" : "center",
-                  transition: "all 0.35s"
-                }}>
-                  {isExpanded && (
-                    <span style={{
-                      fontSize: "0.62rem",
-                      fontWeight: 700,
-                      color: "var(--text-muted)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.09em",
-                      whiteSpace: "nowrap"
-                    }}>
-                      {item.sectionLabel}
-                    </span>
-                  )}
-                </div>
-              )}
-              {(() => {
-                const isLocked = !hasPermission(item.key);
-                return (
-                  <button 
-                    className={`sidebar-nav-item ${activeTab === item.key ? "active" : ""} ${!isExpanded ? "collapsed" : ""}`}
-                    disabled={item.disabled}
-                    onClick={() => {
-                      if (!item.disabled) {
-                        setActiveTab(item.key as any);
-                        setMobileMenuOpen(false);
-                      }
-                    }}
+          {/* Applications Header */}
+          <div style={{
+            padding: isExpanded ? "0.6rem 0.5rem 0.2rem" : "0.6rem 0 0.2rem",
+            marginTop: "0.2rem",
+            textAlign: isExpanded ? "left" : "center",
+            transition: "all 0.35s"
+          }}>
+            {isExpanded && (
+              <span style={{
+                fontSize: "0.62rem",
+                fontWeight: 700,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.09em",
+                whiteSpace: "nowrap"
+              }}>
+                {language === "es" ? "Aplicaciones" : "Applications"}
+              </span>
+            )}
+          </div>
+          {applicationsItems.map(item => renderNavItem(item))}
+
+          {/* Collapsible Agentic Layer Section */}
+          <div style={{
+            borderTop: "1px solid var(--border-color)",
+            marginTop: "0.5rem",
+            paddingTop: "0.5rem"
+          }}>
+            <button
+              onClick={() => {
+                if (!sidebarOpen) {
+                  setSidebarOpen(true);
+                  setAgenticOpen(true);
+                } else {
+                  setAgenticOpen(!agenticOpen);
+                }
+              }}
+              className={`sidebar-nav-item ${!isExpanded ? "collapsed" : ""}`}
+              style={{
+                cursor: "pointer",
+                color: "var(--text-secondary)",
+                background: "transparent",
+                border: "none",
+                width: "100%",
+                padding: "0.7rem 1rem",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.75rem",
+                borderRadius: "24px"
+              }}
+            >
+              <Sparkles size={18} strokeWidth={1.5} className="text-[var(--color-primary)]" />
+              <span style={{
+                opacity: isExpanded ? 1 : 0,
+                maxWidth: isExpanded ? "200px" : "0px",
+                overflow: "hidden",
+                transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+                whiteSpace: "nowrap",
+                display: "flex",
+                alignItems: "center",
+                width: "100%",
+                fontWeight: 600,
+                fontSize: "0.8rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "var(--text-muted)"
+              }}>
+                {language === "es" ? "Capa Agéntica" : "Agentic Layer"}
+                {isExpanded && (
+                  <ChevronDown 
+                    size={14} 
                     style={{ 
-                      opacity: item.disabled ? 0.5 : (isLocked ? 0.65 : 1), 
-                      cursor: item.disabled ? "not-allowed" : "pointer" 
-                    }}
-                    data-tooltip={isLocked ? `${item.label} (${language === "es" ? "Restringido" : "Restricted"})` : item.label}
-                  >
-                    {item.icon}
-                    <span style={{
-                      opacity: isExpanded ? 1 : 0,
-                      maxWidth: isExpanded ? "200px" : "0px",
-                      overflow: "hidden",
-                      transition: "opacity 0.25s, max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-                      whiteSpace: "nowrap",
-                      display: "flex",
-                      alignItems: "center",
-                      width: "100%"
-                    }}>
-                      {item.label}
-                      {isLocked && isExpanded && (
-                        <Lock size={12} style={{ marginLeft: "auto", opacity: 0.6, color: "var(--text-muted)" }} />
-                      )}
-                    </span>
-                  </button>
-                );
-              })()}
-            </React.Fragment>
-          ))}
+                      marginLeft: "auto", 
+                      transform: agenticOpen ? "rotate(180deg)" : "none", 
+                      transition: "transform 0.2s",
+                      opacity: 0.6
+                    }} 
+                  />
+                )}
+              </span>
+            </button>
+
+            {/* Sub-items list with vertical line indicator */}
+            {isExpanded && agenticOpen && (
+              <div 
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.25rem",
+                  borderLeft: "1px solid var(--border-color)",
+                  marginLeft: "1.45rem",
+                  paddingLeft: "0.5rem",
+                  marginTop: "0.25rem",
+                  transition: "all 0.3s"
+                }} 
+                className="animate-fade-in"
+              >
+                {agenticItems.map(item => renderNavItem(item, true))}
+              </div>
+            )}
+          </div>
+
+          {/* System Header */}
+          <div style={{
+            padding: isExpanded ? "0.6rem 0.5rem 0.2rem" : "0.6rem 0 0.2rem",
+            borderTop: "1px solid var(--border-color)",
+            marginTop: "0.5rem",
+            textAlign: isExpanded ? "left" : "center",
+            transition: "all 0.35s"
+          }}>
+            {isExpanded && (
+              <span style={{
+                fontSize: "0.62rem",
+                fontWeight: 700,
+                color: "var(--text-muted)",
+                textTransform: "uppercase",
+                letterSpacing: "0.09em",
+                whiteSpace: "nowrap"
+              }}>
+                {language === "es" ? "Sistema" : "System"}
+              </span>
+            )}
+          </div>
+          {systemItems.map(item => renderNavItem(item))}
         </nav>
       </div>
 
-      {/* Sidebar Footer User profile */}
+      {/* Sidebar Footer User profile (Sticky) */}
       <div 
         className={`sidebar-footer ${!isExpanded ? "collapsed" : ""}`} 
-        style={{ position: "relative" }}
+        style={{ flexShrink: 0, position: "relative", marginTop: "1.25rem" }}
       >
         {/* Floating User Switcher Popover */}
         {switcherOpen && (

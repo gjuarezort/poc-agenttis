@@ -1,0 +1,480 @@
+/*
+  The close flow's own ground. Everything is scoped under `.cierre-root` so the
+  light "Industry" palette, the Barlow pairing and the square-cornered,
+  shadowless components never leak into the dark platform shell in `globals.css`.
+
+  Two rules from the design system that are load-bearing here:
+    · radius 0 on every element — no rounded corners anywhere;
+    · no shadows — elevation is a 1px hairline and nothing else.
+*/
+
+.cierre-root {
+  --color-bg: #f2f2f3;
+  --color-surface: #e9e9ea;
+  --color-text: #1d1f20;
+  --color-accent: #5980a6;
+  --color-accent-600: #597ea3;
+  --color-accent-700: #416180;
+  --color-accent-800: #2c455d;
+  --color-accent-900: #1d2d3d;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+  --color-muted: color-mix(in srgb, #1d1f20 55%, transparent);
+  --color-secondary: color-mix(in srgb, #1d1f20 62%, transparent);
+
+  /* Signed amounts: only the glyph is coloured, never the digits. */
+  --sign-pos: oklch(0.53 0.1 152);
+  --sign-neg: oklch(0.54 0.15 27);
+
+  --font-heading: "Barlow Condensed", system-ui, sans-serif;
+  --font-body: "Barlow", system-ui, sans-serif;
+
+  --space-1: 3.4px;
+  --space-2: 6.8px;
+  --space-3: 10.2px;
+  --space-4: 13.6px;
+  --space-6: 20.4px;
+  --space-8: 27.2px;
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+.cierre-root *,
+.cierre-root *::before,
+.cierre-root *::after {
+  box-sizing: border-box;
+  transition: none;
+}
+
+.cierre-root h1,
+.cierre-root h2,
+.cierre-root h3,
+.cierre-root h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.12;
+  margin: 0;
+  color: var(--color-text);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.cierre-root p {
+  margin: 0;
+  color: inherit;
+}
+
+.cierre-root [title] {
+  cursor: help;
+}
+
+.cierre-root :focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* — type helpers — */
+.c-head {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.c-overline {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.c-muted {
+  color: var(--color-muted);
+}
+
+.c-secondary {
+  color: var(--color-secondary);
+}
+
+.c-accent-text {
+  color: var(--color-accent-800);
+}
+
+.c-figure {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 31px;
+  line-height: 1;
+}
+
+.c-sign-pos {
+  color: var(--sign-pos);
+}
+.c-sign-neg {
+  color: var(--sign-neg);
+}
+
+/* — surfaces — */
+.c-panel {
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+  background: transparent;
+}
+
+.c-panel-accent {
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+}
+
+.c-divider-b {
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.c-divider-t {
+  border-top: 1px solid var(--color-divider);
+}
+
+/* — buttons — */
+.cierre-root .c-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--color-text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  box-shadow: none;
+  transition: background-color 0.12s ease;
+}
+
+.cierre-root .c-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cierre-root .c-btn-primary {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-bg);
+}
+.cierre-root .c-btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-600);
+}
+.cierre-root .c-btn-primary:active:not(:disabled) {
+  background: var(--color-accent-700);
+}
+
+.cierre-root .c-btn-secondary {
+  border-color: var(--color-divider);
+}
+.cierre-root .c-btn-secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+.cierre-root .c-btn-secondary:active:not(:disabled) {
+  background: color-mix(in srgb, var(--color-text) 14%, transparent);
+}
+
+.cierre-root .c-btn-ghost {
+  color: var(--color-accent);
+  border-color: transparent;
+  padding-inline: var(--space-1);
+}
+.cierre-root .c-btn-ghost:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* The one reversed field in the design — an overdue obligation. */
+.cierre-root .c-btn-invert {
+  border-color: var(--color-bg);
+  color: var(--color-bg);
+}
+.cierre-root .c-btn-invert:hover:not(:disabled) {
+  background: color-mix(in srgb, #f2f2f3 16%, transparent);
+}
+
+.cierre-root .c-btn-block {
+  width: 100%;
+}
+
+.cierre-root .c-btn-plain {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--color-muted);
+  text-align: left;
+  justify-content: flex-start;
+}
+.cierre-root .c-btn-plain:hover {
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+
+/* — form controls — */
+.cierre-root .c-input {
+  width: 100%;
+  min-height: 36px;
+  padding: 6px 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text);
+  caret-color: var(--color-accent);
+  background: var(--color-surface);
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+  box-shadow: none;
+}
+.cierre-root .c-input:hover {
+  border-color: color-mix(in srgb, var(--color-text) 45%, transparent);
+}
+.cierre-root .c-input:focus,
+.cierre-root .c-input:focus-visible {
+  border-color: var(--color-accent);
+  outline-offset: 0;
+  box-shadow: none;
+}
+
+/* The mapping table's only visual flag: a column the inference is unsure about. */
+.cierre-root .c-input-flag {
+  border-color: var(--color-accent);
+}
+
+.cierre-root .c-field > label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+
+.cierre-root .c-check {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.cierre-root .c-seg {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--color-divider);
+  border-radius: 0;
+}
+.cierre-root .c-seg-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cierre-root .c-seg-opt + .c-seg-opt {
+  border-left: 1px solid var(--color-divider);
+}
+.cierre-root .c-seg-opt input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.cierre-root .c-seg-opt:has(input:checked) {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+.cierre-root .c-seg-opt:not(:has(input:checked)):hover {
+  background: color-mix(in srgb, var(--color-text) 7%, transparent);
+}
+.cierre-root .c-seg-opt:has(input:focus-visible) {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+/* — tables — */
+.cierre-root .c-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: transparent;
+}
+.cierre-root .c-table th {
+  text-align: left;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-secondary);
+  background: transparent;
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-divider);
+}
+.cierre-root .c-table td {
+  padding: 9px 8px;
+  color: var(--color-text);
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+.cierre-root .c-table tbody tr:hover td {
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+  color: var(--color-text);
+}
+.cierre-root .c-table tr:last-child td {
+  border-bottom: 0;
+}
+.cierre-root .c-num,
+.cierre-root .c-table th.c-num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* — pipeline & rows — */
+.c-pipe-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  border: 0;
+  border-right: 1px solid var(--color-divider);
+  border-radius: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  box-shadow: none;
+}
+.c-pipe-btn:hover:not(.is-active) {
+  background: color-mix(in srgb, var(--color-text) 5%, transparent);
+}
+.c-pipe-btn.is-active {
+  background: var(--color-accent);
+  color: var(--color-bg);
+}
+.c-pipe-num {
+  width: 21px;
+  height: 21px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  font-family: var(--font-heading);
+  font-size: 12px;
+}
+
+.c-mov-row {
+  display: grid;
+  grid-template-columns: 3px 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 13px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--color-divider);
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--color-text);
+  box-shadow: none;
+}
+.c-mov-row:hover {
+  background: color-mix(in srgb, var(--color-text) 4%, transparent);
+}
+.c-mov-row.is-selected {
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+}
+
+.c-dropzone {
+  border: 1px dashed var(--color-divider);
+  padding: 34px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  background: transparent;
+  width: 100%;
+  border-radius: 0;
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+.c-dropzone:hover,
+.c-dropzone.is-over {
+  border-color: var(--color-accent);
+  background: color-mix(in srgb, var(--color-accent) 5%, transparent);
+}
+
+/* — screen transition — */
+@keyframes cierreFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.c-screen {
+  animation: cierreFadeIn 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+/* — two-column screens stack on narrow viewports — */
+.c-split {
+  display: grid;
+  gap: var(--space-8);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .c-split-15 {
+    grid-template-columns: 1.5fr 1fr;
+  }
+  .c-split-13 {
+    grid-template-columns: 1.3fr 1fr;
+  }
+  .c-split-135 {
+    grid-template-columns: 1.35fr 1fr;
+  }
+}
+
+.c-figures {
+  display: grid;
+  gap: var(--space-8);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .c-figures {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

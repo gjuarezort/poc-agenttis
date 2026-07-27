@@ -1,4 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Satisfy&family=Dancing+Script:wght@500;600;700&display=swap');
+/* Barlow pairing for the close flow (see cierre.css) */
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -1213,4 +1215,28 @@ body:has(.copilot-drawer) .sidebar-container {
   background: var(--bg-surface-hover);
   color: var(--text-primary);
 }
+
+/* Custom premium scrollbar for scrollable sidebar navigation */
+.sidebar-nav-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+}
+
+.sidebar-nav-scrollable::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-nav-scrollable::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.sidebar-nav-scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
 
