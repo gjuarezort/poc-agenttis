@@ -46,7 +46,8 @@ export const PERMISSION_CATEGORIES: PermissionCategory[] = [
       { key: "taxAlerts", labelEn: "Tax Alert Monitor", labelEs: "Control de Alertas Fiscales" },
       { key: "settings", labelEn: "Global Preferences Settings", labelEs: "Configuración Global" },
       { key: "users", labelEn: "Team & Permissions", labelEs: "Miembros y Permisos" },
-      { key: "observability", labelEn: "Observability & Metrics Dashboard", labelEs: "Métricas y Observabilidad" }
+      { key: "observability", labelEn: "Observability & Metrics Dashboard", labelEs: "Métricas y Observabilidad" },
+      { key: "decisionSimulator", labelEn: "Quantum Decision Simulator", labelEs: "Simulador Cuántico de Decisiones" }
     ]
   },
   {
@@ -99,7 +100,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(255,255,255,0.08)",
     borderColor: "rgba(255,255,255,0.15)",
     permissions: {
-      modules: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users", "observability"],
+      modules: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users", "observability", "decisionSimulator"],
       agents: ["execute", "edit", "bypass"],
       skills: ["custom_api", "mcp_tool", "datasource_op", "native_util", "compute_sandbox"],
       mcp: ["manage"],
@@ -114,7 +115,7 @@ export const INITIAL_ROLES_METADATA: RoleMetadata[] = [
     bgColor: "rgba(16,185,129,0.12)",
     borderColor: "rgba(16,185,129,0.2)",
     permissions: {
-      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings", "observability"],
+      modules: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings", "observability", "decisionSimulator"],
       agents: ["execute"],
       skills: ["custom_api", "native_util"],
       mcp: [],

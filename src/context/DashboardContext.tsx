@@ -14,7 +14,7 @@ import {
 } from "../lib/initialData";
 import { RoleMetadata, INITIAL_ROLES_METADATA } from "../lib/rolePolicyMetadata";
 
-export type TabType = "home" | "connections" | "skills" | "mcpServers" | "agents" | "apps" | "visualGraph" | "playground" | "recipe" | "marketplace" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings" | "users" | "observability";
+export type TabType = "home" | "connections" | "skills" | "mcpServers" | "agents" | "apps" | "visualGraph" | "playground" | "recipe" | "marketplace" | "reconciliation" | "monthlyClose" | "taxAlerts" | "settings" | "users" | "observability" | "decisionSimulator";
 
 export interface UserProfile {
   id: string;
@@ -218,7 +218,7 @@ export const INITIAL_USERS: UserProfile[] = [
 
 export const INITIAL_PERMISSION_POLICY: Record<string, PermissionPolicy> = {
   "Admin": {
-    views: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users"],
+    views: ["home", "connections", "skills", "mcpServers", "agents", "apps", "visualGraph", "playground", "recipe", "marketplace", "reconciliation", "monthlyClose", "taxAlerts", "settings", "users", "observability", "decisionSimulator"],
     actions: {
       execute_agents: true,
       edit_agents: true,
@@ -233,7 +233,7 @@ export const INITIAL_PERMISSION_POLICY: Record<string, PermissionPolicy> = {
     }
   },
   "Accountant": {
-    views: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings"],
+    views: ["home", "reconciliation", "monthlyClose", "taxAlerts", "connections", "skills", "agents", "apps", "visualGraph", "playground", "settings", "observability", "decisionSimulator"],
     actions: {
       execute_agents: true,
       edit_agents: false,
